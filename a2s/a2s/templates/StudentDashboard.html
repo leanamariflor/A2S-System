@@ -1,0 +1,523 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2S Dashboard - Academic Success Portal</title>
+    <link rel="stylesheet"  href="{% static 'css/StudentDashboard.css' %}" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="page-container">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content container">
+            <div class="header-left">
+                <div class="header-icon">
+                    <i data-lucide="graduation-cap"></i>
+                </div>
+                <div class="header-text">
+                    <h1>A2S Dashboard</h1>
+                    <p>Academic Success Portal</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="notification-button">
+                    <i data-lucide="bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-avatar">
+                    <span>JD</span>
+                </div>
+                <button class="logout-button">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <!-- Student Info -->
+            <div class="sidebar-student-info">
+                <div class="student-avatar">
+                    <span>JD</span>
+                </div>
+                <div class="student-details">
+                    <h3>John Doe</h3>
+                    <p class="student-id">2024-00001</p>
+                    <p class="student-program">BS Information Technology</p>
+                    <p class="student-year">3rd Year</p>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="sidebar-stats">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Current GPA</span>
+                        <i data-lucide="award"></i>
+                    </div>
+                    <div class="stat-value">3.75</div>
+                    <div class="stat-subtitle">Dean's List Eligible</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Progress</span>
+                        <i data-lucide="target"></i>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 70%"></div>
+                    </div>
+                    <div class="stat-subtitle">84/120 credits</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <button class="nav-button active">
+                    <i data-lucide="book-open"></i>
+                    <span>Overview</span>
+                </button>
+               <a href="{% url 'StudentProfile' %}" class="nav-button">
+                    <i data-lucide="user"></i>
+                    <span>Profile</span>
+                </a>
+                <button class="nav-button">
+                    <i data-lucide="calendar"></i>
+                    <span>Schedule</span>
+                </button>
+                <button class="nav-button">
+                    <i data-lucide="trending-up"></i>
+                    <span>Grades</span>
+                </button>
+                <button class="nav-button">
+                    <i data-lucide="users"></i>
+                    <span>Courses</span>
+                </button>
+                <button class="nav-button">
+                    <i data-lucide="file-text"></i>
+                    <span>Degree Audit</span>
+                </button>
+                <button class="nav-button">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Welcome Section -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h2>Welcome back, John!</h2>
+                        <p>Fall 2025 • 5 active courses</p>
+                    </div>
+                    <div class="welcome-gpa">
+                        <div class="gpa-value">3.75</div>
+                        <div class="gpa-label">Current GPA</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tabs -->
+            <div class="tabs">
+                <div class="tab-list">
+                    <button class="tab-trigger active" data-tab="overview">Overview</button>
+                    <button class="tab-trigger" data-tab="courses">Courses</button>
+                    <button class="tab-trigger" data-tab="progress">Progress</button>
+                    <button class="tab-trigger" data-tab="tasks">Tasks</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div class="tab-content active" id="overview">
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-grid">
+                        <div class="action-card">
+                            <i data-lucide="calendar"></i>
+                            <h3>Schedule</h3>
+                            <p>View timetable</p>
+                        </div>
+                        <div class="action-card">
+                            <i data-lucide="trending-up"></i>
+                            <h3>Grades</h3>
+                            <p>Check results</p>
+                        </div>
+                        <div class="action-card">
+                            <i data-lucide="file-text"></i>
+                            <h3>Degree Audit</h3>
+                            <p>Track requirements</p>
+                        </div>
+                        <div class="action-card">
+                            <i data-lucide="award"></i>
+                            <h3>Achievements</h3>
+                            <p>View awards</p>
+                        </div>
+                    </div>
+
+                    <!-- Current Semester Overview -->
+                    <div class="overview-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i data-lucide="book-open"></i>
+                                    Current Courses
+                                </div>
+                                <div class="card-description">Fall 2025 - 5 courses enrolled</div>
+                            </div>
+                            <div class="card-content">
+                                <div class="course-list">
+                                    <div class="course-item">
+                                        <div class="course-details">
+                                            <div class="course-code">IT317</div>
+                                            <div class="course-name">Systems Integration and Architecture</div>
+                                            <div class="course-instructor">Prof. Amparo</div>
+                                        </div>
+                                        <div class="course-units">3 units</div>
+                                    </div>
+                                    <div class="course-item">
+                                        <div class="course-details">
+                                            <div class="course-code">CSIT327</div>
+                                            <div class="course-name">Database Systems</div>
+                                            <div class="course-instructor">Prof. Revilleza</div>
+                                        </div>
+                                        <div class="course-units">3 units</div>
+                                    </div>
+                                    <div class="course-item">
+                                        <div class="course-details">
+                                            <div class="course-code">IT315</div>
+                                            <div class="course-name">Web Development</div>
+                                            <div class="course-instructor">Prof. Johnson</div>
+                                        </div>
+                                        <div class="course-units">3 units</div>
+                                    </div>
+                                </div>
+                                <button class="view-all-button">View All Courses</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i data-lucide="clock"></i>
+                                    Upcoming Tasks
+                                </div>
+                                <div class="card-description">Assignments and deadlines</div>
+                            </div>
+                            <div class="card-content">
+                                <div class="task-list">
+                                    <div class="task-item">
+                                        <div class="task-details">
+                                            <div class="task-title">IT317 Project Proposal</div>
+                                            <div class="task-due">Due: Sep 25, 2025</div>
+                                        </div>
+                                        <div class="task-type">Project</div>
+                                    </div>
+                                    <div class="task-item">
+                                        <div class="task-details">
+                                            <div class="task-title">CSIT327 Database Design</div>
+                                            <div class="task-due">Due: Sep 28, 2025</div>
+                                        </div>
+                                        <div class="task-type">Assignment</div>
+                                    </div>
+                                    <div class="task-item">
+                                        <div class="task-details">
+                                            <div class="task-title">IT315 Web Portfolio</div>
+                                            <div class="task-due">Due: Oct 02, 2025</div>
+                                        </div>
+                                        <div class="task-type">Project</div>
+                                    </div>
+                                    <div class="task-item">
+                                        <div class="task-details">
+                                            <div class="task-title">Midterm Examinations</div>
+                                            <div class="task-due">Due: Oct 15, 2025</div>
+                                        </div>
+                                        <div class="task-type exam">Exam</div>
+                                    </div>
+                                </div>
+                                <button class="view-all-button">View All Tasks</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Tab -->
+                <div class="tab-content" id="courses">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Enrolled Courses - Fall 2025</div>
+                            <div class="card-description">Your current course load and details</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="courses-full-list">
+                                <div class="course-full-item">
+                                    <div class="course-info">
+                                        <div class="course-header">
+                                            <h3>IT317</h3>
+                                            <span class="course-units">3 units</span>
+                                        </div>
+                                        <p class="course-name">Systems Integration and Architecture</p>
+                                        <p class="course-instructor">Prof. Amparo</p>
+                                    </div>
+                                    <button class="course-details-button">View Details</button>
+                                </div>
+                                <div class="course-full-item">
+                                    <div class="course-info">
+                                        <div class="course-header">
+                                            <h3>CSIT327</h3>
+                                            <span class="course-units">3 units</span>
+                                        </div>
+                                        <p class="course-name">Database Systems</p>
+                                        <p class="course-instructor">Prof. Revilleza</p>
+                                    </div>
+                                    <button class="course-details-button">View Details</button>
+                                </div>
+                                <div class="course-full-item">
+                                    <div class="course-info">
+                                        <div class="course-header">
+                                            <h3>IT315</h3>
+                                            <span class="course-units">3 units</span>
+                                        </div>
+                                        <p class="course-name">Web Development</p>
+                                        <p class="course-instructor">Prof. Johnson</p>
+                                    </div>
+                                    <button class="course-details-button">View Details</button>
+                                </div>
+                                <div class="course-full-item">
+                                    <div class="course-info">
+                                        <div class="course-header">
+                                            <h3>IT313</h3>
+                                            <span class="course-units">3 units</span>
+                                        </div>
+                                        <p class="course-name">Data Structures</p>
+                                        <p class="course-instructor">Prof. Smith</p>
+                                    </div>
+                                    <button class="course-details-button">View Details</button>
+                                </div>
+                                <div class="course-full-item">
+                                    <div class="course-info">
+                                        <div class="course-header">
+                                            <h3>IT311</h3>
+                                            <span class="course-units">3 units</span>
+                                        </div>
+                                        <p class="course-name">Computer Networks</p>
+                                        <p class="course-instructor">Prof. Brown</p>
+                                    </div>
+                                    <button class="course-details-button">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Tab -->
+                <div class="tab-content" id="progress">
+                    <div class="progress-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Academic Progress</div>
+                                <div class="card-description">Your GPA trend over semesters</div>
+                            </div>
+                            <div class="card-content">
+                                <div class="semester-list">
+                                    <div class="semester-item">
+                                        <div class="semester-info">
+                                            <div class="semester-name">Fall 2023</div>
+                                            <div class="semester-status">Completed</div>
+                                        </div>
+                                        <div class="semester-gpa">
+                                            <div class="gpa-value">3.50</div>
+                                            <div class="gpa-label">GPA</div>
+                                        </div>
+                                    </div>
+                                    <div class="semester-item">
+                                        <div class="semester-info">
+                                            <div class="semester-name">Spring 2024</div>
+                                            <div class="semester-status">Completed</div>
+                                        </div>
+                                        <div class="semester-gpa">
+                                            <div class="gpa-value">3.60</div>
+                                            <div class="gpa-label">GPA</div>
+                                        </div>
+                                    </div>
+                                    <div class="semester-item">
+                                        <div class="semester-info">
+                                            <div class="semester-name">Fall 2024</div>
+                                            <div class="semester-status">Completed</div>
+                                        </div>
+                                        <div class="semester-gpa">
+                                            <div class="gpa-value">3.80</div>
+                                            <div class="gpa-label">GPA</div>
+                                        </div>
+                                    </div>
+                                    <div class="semester-item">
+                                        <div class="semester-info">
+                                            <div class="semester-name">Spring 2025</div>
+                                            <div class="semester-status">Completed</div>
+                                        </div>
+                                        <div class="semester-gpa">
+                                            <div class="gpa-value">3.70</div>
+                                            <div class="gpa-label">GPA</div>
+                                        </div>
+                                    </div>
+                                    <div class="semester-item">
+                                        <div class="semester-info">
+                                            <div class="semester-name">Fall 2025</div>
+                                            <div class="semester-status">In Progress</div>
+                                        </div>
+                                        <div class="semester-gpa">
+                                            <div class="gpa-value">3.75</div>
+                                            <div class="gpa-label">GPA</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Degree Progress</div>
+                                <div class="card-description">Credits completed towards graduation</div>
+                            </div>
+                            <div class="card-content">
+                                <div class="degree-progress">
+                                    <div class="progress-header">
+                                        <span>Overall Progress</span>
+                                        <span>84/120 credits</span>
+                                    </div>
+                                    <div class="progress-bar large">
+                                        <div class="progress-fill" style="width: 70%"></div>
+                                    </div>
+                                    <div class="progress-percentage">70% Complete</div>
+                                </div>
+
+                                <div class="degree-breakdown">
+                                    <h4>Requirements Breakdown</h4>
+                                    <div class="requirement-item">
+                                        <div class="requirement-info">
+                                            <span>Core Courses</span>
+                                            <span>45/48 credits</span>
+                                        </div>
+                                        <div class="progress-bar small">
+                                            <div class="progress-fill" style="width: 94%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <div class="requirement-info">
+                                            <span>Major Electives</span>
+                                            <span>24/30 credits</span>
+                                        </div>
+                                        <div class="progress-bar small">
+                                            <div class="progress-fill" style="width: 80%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <div class="requirement-info">
+                                            <span>General Education</span>
+                                            <span>15/18 credits</span>
+                                        </div>
+                                        <div class="progress-bar small">
+                                            <div class="progress-fill" style="width: 83%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Tab -->
+                <div class="tab-content" id="tasks">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">All Upcoming Tasks</div>
+                            <div class="card-description">Assignments, projects, and examinations</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="tasks-full-list">
+                                <div class="task-full-item">
+                                    <div class="task-priority high"></div>
+                                    <div class="task-info">
+                                        <h3>IT317 Project Proposal</h3>
+                                        <p>Systems Integration and Architecture</p>
+                                        <div class="task-meta">
+                                            <span class="task-due">Due: Sep 25, 2025</span>
+                                            <span class="task-time">2 days left</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-badge project">Project</div>
+                                </div>
+                                <div class="task-full-item">
+                                    <div class="task-priority medium"></div>
+                                    <div class="task-info">
+                                        <h3>CSIT327 Database Design</h3>
+                                        <p>Database Systems</p>
+                                        <div class="task-meta">
+                                            <span class="task-due">Due: Sep 28, 2025</span>
+                                            <span class="task-time">5 days left</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-badge assignment">Assignment</div>
+                                </div>
+                                <div class="task-full-item">
+                                    <div class="task-priority medium"></div>
+                                    <div class="task-info">
+                                        <h3>IT315 Web Portfolio</h3>
+                                        <p>Web Development</p>
+                                        <div class="task-meta">
+                                            <span class="task-due">Due: Oct 02, 2025</span>
+                                            <span class="task-time">9 days left</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-badge project">Project</div>
+                                </div>
+                                <div class="task-full-item">
+                                    <div class="task-priority high"></div>
+                                    <div class="task-info">
+                                        <h3>Midterm Examinations</h3>
+                                        <p>All enrolled courses</p>
+                                        <div class="task-meta">
+                                            <span class="task-due">Due: Oct 15, 2025</span>
+                                            <span class="task-time">22 days left</span>
+                                        </div>
+                                    </div>
+                                    <div class="task-badge exam">Exam</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab functionality
+        const tabTriggers = document.querySelectorAll('.tab-trigger');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const targetTab = trigger.getAttribute('data-tab');
+                
+                // Remove active class from all triggers and contents
+                tabTriggers.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked trigger and corresponding content
+                trigger.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
