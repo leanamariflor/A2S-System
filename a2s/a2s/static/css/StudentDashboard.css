@@ -23,7 +23,7 @@
   --muted-foreground: hsl(0, 0%, 25%);
   
   /* Accent */
-  --accent: hsl(50, 100%, 60%);
+  --accent: ;
   --accent-foreground: hsl(0, 0%, 15%);
   
   /* Destructive */
@@ -77,12 +77,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--gr);
-    color: var(--foreground);
+    color: var(--academic-red);
+    background: linear-gradient(180deg, #F2E8C6, #FFE797);
     line-height: 1.5;
 }
 
@@ -183,10 +184,6 @@ body {
     font-weight: 500;
     box-shadow: var(--shadow-academic);
     transition: var(--transition-academic);
-}
-
-.edit-button:hover {
-    background: var(--academic-red-dark);
 }
 
 /* Main content */
@@ -790,7 +787,7 @@ body {
 
 /* Welcome Card */
 .welcome-card {
-    background: var(--gradient-gold);
+    background: var(--card-foreground);
     border: 1px solid var(--border);
     border-radius: 1rem;
     padding: 1.5rem;
@@ -892,7 +889,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem;
-    background-color: var(--academic-bg-secondary);
+    background-color: var(--academic-bg-tertiary);
     border-radius: var(--radius);
 }
 

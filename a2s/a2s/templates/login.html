@@ -11,29 +11,32 @@
 
 <div class="container">
     <!-- Login card -->
-  <div class="form-container">
-    <h2>User Authentication</h2>
+    <div class="form-container">
+        <h2>User Authentication</h2>
 
-    <div class="form-group">
-        <label for="email">Student Email</label>
-        <input type="email" id="email" name="email" placeholder="student@university.edu">
+            <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email">Student Email</label>
+                <input type="email" id="email" name="email" placeholder="student@university.edu" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="forgot-container">
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+           <button type="submit">Login</button>
+        </form>
+
+        <p>Don't have an account? <a href="{% url 'register' %}"><strong>Create account</strong></a></p>
+
+        </p>
     </div>
-
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password">
-    </div>
-
-    <!-- Forgot password (aligned right, directly under password field) -->
-    <div class="forgot-container">
-        <a href="#" class="forgot-password">Forgot password?</a>
-    </div>
-
-    <a href="{% url 'StudentDashboard' %}" class="btn">Login</a>
-
-    <p>Don't have an account? <a href="{% url 'register' %}"><strong>Create account</strong></a></p>
-</div>
-
 </div>
 
 </body>
