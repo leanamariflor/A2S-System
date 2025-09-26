@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>A2S System - Login</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Login.css' %}" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body style="background-image: url('{% static 'images/background.png' %}'); background-size: cover; background-position: center; height: 100vh; margin: 0;">
@@ -14,7 +14,7 @@
     <div class="form-container">
         <h2>User Authentication</h2>
 
-            <form method="POST" action="{% url 'login' %}">
+            <form method="POST" action="{% url 'Login' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label for="email">Student Email</label>
@@ -30,10 +30,11 @@
                 <a href="#" class="forgot-password">Forgot password?</a>
             </div>
 
-           <button type="submit">Login</button>
+        <button type="submit" class="btn">Login</button>
+
         </form>
 
-        <p>Don't have an account? <a href="{% url 'register' %}"><strong>Create account</strong></a></p>
+        <p>Don't have an account? <a href="{% url 'Register' %}"><strong>Create account</strong></a></p>
 
         </p>
     </div>

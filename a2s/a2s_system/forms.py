@@ -7,7 +7,7 @@ User = get_user_model()
 class StudentRegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2"]
+        fields = ["idnumber","username", "email", "password1", "password2"]
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label="Email / Username")

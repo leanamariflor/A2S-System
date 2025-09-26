@@ -1,17 +1,17 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .models import User
 
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Authenticate using email
-        user = authenticate(request, email=email, password=password)
-
-        if user is not None:
+        # Authenticate using email (custom user model)
+        user = authenticate(request, username=email, password=password)
+        if user:
             login(request, user)
             if user.is_student:
                 return redirect("StudentDashboard")
@@ -21,51 +21,72 @@ def login_view(request):
                 messages.error(request, "User role not defined")
         else:
             messages.error(request, "Invalid email or password")
+    return render(request, "Login.html")
 
-    return render(request, "login.html")
 
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
-        # If you have a custom user model that uses email as username:
-        user = authenticate(request, username=email, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect("StudentDashboard")  # redirect for student
-        else:
-            messages.error(request, "Invalid email or password")
-
-    return render(request, "login.html")
-
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        
-        # Custom User: authenticate using email
-        user = authenticate(request, username=email, password=password)  # or email field depending on your backend
-        
-        if user:
-            login(request, user)
-            return redirect("StudentDashboard")
-        else:
-            messages.error(request, "Invalid email or password")
-    
-    return render(request, "login.html")
-
-# Registration (placeholder for now)
 def register(request):
-    return render(request, "register.html")
+    if request.method == "POST":
+        id_number = request.POST.get("id_number")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        password2 = request.POST.get("password2")
+        program = request.POST.get("program")
+        yearlevel = request.POST.get("yearlevel")
+
+        # Check required fields
+        if not all([id_number, first_name, last_name, email, password, password2]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect("register")
+
+        # Password match
+        if password != password2:
+            messages.error(request, "Passwords do not match.")
+            return redirect("register")
+
+        # Check unique email
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered.")
+            return redirect("register")
+
+        # Create the user
+        user = User.objects.create_user(
+            id_number=id_number,
+            username=email,  # username is required in Django auth
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            is_student=True,
+        )
+
+        # Optional: assign program/yearlevel to student profile if exists
+        if hasattr(user, "studentprofile"):
+            user.studentprofile.program = program
+            user.studentprofile.yearlevel = yearlevel
+            user.studentprofile.save()
+
+        messages.success(request, "Account created successfully! You can now login.")
+        return redirect("login")
+
+    return render(request, "Register.html")
+
 
 @login_required
 def student_dashboard(request):
     return render(request, "StudentDashboard.html")
 
+
+@login_required
 def teacher_dashboard(request):
     return render(request, "TeacherDashboard.html")
 
-# Student profile (dummy data for now)
+
+def logout_view(request):
+    logout(request)
+    return redirect("login")
+
 def student_profile(request):
     context = {
         "first_name": "John",
@@ -86,7 +107,3 @@ def student_profile(request):
     }
     return render(request, "StudentProfile.html", context)
 
-# Logout view
-def logout_view(request):
-    logout(request)
-    return redirect("login")
