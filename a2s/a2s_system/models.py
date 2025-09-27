@@ -10,8 +10,8 @@ class User(AbstractUser):
 
 
     USERNAME_FIELD = 'email'  
-    REQUIRED_FIELDS = ['username'] 
-    REQUIRED_FIELDS = ['id_number'] 
+    REQUIRED_FIELDS = ['username', 'id_number']
+    
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
