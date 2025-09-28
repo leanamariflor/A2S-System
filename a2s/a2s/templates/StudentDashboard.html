@@ -16,8 +16,8 @@
     <header class="header">
         <div class="header-content container">
             <div class="header-left">
-                <div class="header-icon">
-                    <i data-lucide="graduation-cap"></i>
+                <div class="header-logo">
+                    <img src="{% static 'images/cit-logo.png' %}" alt="A2S Logo">
                 </div>
                 <div class="header-text">
                     <h1>A2S Dashboard</h1>
@@ -30,7 +30,7 @@
                     <span class="notification-badge">3</span>
                 </button>
                 <div class="user-avatar">
-                    <span>JD</span>
+                    <span>{{ user.first_name|first }}{{ user.last_name|first }}</span>
                 </div>
                <a href="{% url 'Logout' %}" class="logout-button">
                 <i data-lucide="log-out"></i>
@@ -46,13 +46,13 @@
             <!-- Student Info -->
             <div class="sidebar-student-info">
                 <div class="student-avatar">
-                    <span>JD</span>
+                    <span>{{ user.first_name|first }}{{ user.last_name|first }}</span>
                 </div>
                 <div class="student-details">
-                    <h3>John Doe</h3>
-                    <p class="student-id">2024-00001</p>
-                    <p class="student-program">BS Information Technology</p>
-                    <p class="student-year">3rd Year</p>
+                    <h3>{{ user.get_full_name }}</h3>
+                    <p class="student-id">{{ user.username }}</p>   <!-- or student id if stored -->
+                    <p class="student-program">{{ user.profile.program }}</p>
+                    <p class="student-year">{{ user.profile.year_level }}</p>
                 </div>
             </div>
 
@@ -97,7 +97,7 @@
             <div class="welcome-card">
                 <div class="welcome-content">
                     <div class="welcome-text">
-                        <h2>Welcome back, John!</h2>
+                        <h2>Welcome, {{ user.first_name }}!</h2>
                         <p>Fall 2025 • 5 active courses</p>
                     </div>
                     <div class="welcome-gpa">

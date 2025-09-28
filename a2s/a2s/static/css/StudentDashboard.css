@@ -111,11 +111,24 @@ body {
     padding: 1rem 0;
 }
 
+.header-content.container {
+    margin: 0;          
+    max-width: 100%;    
+    padding-left: 0.5rem;
+}
+
+
 .header-left {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
+.header-logo img {
+    height: 40px;   /* adjust size */
+    width: auto;    /* keeps aspect ratio */
+    display: block;
+}
+
 
 .back-button {
     display: flex;
@@ -787,11 +800,13 @@ body {
 
 /* Welcome Card */
 .welcome-card {
-    background: var(--card-foreground);
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-card);
+    background: hsla(0, 80%, 45%, 0.6) !important; 
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    box-shadow: var(--shadow-card) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    color: var(--academic-text-primary) !important; 
 }
 
 .welcome-content {
