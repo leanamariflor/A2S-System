@@ -18,8 +18,8 @@
           <i data-lucide="chalkboard"></i>
         </div>
         <div class="header-text">
-          <h1>A2S Teacher Dashboard</h1>
-          <p>Academic Success Portal</p>
+          <h1>A2S Next-Gen: Academic To Success</h1>
+          <p>Faculty Success Portal</p>
         </div>
       </div>
       <div class="header-actions">
@@ -94,7 +94,7 @@
             <p>Fall 2025 • 4 active courses</p>
           </div>
           <div class="welcome-gpa">
-            <div class="gpa-value">120</div>
+            <div class="gpa-value">317</div>
             <div class="gpa-label">Total Students</div>
           </div>
         </div>
@@ -104,33 +104,98 @@
       <div class="tabs">
         <div class="tab-list">
           <button class="tab-trigger active" data-tab="overview">Overview</button>
-          <button class="tab-trigger" data-tab="classes">My Classes</button>
-          <button class="tab-trigger" data-tab="submissions">Submissions</button>
-          <button class="tab-trigger" data-tab="analytics">Analytics</button>
+          <button class="tab-trigger" data-tab="classes">Courses</button>
+          <button class="tab-trigger" data-tab="reports">Reports</button>
+          <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
+          <button class="tab-trigger" data-tab="map">University’s Map</button>
         </div>
 
         <!-- Overview Tab -->
         <div class="tab-content active" id="overview">
           <div class="quick-actions-grid">
             <div class="action-card">
-              <i data-lucide="file-plus"></i>
-              <h3>Create Assignment</h3>
-              <p>Post new work</p>
+              <i data-lucide="calendar"></i>
+              <h3>Schedule</h3>
+              <p>View timetable</p>
             </div>
             <div class="action-card">
-              <i data-lucide="users"></i>
-              <h3>Class List</h3>
-              <p>View enrolled students</p>
+              <i data-lucide="line-chart"></i>
+              <h3>Student Progress</h3>
+              <p>Track performance</p>
             </div>
             <div class="action-card">
-              <i data-lucide="clipboard-check"></i>
-              <h3>Gradebook</h3>
-              <p>Update records</p>
+              <i data-lucide="upload"></i>
+              <h3>Upload Grades</h3>
+              <p>Record assessments</p>
             </div>
             <div class="action-card">
-              <i data-lucide="bar-chart-3"></i>
-              <h3>Performance</h3>
-              <p>Track analytics</p>
+              <i data-lucide="file-bar-chart"></i>
+              <h3>Reports</h3>
+              <p>Generate summaries</p>
+            </div>
+            <div class="action-card">
+              <i data-lucide="megaphone"></i>
+              <h3>Announcement</h3>
+              <p>Post updates</p>
+            </div>
+          </div>
+
+          <div class="cards-row">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Current Courses</div>
+                <div class="card-description">2025-2026 • 8 enrolled courses</div>
+              </div>
+              <div class="card-content">
+                <div class="course-list">
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">IT317 - G5</div>
+                      <div class="course-name">Project Management 1</div>
+                    </div>
+                    <div class="course-units">38 students</div>
+                  </div>
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">CSIT340 - G4</div>
+                      <div class="course-name">Industry Elective 2</div>
+                    </div>
+                    <div class="course-units">40 students</div>
+                  </div>
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">CSIT340 - G4</div>
+                      <div class="course-name"></div>
+                    </div>
+                    <div class="course-units"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Recent Alerts</div>
+                <div class="card-description">Student notifications requiring attention</div>
+              </div>
+              <div class="card-content">
+                <div class="task-list">
+                  <div class="task-item">
+                    <div class="task-details">
+                      <div class="task-title">John Doe Junior BamBam</div>
+                      <div class="task-due">GPA dropped below 2.0</div>
+                    </div>
+                    <div class="task-type">GPA!</div>
+                  </div>
+                  <div class="task-item">
+                    <div class="task-details">
+                      <div class="task-title">Jackie Chenban</div>
+                      <div class="task-due">Missing multiple classes</div>
+                    </div>
+                    <div class="task-type">Attendance</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -173,43 +238,41 @@
           </div>
         </div>
 
-        <!-- Submissions Tab -->
-        <div class="tab-content" id="submissions">
+        <!-- Reports Tab -->
+        <div class="tab-content" id="reports">
           <div class="card">
             <div class="card-header">
-              <div class="card-title">Recent Submissions</div>
-              <div class="card-description">Student work awaiting review</div>
+              <div class="card-title">Reports</div>
+              <div class="card-description">Generate and view summaries</div>
             </div>
             <div class="card-content">
-              <div class="task-list">
-                <div class="task-item">
-                  <div class="task-details">
-                    <div class="task-title">IT317 Project Proposal</div>
-                    <div class="task-due">Submitted: Sep 25, 2025</div>
-                  </div>
-                  <div class="task-type">Project</div>
-                </div>
-                <div class="task-item">
-                  <div class="task-details">
-                    <div class="task-title">CSIT327 Database Design</div>
-                    <div class="task-due">Submitted: Sep 26, 2025</div>
-                  </div>
-                  <div class="task-type">Assignment</div>
-                </div>
-              </div>
+              <p>Report generation UI placeholder.</p>
             </div>
           </div>
         </div>
 
-        <!-- Analytics Tab -->
-        <div class="tab-content" id="analytics">
+        <!-- Academic Calendar Tab -->
+        <div class="tab-content" id="calendar">
           <div class="card">
             <div class="card-header">
-              <div class="card-title">Class Performance Overview</div>
-              <div class="card-description">Student performance summary</div>
+              <div class="card-title">Academic Calendar</div>
+              <div class="card-description">Important academic dates</div>
             </div>
             <div class="card-content">
-              <p>📊 Analytics charts/graphs can be added here later.</p>
+              <p>Calendar content placeholder.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- University’s Map Tab -->
+        <div class="tab-content" id="map">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">University’s Map</div>
+              <div class="card-description">Campus locations and buildings</div>
+            </div>
+            <div class="card-content">
+              <p>Map embedding placeholder.</p>
             </div>
           </div>
         </div>
