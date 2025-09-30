@@ -1,97 +1,331 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Student Dashboard</title>
-  <!-- Import Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/studentDashboard.css' %}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A2S Student Dashboard - Academic Success Portal</title>
+  <link rel="stylesheet" href="{% static 'css/TeacherDashboard.css' %}" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
-<body>
+<body class="page-container">
   <!-- Header -->
   <header class="header">
-    <div class="header-left">
-      <img src="{% static 'images/logo.png' %}" alt="A2S Logo" class="logo" />
-      <div class="title-group">
-        <h1>A2S Next-Gen: Academic To Success</h1>
-        <span class="subtitle">Student Success Portal</span>
+    <div class="header-content container">
+      <div class="header-left">
+        <div class="header-icon">
+          <i data-lucide="book-open"></i>
+        </div>
+        <div class="header-text">
+          <h1>A2S Next-Gen: Academic To Success</h1>
+          <p>Student Portal</p>
+        </div>
       </div>
-    </div>
-    <div class="header-icons">
-      <span class="icon">
-            <img src="{% static 'images/message.png' %}" alt="Messages" class="icon-img">
-            <span class="badge">1</span>
-        </span>
-      <span class="icon">🔐</span>
+      <div class="header-actions">
+        <button class="notification-button">
+          <i data-lucide="bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+        <div class="user-avatar">
+          <span>PR</span>
+        </div>
+        <a href="{% url 'Logout' %}" class="logout-button">
+          <i data-lucide="log-out"></i>
+        </a>
+      </div>
     </div>
   </header>
 
   <div class="dashboard-container">
     <!-- Sidebar -->
-    <!-- Sidebar -->
-    <aside class="sidebar">
-    <div class="profile">
-        <img src="{% static 'images/boy.png' %}" alt="Profile">
-        <h3>John Doe</h3>
-        <p>Information Technology<br>3rd Year</p>
-    </div>
-    <nav class="sidebar-nav">
-        <button>Overview</button>
-        <button>Profile</button>
-        <button>Schedule</button>
-        <button>Grades</button>
-        <button>Courses</button>
-        <button>Degree Audit</button>
-        <button>Achievements</button>  
-        <button>Announcements</button>  
-        <div class="spacer"></div>
-        <button class="settings">Settings</button>
-    </nav>
-    </aside>
-
-
-    <!-- Main Content -->
-    <main class="content">
-      <section class="welcome-card">
-        <h2>Welcome, John!</h2>
-        <p>2025-2026</p>
-        <p>8 active courses</p>
-      </section>
-
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="active">Overview</button>
-        <button>Student’s Handbook</button>
-        <button>Academic Calendar</button>
-        <button>University’s Map</button>
-        <button>Progress</button>
-        <button>Curriculum</button>
+    <aside class="dashboard-sidebar">
+      <!-- Student Info -->
+      <div class="sidebar-student-info">
+        <div class="student-avatar">
+          <span>PR</span>
+        </div>
+        <div class="student-details">
+          <h3>Paul Revilleza</h3>
+          <p class="student-id">Student ID: S-2025-045</p>
+          <p class="student-program">Bachelor of IT</p>
+          <p class="student-year">3rd Year</p>
+        </div>
       </div>
 
-      <!-- Current Courses & Upcoming Tasks -->
-      <div class="course-task-section">
-        <div class="card">
-          <h3>📘 Current Courses</h3>
-          <p>2025-2026 — 8 enrolled courses</p>
-          <ul>
-            <li><strong>IT317 - G5</strong> — Project Management 1 <span>3 Units</span></li>
-            <li><strong>CSIT340 - G4</strong> — Industry Elective 2 <span>3 Units</span></li>
-          </ul>
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+        <button class="nav-button active">
+          <i data-lucide="home"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="book"></i>
+          <span>My Courses</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="check-square"></i>
+          <span>Grades</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="bar-chart-2"></i>
+          <span>Performance</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <!-- Welcome Section -->
+      <div class="welcome-card">
+        <div class="welcome-content">
+          <div class="welcome-text">
+            <h2>Welcome back, Paul</h2>
+            <p>Fall 2025 • 4 active courses</p>
+          </div>
+          <div class="welcome-gpa">
+            <div class="gpa-value">3.75</div>
+            <div class="gpa-label">Current GPA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Tabs -->
+      <div class="tabs">
+        <div class="tab-list">
+          <button class="tab-trigger active" data-tab="dashboard">Dashboard</button>
+          <button class="tab-trigger" data-tab="courses">My Courses</button>
+          <button class="tab-trigger" data-tab="assignments">Assignments</button>
+          <button class="tab-trigger" data-tab="grades">Grades</button>
+          <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
+          <button class="tab-trigger" data-tab="map">University Map</button>
         </div>
 
-        <div class="card">
-          <h3>🗂️ Upcoming Task</h3>
-          <p>Assignments & Tasks</p>
-          <ul>
-            <li><strong>Minutes of the Meeting</strong> (IT317 - G5)<br>
-              Due: October 04, 2025 <span class="tag">Assignment</span></li>
-            <li><strong>Sprint Backlog 200</strong> (CSIT327 - G1)<br>
-              Due: October 04, 2025 <span class="tag">Assignment</span></li>
-          </ul>
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+          <div class="quick-actions-grid">
+            <div class="action-card">
+              <i data-lucide="calendar"></i>
+              <h3>Schedule</h3>
+              <p>View timetable</p>
+            </div>
+            <div class="action-card">
+              <i data-lucide="trending-up"></i>
+              <h3>Performance</h3>
+              <p>Track your progress</p>
+            </div>
+            <div class="action-card">
+              <i data-lucide="upload"></i>
+              <h3>Submit Assignments</h3>
+              <p>Upload your work</p>
+            </div>
+            <div class="action-card">
+              <i data-lucide="file-text"></i>
+              <h3>View Grades</h3>
+              <p>Check your scores</p>
+            </div>
+            <div class="action-card">
+              <i data-lucide="message-circle"></i>
+              <h3>Announcements</h3>
+              <p>Stay updated</p>
+            </div>
+          </div>
+
+          <div class="cards-row">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Current Courses</div>
+                <div class="card-description">Fall 2025 • 4 enrolled courses</div>
+              </div>
+              <div class="card-content">
+                <div class="course-list">
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">IT317</div>
+                      <div class="course-name">Systems Integration</div>
+                      <div class="course-instructor">Prof. Revilleza</div>
+                    </div>
+                    <div class="course-units">3 units</div>
+                  </div>
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">CSIT327</div>
+                      <div class="course-name">Database Systems</div>
+                      <div class="course-instructor">Prof. Revilleza</div>
+                    </div>
+                    <div class="course-units">3 units</div>
+                  </div>
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">IT315</div>
+                      <div class="course-name">Web Development</div>
+                      <div class="course-instructor">Prof. Revilleza</div>
+                    </div>
+                    <div class="course-units">3 units</div>
+                  </div>
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">CSIT340</div>
+                      <div class="course-name">Industry Elective 2</div>
+                      <div class="course-instructor">Prof. Revilleza</div>
+                    </div>
+                    <div class="course-units">3 units</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Recent Notifications</div>
+                <div class="card-description">Important updates for you</div>
+              </div>
+              <div class="card-content">
+                <div class="task-list">
+                  <div class="task-item">
+                    <div class="task-details">
+                      <div class="task-title">Assignment 3 Deadline</div>
+                      <div class="task-due">Due: Oct 5, 2025</div>
+                    </div>
+                    <div class="task-type">Urgent</div>
+                  </div>
+                  <div class="task-item">
+                    <div class="task-details">
+                      <div class="task-title">Midterm Exam Schedule</div>
+                      <div class="task-due">Starts: Nov 10, 2025</div>
+                    </div>
+                    <div class="task-type">Exam</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Courses Tab -->
+        <div class="tab-content" id="courses">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">My Courses</div>
+              <div class="card-description">Courses you are enrolled in</div>
+            </div>
+            <div class="card-content">
+              <div class="course-list">
+                <div class="course-item">
+                  <div class="course-details">
+                    <div class="course-code">IT317</div>
+                    <div class="course-name">Systems Integration</div>
+                    <div class="course-instructor">Prof. Revilleza</div>
+                  </div>
+                  <div class="course-units">3 units</div>
+                </div>
+                <div class="course-item">
+                  <div class="course-details">
+                    <div class="course-code">CSIT327</div>
+                    <div class="course-name">Database Systems</div>
+                    <div class="course-instructor">Prof. Revilleza</div>
+                  </div>
+                  <div class="course-units">3 units</div>
+                </div>
+                <div class="course-item">
+                  <div class="course-details">
+                    <div class="course-code">IT315</div>
+                    <div class="course-name">Web Development</div>
+                    <div class="course-instructor">Prof. Revilleza</div>
+                  </div>
+                  <div class="course-units">3 units</div>
+                </div>
+                <div class="course-item">
+                  <div class="course-details">
+                    <div class="course-code">CSIT340</div>
+                    <div class="course-name">Industry Elective 2</div>
+                    <div class="course-instructor">Prof. Revilleza</div>
+                  </div>
+                  <div class="course-units">3 units</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignments Tab -->
+        <div class="tab-content" id="assignments">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Assignments</div>
+              <div class="card-description">View and submit your assignments</div>
+            </div>
+            <div class="card-content">
+              <p>Assignment submission UI placeholder.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grades Tab -->
+        <div class="tab-content" id="grades">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Grades</div>
+              <div class="card-description">View your scores and feedback</div>
+            </div>
+            <div class="card-content">
+              <p>Grades overview UI placeholder.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Calendar Tab -->
+        <div class="tab-content" id="calendar">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Academic Calendar</div>
+              <div class="card-description">Important academic dates</div>
+            </div>
+            <div class="card-content">
+              <p>Calendar content placeholder.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- University Map Tab -->
+        <div class="tab-content" id="map">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">University Map</div>
+              <div class="card-description">Campus locations and buildings</div>
+            </div>
+            <div class="card-content">
+              <p>Map embedding placeholder.</p>
+            </div>
+          </div>
         </div>
       </div>
     </main>
   </div>
+
+  <script>
+    lucide.createIcons();
+
+    const tabTriggers = document.querySelectorAll('.tab-trigger');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabTriggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const targetTab = trigger.getAttribute('data-tab');
+        tabTriggers.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        trigger.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
