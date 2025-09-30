@@ -73,12 +73,13 @@ WSGI_APPLICATION = 'a2s.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # Supabase default
+        'NAME': 'postgres',  
         'USER': 'postgres.qimrryerxdzfewbkoqyq',
         'PASSWORD': 'a2sSystemProjectG3',
         'HOST': 'aws-1-ap-southeast-1.pooler.supabase.com',
         'PORT': '5432',
     }
+
 }
 
 
