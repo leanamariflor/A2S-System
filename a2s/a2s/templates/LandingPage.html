@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A2S NEXT-GEN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/LandingPage.css' %}">
+</head>
+<body>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>A2S NEXT–GEN</h1>
+      <p>Academic to Success<br>Transform your academic journey with intelligent analytics, personalized learning paths, and seamless career integration.</p>
+      <div class="hero-buttons">
+        <button>Get Started</button>
+       <a href="{% url 'Login' %}"><button>Sign-In</button></a>
+
+    
+        
+      </div>
+    </div>
+  </section>
+
+
+ <!-- Features Section -->
+<section class="features-card">
+  <h2>Empowering Academic Excellence</h2>
+  <p class="subtitle">
+    Discover how A2S Next-Gen revolutionizes the academic experience with cutting-edge technology and proven methodologies.
+  </p>
+  
+  <div class="features">
+    <div class="feature">
+      <img src="https://img.icons8.com/ios-filled/50/000000/combo-chart.png" alt="Smart Analytics">
+      <h3>Smart Analytics</h3>
+      <p>Advanced learning analytics to track progress and optimize performance.</p>
+    </div>
+    <div class="feature">
+      <img src="https://img.icons8.com/ios-filled/50/000000/conference-call.png" alt="Collaboration">
+      <h3>Collaboration</h3>
+      <p>Connect with peers, mentors, and industry professionals seamlessly.</p>
+    </div>
+    <div class="feature">
+      <img src="https://img.icons8.com/ios-filled/50/000000/student-male.png" alt="Personalized Learning">
+      <h3>Personalized Learning</h3>
+      <p>Adaptive learning paths tailored to your unique goals and style.</p>
+    </div>
+    <div class="feature">
+      <img src="https://img.icons8.com/ios-filled/50/000000/business.png" alt="Career Ready">
+      <h3>Career Ready</h3>
+      <p>Bridge the gap between academics and professional success.</p>
+    </div>
+  </div>
+</section>
+
+
+  <section class="cta">
+    <div class="cta-content">
+      <h2>Ready to Transform Your Academic Journey?</h2>
+      <p>Join thousands of students and educators already using A2S Next–Gen to achieve academic excellence.</p>
+      <button>Start your Success Story</button>
+    </div>
+  </section>
+
+</body>
+</html>
+
+     

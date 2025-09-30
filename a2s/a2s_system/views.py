@@ -5,10 +5,12 @@ from django.contrib.auth.decorators import login_required
 from .models import User
 from supabase import create_client
 
+
 # Supabase client
 SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4OTkyMjYsImV4cCI6MjA3NDQ3NTIyNn0.RYUzh-HS52HbiMGWhQiGkcf9OY0AeRsm0fuXruw0sEc"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 
 # ------------------ LOGIN ------------------
@@ -16,46 +18,28 @@ def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
+        remember = request.POST.get("remember") 
 
-        if not all([email, password]):
-            messages.error(request, "Please fill in all required fields.")
-            return redirect("Login")
-
-        try:
-            # Supabase login
-            supabase_response = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-
-            if supabase_response.user is None:
-                messages.error(request, "Invalid email or password.")
-                return redirect("Login")
-
-            if not supabase_response.user.confirmed_at:
-                messages.error(request, "Email not confirmed. Check your inbox for verification link.")
-                return redirect("Login")
-
-        except Exception as e:
-            messages.error(request, f"Login error: {e}")
-            return redirect("Login")
-
-        # Django authentication
         user = authenticate(request, username=email, password=password)
         if user:
             login(request, user)
-            if user.is_student:
-                return redirect("StudentDashboard")
-            elif user.is_teacher:
-                return redirect("TeacherDashboard")
+            if remember:
+              
+                response = redirect("StudentDashboard" if user.is_student else "TeacherDashboard")
+                response.set_cookie("remember_email", email, max_age=30*24*60*60)  # 30 days
+                return response
             else:
-                messages.error(request, "User role not defined.")
-                return redirect("Login")
+               
+                response = redirect("StudentDashboard" if user.is_student else "TeacherDashboard")
+                response.delete_cookie("remember_email")
+                return response
         else:
             messages.error(request, "Invalid email or password.")
             return redirect("Login")
 
-    return render(request, "Login.html")
+ 
+    remembered_email = request.COOKIES.get("remember_email", "")
+    return render(request, "Login.html", {"remembered_email": remembered_email})
 
 
 # ------------------ REGISTER ------------------
@@ -69,11 +53,16 @@ def register(request):
         password2 = request.POST.get("password2")
         program = request.POST.get("program")
         yearlevel = request.POST.get("yearlevel")
-        role = request.POST.get("role")  # "Student" or "Teacher"
+        role = request.POST.get("role") 
+        agree = request.POST.get("agree")
 
-        # --- Validation ---
+       
         if not all([id_number, first_name, last_name, email, password, password2, role]):
             messages.error(request, "Please fill in all required fields.")
+            return redirect("Register")
+
+        if not agree:
+            messages.error(request, "You must agree to the Terms of Service and Privacy Policy to register.")
             return redirect("Register")
 
         if password != password2:
@@ -113,8 +102,6 @@ def register(request):
             is_student=is_student,
             is_teacher=is_teacher,
         )
-
-
 
         messages.success(request, "Account created! Verify your email before logging in.")
         return redirect("Login")
@@ -176,3 +163,31 @@ def student_profile(request):
         "credits_max": "120",
     }
     return render(request, "StudentProfile.html", context)
+
+
+def forgot_password(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        if not email:
+            messages.error(request, "Please enter your email.")
+            return redirect("ForgotPassword")
+        try:
+            supabase.auth.reset_password_for_email(email)
+            messages.success(request, "Password reset email sent! Check your inbox.")
+            return redirect("Login")
+        except Exception as e:
+            messages.error(request, f"Error sending password reset email: {e}")
+            return redirect("ForgotPassword")
+    return render(request, "ForgotPassword.html")
+    
+
+    
+
+def reset_password(request):
+    return render(request, "ResetPassword.html")
+
+
+
+
+def landing_page(request):
+    return render(request, "LandingPage.html")

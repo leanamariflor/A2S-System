@@ -70,13 +70,15 @@ WSGI_APPLICATION = 'a2s.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,  
-        ssl_require=True   
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # Supabase default
+        'USER': 'postgres.qimrryerxdzfewbkoqyq',
+        'PASSWORD': 'a2sSystemProjectG3',
+        'HOST': 'aws-1-ap-southeast-1.pooler.supabase.com',
+        'PORT': '5432',
+    }
 }
 
 
