@@ -1,73 +1,61 @@
 :root {
-  
-  /* Base colors */
-  --background: linear-gradient(180deg, hsl(50, 100%, 96%), hsl(48, 87%, 67%));
-  --foreground: hsl(0, 0%, 10%);
-  
-  --card: hsl(48, 100%, 92%);
-  --card-foreground: hsl(0, 0%, 15%);
+  /* Desired navy/gray/purple palette mapped to existing variables */
+  --background: #cfd1d8;            /* page bg */
+  --foreground: #121212;            /* default text */
 
-  --popover: hsl(0, 0%, 12%);
-  --popover-foreground: hsl(48, 100%, 95%);
-  
-  /* Primary: Golden Yellow */
-  --primary: hsl(45, 100%, 55%);
-  --primary-foreground: hsl(0, 0%, 10%);
-  
-  /* Secondary: Academic Red */
-  --secondary: hsl(0, 75%, 45%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  
-  /* Muted accents */
-  --muted: hsl(45, 30%, 75%);
-  --muted-foreground: hsl(0, 0%, 25%);
-  
-  /* Accent */
-  --accent: hsl(50, 100%, 60%);
-  --accent-foreground: hsl(0, 0%, 15%);
-  
-  /* Destructive */
-  --destructive: hsl(0, 80%, 45%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  
-  /* Borders & Inputs */
-  --border: hsl(0, 0%, 30%);
-  --input: hsl(0, 0%, 20%);
-  --ring: hsl(45, 100%, 55%);
-  
+  --card: #6f73ff;                  /* card background per request */
+  --card-foreground: #121212;
+
+  --popover: #0b1231;
+  --popover-foreground: #ffffff;
+
+  --primary: #6f73ff;               /* purple accent for buttons */
+  --primary-foreground: #ffffff;
+
+  --secondary: #7a7f8d;
+  --secondary-foreground: #ffffff;
+
+  --muted: #6f73ff;
+  --muted-foreground: #121212;
+
+  --accent: #6f73ff;
+  --accent-foreground: #121212;
+
+  --destructive: #e25555;
+  --destructive-foreground: #ffffff;
+
+  --border: #2a3356;
+  --input: #1b2240;
+  --ring: #6f73ff;
+
   --radius: 0.75rem;
 
-  /* Academic shades */
-  --academic-red: hsl(0, 80%, 45%);
-  --academic-red-dark: hsl(0, 80%, 30%);
-  --academic-red-light: hsl(0, 80%, 65%);
-  
-  --academic-bg-primary: hsl(0, 0%, 8%);
-  --academic-bg-secondary: hsl(0, 0%, 12%);
-  --academic-bg-tertiary: hsl(0, 0%, 18%);
-  
-  --academic-text-primary: hsl(0, 0%, 100%);
-  --academic-text-secondary: hsl(0, 0%, 85%);
-  --academic-text-muted: hsl(0, 0%, 65%);
-  
-  --academic-success: hsl(142, 70%, 40%);
-  --academic-warning: hsl(45, 100%, 50%);
-  --academic-info: hsl(48, 90%, 65%);
-  
-  /* Gradients */
-  --gradient-gold: linear-gradient(135deg, hsl(45, 100%, 60%), hsl(50, 100%, 85%));
-  --gradient-red: linear-gradient(135deg, hsl(0, 80%, 50%), hsl(45, 100%, 55%));
-  --gradient-dark: linear-gradient(135deg, hsl(0, 0%, 8%), hsl(0, 0%, 18%));
-  
-  /* Shadows */
-  --shadow-academic: 0 10px 30px -10px hsl(45, 100%, 55%, 0.4);
-  --shadow-card: 0 4px 20px -2px hsl(0, 0%, 0%, 0.25);
-  --shadow-glow: 0 0 40px hsl(45, 100%, 55%, 0.5);
+  /* Academic shades (repurposed) */
+  --academic-red: #6f73ff;
+  --academic-red-dark: #5559e6;
+  --academic-red-light: #8a8eff;
 
+  --academic-bg-primary: #0f1426;
+  --academic-bg-secondary: #b9bcc8; /* row gray */
+  --academic-bg-tertiary: #a9adba;
 
-    /* Transitions */
-    --transition-academic: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.15s ease-out;
+  --academic-text-primary: #ffffff;
+  --academic-text-secondary: #121212;
+  --academic-text-muted: #121212;
+
+  --academic-success: #2fb86e;
+  --academic-warning: #ffd357;
+  --academic-info: #8a8eff;
+
+  --gradient-gold: linear-gradient(135deg, #6f73ff, #8a8eff);
+  --gradient-red: linear-gradient(135deg, #6f73ff, #8a8eff);
+  --gradient-dark: linear-gradient(135deg, #0b1231, #0f1426);
+
+  --shadow-academic: 0 10px 30px rgba(111,115,255,0.35);
+  --shadow-card: 0 6px 18px rgba(0,0,0,0.25);
+  --shadow-glow: 0 0 40px rgba(111,115,255,0.5);
+
+  --header-bg: #0b1231;
 }
 
 
@@ -81,7 +69,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--gr);
+    background-color: var(--background);
     color: var(--foreground);
     line-height: 1.5;
 }
@@ -100,7 +88,7 @@ body {
 /* Header */
 .header {
     border-bottom: 1px solid var(--border);
-    background-color: var(--card);
+    background-color: var(--header-bg);
 }
 
 .header-content {
@@ -588,7 +576,6 @@ body {
 
 .sidebar-student-info {
     text-align: center;
-    space-y: 0.75rem;
 }
 
 .student-avatar {
@@ -1311,5 +1298,148 @@ body {
 
     .welcome-gpa {
         text-align: center;
+    }
+}
+
+/* ===== Overrides to match desired navy/gray/purple layout ===== */
+
+/* Global colors */
+body {
+    background-color: #cfd1d8;
+    color: #121212;
+}
+
+.header {
+    background-color: #0b1231;
+    border-bottom-color: #10183d;
+}
+
+.header-icon { background: #6f73ff; border-radius: 10px; }
+.header-text h1 { color: #ffffff; }
+.header-text p { color: #a9b1d6; }
+
+/* Sidebar pills */
+.dashboard-sidebar {
+    background-color: #e6e7ee;
+}
+
+.nav-button {
+    background: #6f73ff;
+    border: 1px solid #5d61e8;
+    border-radius: 9999px;
+    color: #121212;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+}
+
+.nav-button::before {
+    content: "";
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: #d1d4ff;
+}
+
+.nav-button:hover {
+    background-color: #8a8eff;
+    border-color: #6f73ff;
+    color: #121212;
+}
+
+.nav-button.active {
+    background-color: #8a8eff;
+    border-color: #6f73ff;
+    color: #121212;
+}
+
+/* Single-line 5-tab navigation with pills */
+.tab-list {
+    display: flex;
+    gap: 0.75rem;
+    background: #6f73ff; /* full-width bar */
+    padding: 0.5rem;
+    border-radius: 9999px;
+    align-items: center;
+    justify-content: space-between; /* distribute buttons evenly */
+}
+
+.tab-trigger {
+    background: #6f73ff;
+    color: #121212;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* make each button fill available space equally */
+    text-align: center;
+}
+
+.tab-trigger.active {
+    background: #8a8eff;
+    color: #121212;
+}
+
+/* Welcome panel */
+.welcome-card {
+    background: #6f73ff;
+    color: #121212;
+    border: none;
+}
+
+.welcome-text h2 { color: #121212; }
+.welcome-text p { color: #121212; }
+.welcome-gpa .gpa-value { color: #121212; }
+.welcome-gpa .gpa-label { color: #121212; }
+
+/* Cards become purple panels */
+.card {
+    background-color: #6f73ff;
+    border: 1px solid #5d61e8;
+    border-radius: 16px;
+    color: #121212;
+}
+
+/* Course and task rows on gray */
+.course-item, .task-item { background-color: #b9bcc8; color: #121212; }
+
+/* Ensure icon color harmony */
+.action-card i, .card-title i { color: #121212; }
+
+/* Quick action tiles to purple */
+.action-card { background-color: #6f73ff; color: #121212; }
+
+/* Cards row layout for side-by-side cards */
+.cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Override card color for cards in cards-row */
+.cards-row .card {
+    background-color: #8b8f9b;
+    color: #121212;
+    border: 1px solid #757984; /* darker complementary border */
+}
+
+/* Ensure all text in cards-row cards is black */
+.cards-row .card .card-title,
+.cards-row .card .card-description,
+.cards-row .card .course-code,
+.cards-row .card .course-name,
+.cards-row .card .task-title,
+.cards-row .card .task-due,
+.cards-row .card .course-units,
+.cards-row .card .task-type {
+    color: #121212 !important;
+}
+
+@media (max-width: 768px) {
+    .cards-row {
+        grid-template-columns: 1fr;
     }
 }
