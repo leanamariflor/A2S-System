@@ -9,14 +9,16 @@
 
 {% block content %}
 <div class="profile-page-container">
-    <!-- Back Button and Page Header -->
- 
-        <div class="header-info">
-            <div class="header-text">
-                <h1>Student Profile</h1>
-                <p>Manage your account information</p>
-            </div>
+
+    <!-- Header with Edit Profile Button -->
+    <div class="header-info" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Student Profile</h1>
+            <p>Manage your account information</p>
         </div>
+        <button class="edit-profile-button">
+            <i data-lucide="edit"></i> Edit Profile
+        </button>
     </div>
 
     <!-- Tabs -->
@@ -27,226 +29,103 @@
             <button class="tab-trigger" data-tab="achievements">Achievements</button>
         </div>
 
-        <!-- Personal Info Tab -->
+        <!-- Personal Info -->
         <div class="tab-content active" id="personal">
             <div class="profile-grid">
-                <!-- Profile Picture Card -->
                 <div class="profile-picture-card">
-                    <div class="profile-picture-content">
-                        <div class="profile-picture-wrapper">
-                            <div class="profile-picture">
-                                <i data-lucide="user"></i>
-                            </div>
-                            <button class="camera-button">
-                                <i data-lucide="camera"></i>
-                            </button>
-                        </div>
-                        <h2 class="profile-name">John Doe</h2>
-                        <div class="profile-badge">
-                            Senior • Computer Science
-                        </div>
+                    <div class="profile-picture-wrapper">
+                        <div class="profile-picture"><i data-lucide="user"></i></div>
+                        <button class="camera-button"><i data-lucide="camera"></i></button>
                     </div>
+                    <h2 class="profile-name">John Doe</h2>
+                    <div class="profile-badge">Senior • Computer Science</div>
                 </div>
 
-                <!-- Contact Information -->
                 <div class="contact-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i data-lucide="mail"></i> Contact Information
-                        </h3>
+                    <h3 class="card-title"><i data-lucide="mail"></i> Contact Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>First Name</label>
+                            <p class="field-value">John</p>
+                        </div>
+                        <div class="form-field">
+                            <label>Last Name</label>
+                            <p class="field-value">Doe</p>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <div class="form-grid">
-                            <div class="form-field">
-                                <label>First Name</label>
-                                <p class="field-value">John</p>
-                            </div>
-                            <div class="form-field">
-                                <label>Last Name</label>
-                                <p class="field-value">Doe</p>
-                            </div>
-                        </div>
-                        <div class="form-field">
-                            <label>Email Address</label>
-                            <p class="field-value field-with-icon">
-                                <i data-lucide="mail"></i>
-                                john.doe@student.edu
-                            </p>
-                        </div>
-                        <div class="form-field">
-                            <label>Phone Number</label>
-                            <p class="field-value field-with-icon">
-                                <i data-lucide="phone"></i>
-                                +1 (555) 123-4567
-                            </p>
-                        </div>
-                        <div class="form-field">
-                            <label>Address</label>
-                            <p class="field-value field-with-icon">
-                                <i data-lucide="map-pin"></i>
-                                123 University Ave, Campus City, CC 12345
-                            </p>
-                        </div>
-                        <div class="form-field">
-                            <label>Date of Birth</label>
-                            <p class="field-value field-with-icon">
-                                <i data-lucide="calendar"></i>
-                                May 15, 1999
-                            </p>
-                        </div>
-                        <div class="form-field">
-                            <label>Bio</label>
-                            <p class="field-value">Computer Science student passionate about software development and AI. Currently working on my senior capstone project.</p>
-                        </div>
+                    <div class="form-field">
+                        <label>Email Address</label>
+                        <p class="field-value field-with-icon"><i data-lucide="mail"></i> john.doe@student.edu</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Phone Number</label>
+                        <p class="field-value field-with-icon"><i data-lucide="phone"></i> +1 (555) 123-4567</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Address</label>
+                        <p class="field-value field-with-icon"><i data-lucide="map-pin"></i> 123 University Ave, Campus City</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Date of Birth</label>
+                        <p class="field-value field-with-icon"><i data-lucide="calendar"></i> May 15, 1999</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Bio</label>
+                        <p class="field-value">Computer Science student passionate about software development and AI. Currently working on my senior capstone project.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Academic Info Tab -->
+        <!-- Academic Info -->
         <div class="tab-content" id="academic">
             <div class="academic-grid">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i data-lucide="graduation-cap"></i> Academic Details
-                        </h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="form-field">
-                            <label>Student ID</label>
-                            <p class="field-value student-id">CS-2021-001234</p>
-                        </div>
-                        <div class="form-field">
-                            <label>Major</label>
-                            <p class="field-value">Computer Science</p>
-                        </div>
-                        <div class="form-field">
-                            <label>Minor</label>
-                            <p class="field-value">Mathematics</p>
-                        </div>
-                        <div class="form-field">
-                            <label>Academic Year</label>
-                            <p class="field-value">Senior</p>
-                        </div>
-                        <div class="form-field">
-                            <label>Expected Graduation</label>
-                            <p class="field-value">May 2025</p>
-                        </div>
-                    </div>
+                    <h3 class="card-title"><i data-lucide="graduation-cap"></i> Academic Details</h3>
+                    <div class="form-field"><label>Student ID</label><p class="field-value">CS-2021-001234</p></div>
+                    <div class="form-field"><label>Major</label><p class="field-value">Computer Science</p></div>
+                    <div class="form-field"><label>Minor</label><p class="field-value">Mathematics</p></div>
+                    <div class="form-field"><label>Academic Year</label><p class="field-value">Senior</p></div>
+                    <div class="form-field"><label>Expected Graduation</label><p class="field-value">May 2025</p></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i data-lucide="book-open"></i> Academic Progress
-                        </h3>
+                    <h3 class="card-title"><i data-lucide="book-open"></i> Academic Progress</h3>
+                    <div class="form-field">
+                        <label>Current GPA</label>
+                        <div class="gpa-display"><span class="gpa-value">3.85</span><span class="gpa-max">/ 4.0</span></div>
                     </div>
-                    <div class="card-content">
-                        <div class="form-field">
-                            <label>Current GPA</label>
-                            <div class="gpa-display">
-                                <span class="gpa-value">3.85</span>
-                                <span class="gpa-max">/ 4.0</span>
-                            </div>
-                        </div>
-                        <div class="form-field">
-                            <label>Credits Completed</label>
-                            <div class="credits-display">
-                                <span class="credits-value">105</span>
-                                <span class="credits-max">/ 120</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 87.5%"></div>
-                            </div>
-                        </div>
-                        <div class="form-field">
-                            <label>Academic Standing</label>
-                            <div class="status-badge success">Good Standing</div>
-                        </div>
+                    <div class="form-field">
+                        <label>Credits Completed</label>
+                        <div class="credits-display"><span class="credits-value">105</span><span class="credits-max">/ 120</span></div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 87.5%"></div></div>
+                    </div>
+                    <div class="form-field">
+                        <label>Academic Standing</label>
+                        <div class="status-badge success">Good Standing</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Achievements Tab -->
+        <!-- Achievements -->
         <div class="tab-content" id="achievements">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i data-lucide="award"></i> Academic Achievements
-                    </h3>
-                    <p class="card-description">
-                        Your accomplishments and recognitions throughout your academic journey.
-                    </p>
-                </div>
-                <div class="card-content">
-                    <div class="achievements-grid">
-                        <div class="achievement-card">
-                            <i data-lucide="award"></i>
-                            <h4>Dean's List</h4>
-                            <p>Fall 2023, Spring 2024</p>
-                        </div>
-                        <div class="achievement-card">
-                            <i data-lucide="graduation-cap"></i>
-                            <h4>Academic Excellence</h4>
-                            <p>Cum Laude Track</p>
-                        </div>
-                        <div class="achievement-card">
-                            <i data-lucide="book-open"></i>
-                            <h4>Research Publication</h4>
-                            <p>AI in Education, 2024</p>
-                        </div>
-                    </div>
+                <h3 class="card-title"><i data-lucide="award"></i> Academic Achievements</h3>
+                <div class="achievements-grid">
+                    <div class="achievement-card"><i data-lucide="award"></i><h4>Dean's List</h4><p>Fall 2023, Spring 2024</p></div>
+                    <div class="achievement-card"><i data-lucide="graduation-cap"></i><h4>Academic Excellence</h4><p>Cum Laude Track</p></div>
+                    <div class="achievement-card"><i data-lucide="book-open"></i><h4>Research Publication</h4><p>AI in Education, 2024</p></div>
                 </div>
             </div>
         </div>
 
-        <!-- Settings Tab -->
-        <div class="tab-content" id="settings">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i data-lucide="settings"></i> Account Settings
-                    </h3>
-                    <p class="card-description">
-                        Manage your account preferences and security settings.
-                    </p>
-                </div>
-                <div class="card-content">
-                    <div class="settings-list">
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4>Email Notifications</h4>
-                                <p>Receive updates about grades and assignments</p>
-                            </div>
-                            <button class="setting-button">Configure</button>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4>Privacy Settings</h4>
-                                <p>Control who can see your profile information</p>
-                            </div>
-                            <button class="setting-button">Manage</button>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4>Change Password</h4>
-                                <p>Update your account password for security</p>
-                            </div>
-                            <button class="setting-button">Update</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
 lucide.createIcons();
 
-// Tab switching
 document.querySelectorAll('.tab-trigger').forEach(trigger => {
     trigger.addEventListener('click', () => {
         const targetTab = trigger.getAttribute('data-tab');

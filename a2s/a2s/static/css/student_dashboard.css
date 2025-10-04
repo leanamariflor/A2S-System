@@ -1,11 +1,11 @@
 /* Root Variables */
 :root {
-  --background: #f4f5f7;       /* Page background */
-  --foreground: #121212;       /* Default text */
-  --primary: #4f46e5;          /* Accent color (buttons, highlights) */
-  --card-bg: #ffffff;           /* Card background */
-  --border: #e0e0e0;           /* Light border */
-  --text-muted: #6b7280;       /* Secondary text */
+  --background:  #f4f5f7;     /* Page background */
+  --foreground: #121212;    /* Default text */
+  --primary: #6f73ff;       /* Accent color */
+  --card-bg: #f4f5f7;         /* Card background */
+  --border: #e0e0e0;         /* Light border */
+  --text-muted: #6b7280;     /* Secondary text */
 }
 
 /* Global Styles */
@@ -39,7 +39,7 @@ body {
 
 .welcome-text p {
   margin: 0;
-  color: #d1d5db; /* light text */
+  color: #d1d5db;
 }
 
 .welcome-gpa {
@@ -54,41 +54,6 @@ body {
 .gpa-label {
   font-size: 0.9rem;
   color: #d1d5db;
-}
-
-/* Tabs */
-.tabs {
-  margin: 2rem;
-}
-
-.tab-list {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.tab-trigger {
-  padding: 0.5rem 1rem;
-  border: none;
-  background-color: var(--card-bg);
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.tab-trigger.active {
-  background-color: var(--primary);
-  color: #fff;
-}
-
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
 }
 
 /* Cards */
@@ -195,6 +160,54 @@ body {
   flex-wrap: wrap;
   gap: 1.5rem;
 }
+
 .cards-row .card {
   flex: 1 1 300px;
+}
+
+/* ================== TABS ================== */
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem;
+}
+
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab-trigger {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: var(--primary); /* inactive tabs: purple */
+  color: #fff;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.tab-trigger.active {
+  background: #fff;           /* active tab: white */
+  color: var(--primary);      /* purple text */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.tab-content {
+  display: none;
+  background: var(--card);    /* same card color as profile cards */
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--foreground);
+}
+
+.tab-content.active {
+  display: block;
 }
