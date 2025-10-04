@@ -9,8 +9,10 @@ urlpatterns = [
     path('TeacherDashboard/', views.teacher_dashboard, name='TeacherDashboard'),
     path('StudentProfile/', views.student_profile, name='StudentProfile'),
     path('Logout/', views.logout_view, name='Logout'),
-     path('ForgotPassword/', views.forgot_password, name='ForgotPassword'),
-      path('ResetPassword/', views.reset_password, name='ResetPassword'),
+    path('ForgotPassword/', views.forgot_password, name='ForgotPassword'),
+    path('ResetPassword/', views.reset_password, name='ResetPassword'),
+    path('settings/', views.settings, name='settings'),
+     path('student_base/', views.student_base, name='student_base'),
 ]
 
 

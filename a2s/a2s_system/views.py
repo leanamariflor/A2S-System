@@ -5,44 +5,51 @@ from django.contrib.auth.decorators import login_required
 from .models import User
 from supabase import create_client
 
-
-# Supabase client
 SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4OTkyMjYsImV4cCI6MjA3NDQ3NTIyNn0.RYUzh-HS52HbiMGWhQiGkcf9OY0AeRsm0fuXruw0sEc"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
-
-# ------------------ LOGIN ------------------
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        remember = request.POST.get("remember") 
+        remember = request.POST.get("remember")
 
-        user = authenticate(request, username=email, password=password)
-        if user:
-            login(request, user)
-            if remember:
-              
+        try:
+            response = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+
+            user_data = response.user
+            if user_data is None:
+                messages.error(request, "Invalid email or password.")
+                return redirect("Login")
+
+            if not user_data.email_confirmed_at:
+                messages.warning(request, "Please verify your email before logging in.")
+                return redirect("Login")
+
+            user = authenticate(request, username=email, password=password)
+            if user:
+                login(request, user)
                 response = redirect("StudentDashboard" if user.is_student else "TeacherDashboard")
-                response.set_cookie("remember_email", email, max_age=30*24*60*60)  # 30 days
+                if remember:
+                    response.set_cookie("remember_email", email, max_age=30 * 24 * 60 * 60)
+                else:
+                    response.delete_cookie("remember_email")
                 return response
             else:
-               
-                response = redirect("StudentDashboard" if user.is_student else "TeacherDashboard")
-                response.delete_cookie("remember_email")
-                return response
-        else:
-            messages.error(request, "Invalid email or password.")
+                messages.error(request, "Invalid login credentials.")
+                return redirect("Login")
+
+        except Exception as e:
+            messages.error(request, f"Login error: {e}")
             return redirect("Login")
 
- 
     remembered_email = request.COOKIES.get("remember_email", "")
     return render(request, "Login.html", {"remembered_email": remembered_email})
 
-
-# ------------------ REGISTER ------------------
 def register(request):
     if request.method == "POST":
         id_number = request.POST.get("id_number")
@@ -53,10 +60,9 @@ def register(request):
         password2 = request.POST.get("password2")
         program = request.POST.get("program")
         yearlevel = request.POST.get("yearlevel")
-        role = request.POST.get("role") 
+        role = request.POST.get("role")
         agree = request.POST.get("agree")
 
-       
         if not all([id_number, first_name, last_name, email, password, password2, role]):
             messages.error(request, "Please fill in all required fields.")
             return redirect("Register")
@@ -70,29 +76,31 @@ def register(request):
             return redirect("Register")
 
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already registered.")
+            messages.error(request, "Email already registered in the system.")
+            return redirect("Register")
+
+        try:
+            response = supabase.auth.sign_up({
+                "email": email,
+                "password": password
+            })
+
+            user_data = response.user
+            if not user_data:
+                messages.error(request, "Email already registered or pending verification. Please check your inbox.")
+                return redirect("Register")
+
+        except Exception as e:
+            if "User already registered" in str(e) or "duplicate" in str(e).lower():
+                messages.error(request, "Email already exists in Supabase. Please verify it or use another email.")
+            else:
+                messages.error(request, f"Supabase signup error: {e}")
             return redirect("Register")
 
         is_student = role.lower() == "student"
         is_teacher = role.lower() == "teacher"
 
-        # --- Supabase signup ---
-        try:
-            supabase_response = supabase.auth.sign_up({
-                "email": email,
-                "password": password
-            })
-
-            user_data = supabase_response.user
-            if user_data and not user_data.confirmed_at:
-                messages.info(request, "Verification email sent. Please check your inbox.")
-
-        except Exception as e:
-            messages.error(request, f"Supabase signup error: {e}")
-            return redirect("Register")
-
-        # --- Django user creation ---
-        user = User.objects.create_user(
+        User.objects.create_user(
             id_number=id_number,
             username=email,
             email=email,
@@ -103,36 +111,29 @@ def register(request):
             is_teacher=is_teacher,
         )
 
-        messages.success(request, "Account created! Verify your email before logging in.")
+        messages.success(request, "Account created! A verification email has been sent — please verify before logging in.")
         return redirect("Login")
 
     return render(request, "Register.html")
 
-
-# ------------------ DASHBOARDS ------------------
 @login_required(login_url='Login')
 def student_dashboard(request):
     context = {}
     response = render(request, "StudentDashboard.html", context)
-    # Prevent caching
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
     return response
-
 
 @login_required(login_url='Login')
 def teacher_dashboard(request):
     context = {}
     response = render(request, "TeacherDashboard.html", context)
-    # Prevent caching
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
     return response
 
-
-# ------------------ LOGOUT ------------------
 def logout_view(request):
     logout(request)
     response = redirect('Login')
@@ -141,8 +142,6 @@ def logout_view(request):
     response['Expires'] = '0'
     return response
 
-
-# ------------------ STUDENT PROFILE ------------------
 @login_required(login_url='Login')
 def student_profile(request):
     context = {
@@ -164,7 +163,6 @@ def student_profile(request):
     }
     return render(request, "StudentProfile.html", context)
 
-
 def forgot_password(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -179,15 +177,16 @@ def forgot_password(request):
             messages.error(request, f"Error sending password reset email: {e}")
             return redirect("ForgotPassword")
     return render(request, "ForgotPassword.html")
-    
-
-    
 
 def reset_password(request):
     return render(request, "ResetPassword.html")
 
-
-
-
 def landing_page(request):
     return render(request, "LandingPage.html")
+
+
+def settings(request):
+    return render(request, "Settings.html")
+
+def student_base(request):
+    return render(request, "student_base.html")
