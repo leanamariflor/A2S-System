@@ -4,7 +4,8 @@
 {% block title %}Student Profile - A2S{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/student_profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/StudentProfile.css' %}">
+
 {% endblock %}
 
 {% block content %}
@@ -16,116 +17,201 @@
             <h1>Student Profile</h1>
             <p>Manage your account information</p>
         </div>
-        <button class="edit-profile-button">
+        <button id="edit-profile-button" class="edit-profile-button">
             <i data-lucide="edit"></i> Edit Profile
         </button>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-        <div class="tab-list">
-            <button class="tab-trigger active" data-tab="personal">Personal Info</button>
-            <button class="tab-trigger" data-tab="academic">Academic Info</button>
-            <button class="tab-trigger" data-tab="achievements">Achievements</button>
-        </div>
+    <!-- Wrap all tabs in editable container -->
+    <div id="profile-container" class="read-only">
 
-        <!-- Personal Info -->
-        <div class="tab-content active" id="personal">
-            <div class="profile-grid">
-                <div class="profile-picture-card">
-                    <div class="profile-picture-wrapper">
-                        <div class="profile-picture"><i data-lucide="user"></i></div>
-                        <button class="camera-button"><i data-lucide="camera"></i></button>
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-list">
+                <button class="tab-trigger active" data-tab="personal">Personal Info</button>
+                <button class="tab-trigger" data-tab="academic">Academic Info</button>
+                <button class="tab-trigger" data-tab="achievements">Achievements</button>
+            </div>
+
+            <!-- Personal Info -->
+            <div class="tab-content active" id="personal">
+                <div class="profile-grid">
+                    <!-- Profile Picture Card -->
+                    <div class="profile-picture-card">
+                        <div class="profile-picture-wrapper">
+                            <div class="profile-picture"><i data-lucide="user"></i></div>
+                            <div class="editable-field">
+                                <input type="file" name="profile_picture">
+                            </div>
+                        </div>
+                        <h2 class="profile-name">{{ first_name }} {{ last_name }}</h2>
+                        <div class="profile-badge">{{ academic_year }} • {{ major }}</div>
                     </div>
-                    <h2 class="profile-name">John Doe</h2>
-                    <div class="profile-badge">Senior • Computer Science</div>
-                </div>
 
-                <div class="contact-card">
-                    <h3 class="card-title"><i data-lucide="mail"></i> Contact Information</h3>
-                    <div class="form-grid">
+                    <!-- Contact Information -->
+                    <div class="contact-card">
+                        <h3 class="card-title"><i data-lucide="mail"></i> Contact Information</h3>
+
                         <div class="form-field">
                             <label>First Name</label>
-                            <p class="field-value">John</p>
+                            <p class="field-value">{{ first_name }}</p>
+                            <div class="editable-field">
+                                <input type="text" name="first_name" value="{{ first_name }}">
+                            </div>
                         </div>
+
                         <div class="form-field">
                             <label>Last Name</label>
-                            <p class="field-value">Doe</p>
+                            <p class="field-value">{{ last_name }}</p>
+                            <div class="editable-field">
+                                <input type="text" name="last_name" value="{{ last_name }}">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Email</label>
+                            <p class="field-value">{{ email }}</p>
+                            <div class="editable-field">
+                                <input type="email" name="email" value="{{ email }}">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Phone Number</label>
+                            <p class="field-value">{{ phone|default:'' }}</p>
+                            <div class="editable-field">
+                                <input type="text" name="phone" value="{{ phone }}">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Address</label>
+                            <p class="field-value">{{ address|default:'' }}</p>
+                            <div class="editable-field">
+                                <input type="text" name="address" value="{{ address }}">
+                            </div>
+                        </div>
+                            <div class="form-field">
+                                <label>Date of Birth</label>
+                                <p class="field-value">{{ dob_display }}</p>
+                                <div class="editable-field">
+                                    <input type="date" name="dob" value="{{ dob|date:'Y-m-d' }}">
+                                </div>
+                            </div>
+                                            
+
+                        <div class="form-field">
+                            <label>Bio</label>
+                            <p class="field-value">{{ bio|default:'' }}</p>
+                            <div class="editable-field">
+                                <textarea name="bio">{{ bio }}</textarea>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-field">
-                        <label>Email Address</label>
-                        <p class="field-value field-with-icon"><i data-lucide="mail"></i> john.doe@student.edu</p>
+                </div>
+            </div>
+
+            <!-- Academic Info -->
+            <div class="tab-content" id="academic">
+                <div class="academic-grid">
+                    <div class="card">
+                        <h3 class="card-title"><i data-lucide="graduation-cap"></i> Academic Details</h3>
+                        <div class="form-field">
+                            <label>Student ID</label>
+                            <p class="field-value">{{ student_id|default:'' }}</p>
+                            <div class="editable-field">
+                                <input type="text" name="student_id" value="{{ student_id }}">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Major</label>
+                            <p class="field-value">{{ major }}</p>
+                            <div class="editable-field">
+                                <input type="text" name="major" value="{{ major }}">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Academic Year</label>
+                             <p class="field-value" data-field="academic_year">{{ academic_year|default:'' }}</p>
+                            <div class="editable-field">
+                                <input type="number" name="academic_year" value="{{ academic_year }}" min="1" max="5">
+                            </div>
+                        </div>
+                            <div class="form-field">
+                                <label>Expected Graduation</label>
+                                <p class="field-value">{{ expected_graduation_display }}</p>
+                                <div class="editable-field">
+                                    <input type="date" name="expected_graduation" value="{{ expected_graduation|date:'Y-m-d' }}">
+                                </div>
+                            </div>
                     </div>
-                    <div class="form-field">
-                        <label>Phone Number</label>
-                        <p class="field-value field-with-icon"><i data-lucide="phone"></i> +1 (555) 123-4567</p>
-                    </div>
-                    <div class="form-field">
-                        <label>Address</label>
-                        <p class="field-value field-with-icon"><i data-lucide="map-pin"></i> 123 University Ave, Campus City</p>
-                    </div>
-                    <div class="form-field">
-                        <label>Date of Birth</label>
-                        <p class="field-value field-with-icon"><i data-lucide="calendar"></i> May 15, 1999</p>
-                    </div>
-                    <div class="form-field">
-                        <label>Bio</label>
-                        <p class="field-value">Computer Science student passionate about software development and AI. Currently working on my senior capstone project.</p>
+
+                    <div class="card">
+                        <h3 class="card-title"><i data-lucide="book-open"></i> Academic Progress</h3>
+                        <div class="form-field">
+                            <label>Current GPA</label>
+                            <div class="gpa-display">
+                                <span class="gpa-value">{{ gpa|default:'' }}</span>
+                                <span class="gpa-max">/ 4.0</span>
+                            </div>
+                            <div class="editable-field">
+                                <input type="number" step="0.01" name="gpa" value="{{ gpa }}">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Credits Completed</label>
+                            <div class="credits-display">
+                                <span class="credits-value">{{ credits_completed|default:'' }}</span>
+                                <span class="credits-max">/ {{ credits_required|default:'' }}</span>
+                            </div>
+                            <div class="editable-field">
+                                <input type="number" name="credits_completed" value="{{ credits_completed }}">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Academic Standing</label>
+                            <div class="status-badge success">{{ academic_standing|default:'Good Standing' }}</div>
+                            <div class="editable-field">
+                                <input type="text" name="academic_standing" value="{{ academic_standing }}">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Academic Info -->
-        <div class="tab-content" id="academic">
-            <div class="academic-grid">
+            <!-- Achievements -->
+            <div class="tab-content" id="achievements">
                 <div class="card">
-                    <h3 class="card-title"><i data-lucide="graduation-cap"></i> Academic Details</h3>
-                    <div class="form-field"><label>Student ID</label><p class="field-value">CS-2021-001234</p></div>
-                    <div class="form-field"><label>Major</label><p class="field-value">Computer Science</p></div>
-                    <div class="form-field"><label>Minor</label><p class="field-value">Mathematics</p></div>
-                    <div class="form-field"><label>Academic Year</label><p class="field-value">Senior</p></div>
-                    <div class="form-field"><label>Expected Graduation</label><p class="field-value">May 2025</p></div>
-                </div>
-
-                <div class="card">
-                    <h3 class="card-title"><i data-lucide="book-open"></i> Academic Progress</h3>
-                    <div class="form-field">
-                        <label>Current GPA</label>
-                        <div class="gpa-display"><span class="gpa-value">3.85</span><span class="gpa-max">/ 4.0</span></div>
-                    </div>
-                    <div class="form-field">
-                        <label>Credits Completed</label>
-                        <div class="credits-display"><span class="credits-value">105</span><span class="credits-max">/ 120</span></div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 87.5%"></div></div>
-                    </div>
-                    <div class="form-field">
-                        <label>Academic Standing</label>
-                        <div class="status-badge success">Good Standing</div>
+                    <h3 class="card-title"><i data-lucide="award"></i> Academic Achievements</h3>
+                    <div class="achievements-grid">
+                        {% for achievement in achievements %}
+                        <div class="achievement-card">
+                            <i data-lucide="{{ achievement.icon }}"></i>
+                            <h4>{{ achievement.title }}</h4>
+                            <div class="editable-field">
+                                <input type="text" name="achievement_{{ forloop.counter }}_title" value="{{ achievement.title }}">
+                                <input type="text" name="achievement_{{ forloop.counter }}_description" value="{{ achievement.description }}">
+                            </div>
+                            <p>{{ achievement.description }}</p>
+                        </div>
+                        {% empty %}
+                        <p>No achievements yet.</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Achievements -->
-        <div class="tab-content" id="achievements">
-            <div class="card">
-                <h3 class="card-title"><i data-lucide="award"></i> Academic Achievements</h3>
-                <div class="achievements-grid">
-                    <div class="achievement-card"><i data-lucide="award"></i><h4>Dean's List</h4><p>Fall 2023, Spring 2024</p></div>
-                    <div class="achievement-card"><i data-lucide="graduation-cap"></i><h4>Academic Excellence</h4><p>Cum Laude Track</p></div>
-                    <div class="achievement-card"><i data-lucide="book-open"></i><h4>Research Publication</h4><p>AI in Education, 2024</p></div>
-                </div>
-            </div>
-        </div>
+        </div> <!-- end tabs -->
+    </div> <!-- end profile-container -->
 
-    </div>
+    <button id="save-profile-button" class="edit-profile-button" style="display:none;">Save Changes</button>
+
 </div>
 
 <script>
 lucide.createIcons();
 
+// Tab switching
 document.querySelectorAll('.tab-trigger').forEach(trigger => {
     trigger.addEventListener('click', () => {
         const targetTab = trigger.getAttribute('data-tab');
@@ -135,5 +221,119 @@ document.querySelectorAll('.tab-trigger').forEach(trigger => {
         document.getElementById(targetTab).classList.add('active');
     });
 });
+
+// Edit mode toggle
+const editButton = document.getElementById('edit-profile-button');
+const profileContainer = document.getElementById('profile-container');
+const saveButton = document.getElementById('save-profile-button');
+
+editButton.addEventListener('click', () => {
+    profileContainer.classList.toggle('edit-mode');
+    profileContainer.classList.toggle('read-only');
+    saveButton.style.display = profileContainer.classList.contains('edit-mode') ? 'inline-block' : 'none';
+});
+
+saveButton.addEventListener('click', () => {
+    const formData = {};
+
+    // Collect all editable inputs and textareas
+    document.querySelectorAll('#profile-container .editable-field input, #profile-container .editable-field textarea')
+        .forEach(input => {
+            let value = input.value;
+
+            // Convert numbers properly
+            if (['credits_completed', 'credits_required', 'academic_year'].includes(input.name)) {
+                value = parseInt(value) || 0;
+            }
+            if (input.name === 'gpa') {
+                value = parseFloat(value) || 0;
+            }
+
+            formData[input.name] = value;
+        });
+
+    fetch("{% url 'UpdateStudentProfile' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+
+            // Update all display fields dynamically
+            for (const key in formData) {
+                const display = document.querySelector(`.field-value[data-field="${key}"]`);
+                if (display) {
+                    display.textContent = formData[key];
+                }
+            }
+
+            // If server sends formatted fields, override them
+            if (data.dob_display) {
+                const dobDisplay = document.querySelector('.field-value[data-field="dob"]');
+                if (dobDisplay) dobDisplay.textContent = data.dob_display;
+            }
+            if (data.expected_graduation_display) {
+                const gradDisplay = document.querySelector('.field-value[data-field="expected_graduation"]');
+                if (gradDisplay) gradDisplay.textContent = data.expected_graduation_display;
+            }
+            if (data.program) {
+                const majorDisplay = document.querySelector('.field-value[data-field="major"]');
+                if (majorDisplay) majorDisplay.textContent = data.program;
+            }
+            if (data.year_level) {
+                const yearVal = parseInt(data.year_level) || 1;
+                const yearEl = document.getElementById('student-year');
+                const cardYear = document.querySelector('.field-value[data-field="academic_year"]');
+                const formatted = formatYear(yearVal);
+
+                if (yearEl) yearEl.textContent = formatted;
+                if (cardYear) cardYear.textContent = formatted;
+            }
+
+
+            // Toggle back to read-only
+            profileContainer.classList.remove('edit-mode');
+            profileContainer.classList.add('read-only');
+            saveButton.style.display = 'none';
+
+            alert("Profile updated successfully!");
+        } else {
+            alert("Error updating profile: " + (data.message || "Unknown error"));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("An error occurred while updating the profile.");
+    });
+});
+
+// Instant update for Academic Year (card + sidebar) while typing or using spinner
+const yearInput = document.querySelector('input[name="academic_year"]');
+const sidebarYear = document.getElementById('student-year');
+const cardYear = document.querySelector('.field-value[data-field="academic_year"]');
+
+function formatYear(year) {
+    if (year <= 1) return "1st Year";
+    if (year === 2) return "2nd Year";
+    if (year === 3) return "3rd Year";
+    if (year === 4) return "4th Year";
+    if (year >= 5) return "5th Year";
+    return year + "th Year";
+}
+
+if (yearInput) {
+    yearInput.addEventListener('input', () => {
+        const yearVal = parseInt(yearInput.value) || 1;
+        if (sidebarYear) sidebarYear.textContent = formatYear(yearVal);
+        if (cardYear) cardYear.textContent = formatYear(yearVal);
+    });
+}
+
 </script>
+
 {% endblock %}

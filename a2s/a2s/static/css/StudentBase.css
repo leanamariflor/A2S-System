@@ -323,9 +323,32 @@ body {
   height: calc(100vh - 4rem);
   overflow: hidden; /* sidebar content doesn't scroll */
 }
-.sidebar-student-info {
+
+
+.student-details{
     text-align: center;
+    margin-bottom: 2rem;
 }
+
+.student-info {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--foreground);
+  gap: 0.5rem; /* space around the dash */
+}
+
+/* Add dash between program and year */
+.student-program::after {
+  content: " - ";
+}
+.student-info p {
+  margin: 0;
+}
+
+
 
 .student-avatar {
     width: 4rem;
