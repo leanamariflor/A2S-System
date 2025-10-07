@@ -1,0 +1,139 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Teacher Profile - A2S{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-page-container">
+
+    <!-- Header with Edit Profile Button -->
+    <div class="header-info" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Teacher Profile</h1>
+            <p>Manage your account information</p>
+        </div>
+        <button class="edit-profile-button">
+            <i data-lucide="edit"></i> Edit Profile
+        </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab-list">
+            <button class="tab-trigger active" data-tab="personal">Personal Info</button>
+            <button class="tab-trigger" data-tab="academic">Academic Info</button>
+            <button class="tab-trigger" data-tab="achievements">Achievements</button>
+        </div>
+
+        <!-- Personal Info -->
+        <div class="tab-content active" id="personal">
+            <div class="profile-grid">
+                <div class="profile-picture-card">
+                    <div class="profile-picture-wrapper">
+                        <div class="profile-picture"><i data-lucide="user"></i></div>
+                        <button class="camera-button"><i data-lucide="camera"></i></button>
+                    </div>
+                    <h2 class="profile-name">Prof. Revilleza</h2>
+                    <div class="profile-badge">Full-Time Faculty • Department of IT</div>
+                </div>
+
+                <div class="contact-card">
+                    <h3 class="card-title"><i data-lucide="mail"></i> Contact Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>First Name</label>
+                            <p class="field-value">Prof.</p>
+                        </div>
+                        <div class="form-field">
+                            <label>Last Name</label>
+                            <p class="field-value">Revilleza</p>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label>Email Address</label>
+                        <p class="field-value field-with-icon"><i data-lucide="mail"></i> revilleza@university.edu</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Phone Number</label>
+                        <p class="field-value field-with-icon"><i data-lucide="phone"></i> +1 (555) 987-6543</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Office Address</label>
+                        <p class="field-value field-with-icon"><i data-lucide="map-pin"></i> Room 205, IT Building, Campus</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Date of Birth</label>
+                        <p class="field-value field-with-icon"><i data-lucide="calendar"></i> March 10, 1980</p>
+                    </div>
+                    <div class="form-field">
+                        <label>Bio</label>
+                        <p class="field-value">Experienced faculty member specializing in Information Technology and Systems Integration. Passionate about teaching and mentoring students in software development and project management.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Info -->
+        <div class="tab-content" id="academic">
+            <div class="academic-grid">
+                <div class="card">
+                    <h3 class="card-title"><i data-lucide="graduation-cap"></i> Academic Details</h3>
+                    <div class="form-field"><label>Faculty ID</label><p class="field-value">T-2025-010</p></div>
+                    <div class="form-field"><label>Department</label><p class="field-value">Information Technology</p></div>
+                    <div class="form-field"><label>Specialization</label><p class="field-value">Systems Integration</p></div>
+                    <div class="form-field"><label>Position</label><p class="field-value">Full-Time Faculty</p></div>
+                    <div class="form-field"><label>Years of Service</label><p class="field-value">15 years</p></div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i data-lucide="book-open"></i> Teaching Load</h3>
+                    <div class="form-field">
+                        <label>Current Courses</label>
+                        <div class="gpa-display"><span class="gpa-value">4</span><span class="gpa-max"> courses</span></div>
+                    </div>
+                    <div class="form-field">
+                        <label>Total Students</label>
+                        <div class="credits-display"><span class="credits-value">317</span><span class="credits-max"> enrolled</span></div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+                    </div>
+                    <div class="form-field">
+                        <label>Status</label>
+                        <div class="status-badge success">Active</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="tab-content" id="achievements">
+            <div class="card">
+                <h3 class="card-title"><i data-lucide="award"></i> Professional Achievements</h3>
+                <div class="achievements-grid">
+                    <div class="achievement-card"><i data-lucide="award"></i><h4>Teaching Excellence Award</h4><p>2023, University Honors</p></div>
+                    <div class="achievement-card"><i data-lucide="graduation-cap"></i><h4>Research Publication</h4><p>Systems Integration Journal, 2022</p></div>
+                    <div class="achievement-card"><i data-lucide="book-open"></i><h4>Department Head</h4><p>IT Department, 2020-2023</p></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+lucide.createIcons();
+
+document.querySelectorAll('.tab-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        const targetTab = trigger.getAttribute('data-tab');
+        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        trigger.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+    });
+});
+</script>
+{% endblock %}
