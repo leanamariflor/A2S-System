@@ -39,32 +39,21 @@
       </div>
     </header>
 
-    <div class="dashboard-container">
-      <!-- Sidebar -->
-      <aside class="dashboard-sidebar">
-        <!-- Student Info -->
-        <!-- Student Info -->
-  <div class="sidebar-student-info">
-    <div class="student-avatar">
-      {% if student_user.first_name and student_user.last_name %}
-        <span>{{ student_user.first_name|slice:":1" }}{{ student_user.last_name|slice:":1" }}</span>
-      {% else %}
-        <span>ST</span>
-      {% endif %}
-    </div>
-  <div class="student-details">
-    <h3 id="student-name">{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-    <p class="student-id">Student ID: {{ request.user.id_number }}</p>
-    <div class="student-info">
-  <p class="student-program" id="student-program">{{ request.user.studentprofile.program }}</p>
-  <p class="student-year" id="student-year">{{ request.user.studentprofile.year_level }} year</p>
-</div>
-
-
-  </div>
-
-  </div>
-
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <!-- Student Info -->
+      <div class="sidebar-student-info">
+        <div class="student-avatar">
+          <span>PR</span>
+        </div>
+        <div class="student-details">
+          <h3>Paul Revilleza</h3>
+          <p class="student-id">Student ID: S-2025-045</p>
+          <p class="student-program">Bachelor of IT</p>
+          <p class="student-year">3rd Year</p>
+        </div>
+      </div>
 
         <!-- Navigation -->
         <nav class="sidebar-nav">
