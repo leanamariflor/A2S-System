@@ -5,6 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/student_profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/edit_profile_modal.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -37,7 +38,7 @@
                         <div class="profile-picture"><i data-lucide="user"></i></div>
                         <button class="camera-button"><i data-lucide="camera"></i></button>
                     </div>
-                    <h2 class="profile-name">John Doe</h2>
+                    <h2 class="profile-name" id="displayName">John Doe</h2>
                     <div class="profile-badge">Senior • Computer Science</div>
                 </div>
 
@@ -46,24 +47,30 @@
                     <div class="form-grid">
                         <div class="form-field">
                             <label>First Name</label>
-                            <p class="field-value">John</p>
+                            <p class="field-value" id="displayFirstName">John</p>
                         </div>
                         <div class="form-field">
                             <label>Last Name</label>
-                            <p class="field-value">Doe</p>
+                            <p class="field-value" id="displayLastName">Doe</p>
                         </div>
                     </div>
                     <div class="form-field">
                         <label>Email Address</label>
-                        <p class="field-value field-with-icon"><i data-lucide="mail"></i> john.doe@student.edu</p>
+                        <p class="field-value field-with-icon" id="displayEmail">
+                            <i data-lucide="mail"></i> john.doe@student.edu
+                        </p>
                     </div>
                     <div class="form-field">
                         <label>Phone Number</label>
-                        <p class="field-value field-with-icon"><i data-lucide="phone"></i> +1 (555) 123-4567</p>
+                        <p class="field-value field-with-icon" id="displayPhone">
+                            <i data-lucide="phone"></i> +1 (555) 123-4567
+                        </p>
                     </div>
                     <div class="form-field">
                         <label>Address</label>
-                        <p class="field-value field-with-icon"><i data-lucide="map-pin"></i> 123 University Ave, Campus City</p>
+                        <p class="field-value field-with-icon" id="displayAddress">
+                            <i data-lucide="map-pin"></i> 123 University Ave, Campus City
+                        </p>
                     </div>
                     <div class="form-field">
                         <label>Date of Birth</label>
@@ -71,7 +78,9 @@
                     </div>
                     <div class="form-field">
                         <label>Bio</label>
-                        <p class="field-value">Computer Science student passionate about software development and AI. Currently working on my senior capstone project.</p>
+                        <p class="field-value" id="displayBio">
+                            Computer Science student passionate about software development and AI.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -119,13 +128,54 @@
                 </div>
             </div>
         </div>
-
     </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Edit Profile</h2>
+    <form id="editProfileForm">
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="form-field">
+          <label>First Name</label>
+          <input type="text" id="first_name" value="John">
+        </div>
+        <div class="form-field">
+          <label>Last Name</label>
+          <input type="text" id="last_name" value="Doe">
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" id="email" value="john.doe@student.edu">
+        </div>
+        <div class="form-field">
+          <label>Phone</label>
+          <input type="text" id="phone" value="+1 (555) 123-4567">
+        </div>
+        <div class="form-field">
+          <label>Address</label>
+          <input type="text" id="address" value="123 University Ave, Campus City">
+        </div>
+        <div class="form-field">
+          <label>Bio</label>
+          <textarea id="bio">Computer Science student passionate about software development and AI.</textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="cancelEdit">Cancel</button>
+        <button type="submit" class="save-button">Save Changes</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
 lucide.createIcons();
 
+// Tabs
 document.querySelectorAll('.tab-trigger').forEach(trigger => {
     trigger.addEventListener('click', () => {
         const targetTab = trigger.getAttribute('data-tab');
@@ -135,5 +185,77 @@ document.querySelectorAll('.tab-trigger').forEach(trigger => {
         document.getElementById(targetTab).classList.add('active');
     });
 });
+
+// Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const editButton = document.querySelector('.edit-profile-button');
+    const modal = document.getElementById('editProfileModal');
+    const cancelBtn = document.getElementById('cancelEdit');
+    const form = document.getElementById('editProfileForm');
+
+    // ✅ Load saved profile data from localStorage when page loads
+    function loadProfile() {
+        const savedProfile = JSON.parse(localStorage.getItem('studentProfile'));
+        if (savedProfile) {
+            document.getElementById('displayFirstName').textContent = savedProfile.first_name;
+            document.getElementById('displayLastName').textContent = savedProfile.last_name;
+            document.getElementById('displayEmail').innerHTML = `<i data-lucide="mail"></i> ${savedProfile.email}`;
+            document.getElementById('displayPhone').innerHTML = `<i data-lucide="phone"></i> ${savedProfile.phone}`;
+            document.getElementById('displayAddress').innerHTML = `<i data-lucide="map-pin"></i> ${savedProfile.address}`;
+            document.getElementById('displayBio').textContent = savedProfile.bio;
+            document.getElementById('displayName').textContent = `${savedProfile.first_name} ${savedProfile.last_name}`;
+            
+            // also update modal input fields with saved data
+            form.first_name.value = savedProfile.first_name;
+            form.last_name.value = savedProfile.last_name;
+            form.email.value = savedProfile.email;
+            form.phone.value = savedProfile.phone;
+            form.address.value = savedProfile.address;
+            form.bio.value = savedProfile.bio;
+
+            lucide.createIcons();
+        }
+    }
+
+    // Open modal
+    editButton.addEventListener('click', () => modal.style.display = 'flex');
+
+    // Close modal
+    cancelBtn.addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+    // ✅ Save and update fields + persist to localStorage
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const profileData = {
+            first_name: form.first_name.value,
+            last_name: form.last_name.value,
+            email: form.email.value,
+            phone: form.phone.value,
+            address: form.address.value,
+            bio: form.bio.value
+        };
+
+        // Save to localStorage
+        localStorage.setItem('studentProfile', JSON.stringify(profileData));
+
+        // Update visible fields immediately
+        document.getElementById('displayFirstName').textContent = profileData.first_name;
+        document.getElementById('displayLastName').textContent = profileData.last_name;
+        document.getElementById('displayEmail').innerHTML = `<i data-lucide="mail"></i> ${profileData.email}`;
+        document.getElementById('displayPhone').innerHTML = `<i data-lucide="phone"></i> ${profileData.phone}`;
+        document.getElementById('displayAddress').innerHTML = `<i data-lucide="map-pin"></i> ${profileData.address}`;
+        document.getElementById('displayBio').textContent = profileData.bio;
+        document.getElementById('displayName').textContent = profileData.first_name + ' ' + profileData.last_name;
+
+        modal.style.display = 'none';
+        lucide.createIcons();
+    });
+
+    // Load data on page load
+    loadProfile();
+});
 </script>
+
 {% endblock %}

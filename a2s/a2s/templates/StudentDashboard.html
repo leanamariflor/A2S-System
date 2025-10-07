@@ -12,7 +12,7 @@
 <div class="welcome-card">
   <div class="welcome-content">
     <div class="welcome-text">
-      <h2>Welcome back, Paul</h2>
+      <h2>Welcome back, {{ user.first_name|default:user.username }}</h2>
       <p>Fall 2025 • 4 active courses</p>
     </div>
     <div class="welcome-gpa">
