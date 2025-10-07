@@ -1,0 +1,118 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Teacher Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/teacher_base.css' %}" />
+    {% block extra_css %}{% endblock %}
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="page-container">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content container">
+      <div class="header-left">
+        <div class="header-icon">
+          <i data-lucide="graduation cap"></i>
+        </div>
+        <div class="header-text">
+          <h1>A2S Next-Gen: Academic To Success</h1>
+          <p>Teacher Portal</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="notification-button">
+          <i data-lucide="bell"></i>
+          <span class="notification-badge">5</span>
+        </button>
+        <div class="user-avatar">
+          <span>PR</span>
+        </div>
+        <a href="{% url 'Logout' %}" class="logout-button">
+          <i data-lucide="log-out"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <!-- Teacher Info -->
+      <div class="sidebar-teacher-info">
+        <div class="teacher-avatar">
+          <span>PR</span>
+        </div>
+        <div class="teacher-details">
+          <h3>Prof. Revilleza</h3>
+          <p class="teacher-id">Faculty ID: T-2025-010</p>
+          <p class="teacher-program">Department of IT</p>
+          <p class="teacher-year">Full-Time Faculty</p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+        <a href="{% url 'TeacherDashboard' %}" class="nav-button active">
+          <i data-lucide="home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{% url 'TeacherProfile' %}" class="nav-button">
+          <i data-lucide="user"></i>
+          <span>My Profile</span>
+        </a>
+        <button class="nav-button">
+          <i data-lucide="users"></i>
+          <span>My Classes</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="clipboard-list"></i>
+          <span>Submissions</span>
+        </button>
+        <button class="nav-button">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics</span>
+        </button>
+        <a href="{% url 'settings' %}" class="nav-button">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content (child templates fill this block) -->
+    <main class="dashboard-main">
+      {% block content %}
+      <!-- Default content if child does not override -->
+      <p>Welcome! This is the teacher dashboard.</p>
+      {% endblock %}
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const tabTriggers = document.querySelectorAll('.tab-trigger');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabTriggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const targetTab = trigger.getAttribute('data-tab');
+        tabTriggers.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        trigger.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

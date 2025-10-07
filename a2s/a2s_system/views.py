@@ -143,6 +143,7 @@ def student_dashboard(request):
     response['Expires'] = '0'
     return response
 
+#@login_required(login_url='Login')#
 
 @login_required(login_url='Login')
 def teacher_dashboard(request):
@@ -161,6 +162,44 @@ def logout_view(request):
     response['Expires'] = '0'
     return response
 
+#@login_required(login_url='Login')#
+def student_profile(request):
+    context = {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@student.edu",
+        "phone": "+1 (555) 123-4567",
+        "address": "123 University Ave, Campus City",
+        "dob": "May 15, 1999",
+        "bio": "Computer Science student passionate about software development and AI.",
+        "student_id": "CS-2021-001234",
+        "major": "Computer Science",
+        "minor": "Mathematics",
+        "academic_year": "Senior",
+        "expected_grad": "May 2025",
+        "gpa": "3.85",
+        "credits_completed": "105",
+        "credits_max": "120",
+    }
+    return render(request, "StudentProfile.html", context)
+
+#@login_required(login_url='Login')#
+def teacher_profile(request):
+    context = {
+        "first_name": "Robert",
+        "last_name": "Smith",
+        "email": "robert.smith@faculty.edu",
+        "phone": "+1 (555) 987-6543",
+        "address": "456 Faculty Building, University Campus",
+        "dob": "June 20, 1975",
+        "bio": "Professor of Computer Science with expertise in AI and Machine Learning. Published researcher with 15 years teaching experience.",
+        "teacher_id": "FAC-2015-005678",
+        "department": "Computer Science",
+        "position": "Associate Professor",
+        "office": "Room 405, CS Building",
+        "office_hours": "MWF 10:00 AM - 12:00 PM",
+    }
+    return render(request, "TeacherProfile.html", context)
 
 def forgot_password(request):
     if request.method == "POST":
@@ -190,6 +229,8 @@ def settings(request):
 def student_base(request):
     return render(request, "student_base.html")
 
+def teacher_base(request):
+    return render(request, "teacher_base.html")
 @login_required(login_url='Login')
 @csrf_exempt
 def update_student_profile(request):
