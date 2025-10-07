@@ -1,3 +1,5 @@
+
+
 {% extends "student_base.html" %}
 {% load static %}
 
@@ -8,29 +10,29 @@
 {% endblock %}
 
 {% block content %}
+
 <!-- Welcome Section -->
 <div class="welcome-card">
   <div class="welcome-content">
     <div class="welcome-text">
-      <h2>Welcome back, Paul</h2>
-      <p>Fall 2025 • 4 active courses</p>
+      <h2>Welcome back, {{ student.first_name }}</h2>
+      <p>{{ current_semester }} • {{ active_courses_count }} active courses</p>
     </div>
     <div class="welcome-gpa">
-      <div class="gpa-value">3.75</div>
+      <div class="gpa-value">{{ student.gpa }}</div>
       <div class="gpa-label">Current GPA</div>
     </div>
   </div>
 </div>
 
+
 <!-- Dashboard Tabs -->
 <div class="tabs">
   <div class="tab-list">
-    <button class="tab-trigger active" data-tab="dashboard">Dashboard</button>
-    <button class="tab-trigger" data-tab="courses">My Courses</button>
-    <button class="tab-trigger" data-tab="assignments">Assignments</button>
+    <button class="tab-trigger active" data-tab="dashboard">Overview</button>
+        <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
+    <button class="tab-trigger" data-tab="courses">Curriculum</button>
     <button class="tab-trigger" data-tab="grades">Grades</button>
-    <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
-    <button class="tab-trigger" data-tab="map">University Map</button>
   </div>
 
   <!-- Dashboard Tab -->
@@ -39,8 +41,7 @@
       <div class="action-card"><i data-lucide="calendar"></i><h3>Schedule</h3><p>View timetable</p></div>
       <div class="action-card"><i data-lucide="file-text"></i><h3>View Grades</h3><p>Check your scores</p></div>
       <div class="action-card"><i data-lucide="trending-up"></i><h3>Degree Audit</h3><p>Track your progress</p></div>
-      <div class="action-card"><i data-lucide="file-text"></i><h3>Achievements</h3></div>
-      <div class="action-card"><i data-lucide="message-circle"></i><h3>Announcements</h3><p>Stay updated</p></div>
+      <div class="action-card"><i data-lucide="trophy"></i><h3>Achievements</h3><p>Check your achievements</p></div>
     </div>
 
     <div class="cards-row">
@@ -91,12 +92,7 @@
     </div>
   </div>
 
-  <div class="tab-content" id="assignments">
-    <div class="card">
-      <div class="card-header"><div class="card-title">Assignments</div><div class="card-description">View and submit your assignments</div></div>
-      <div class="card-content"><p>Assignment submission UI placeholder.</p></div>
-    </div>
-  </div>
+  
 
   <div class="tab-content" id="grades">
     <div class="card">

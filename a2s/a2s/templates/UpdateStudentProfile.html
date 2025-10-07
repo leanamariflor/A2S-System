@@ -1,0 +1,147 @@
+{% extends "student_base.html" %}
+{% load static %}
+
+{% block title %}Update Profile - A2S{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/student_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-page-container">
+
+    <!-- Header -->
+    <div class="header-info" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Update Profile</h1>
+            <p>Edit your account information below</p>
+        </div>
+        <a href="{% url 'StudentProfile' %}" class="edit-profile-button">
+            <i data-lucide="arrow-left"></i> Back to Profile
+        </a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab-list">
+            <button class="tab-trigger active" data-tab="personal">Personal Info</button>
+            <button class="tab-trigger" data-tab="academic">Academic Info</button>
+        </div>
+
+        <!-- Personal Info -->
+        <div class="tab-content active" id="personal">
+            <form method="POST" action="{% url 'update_student_profile' %}" id="update-profile-form">
+                {% csrf_token %}
+                <div class="profile-grid">
+                    <div class="profile-picture-card">
+                        <div class="profile-picture-wrapper">
+                            <div class="profile-picture"><i data-lucide="user"></i></div>
+                            <button type="button" class="camera-button"><i data-lucide="camera"></i></button>
+                        </div>
+                        <h2 class="profile-name">{{ first_name }} {{ last_name }}</h2>
+                        <div class="profile-badge">{{ academic_year }} • {{ major }}</div>
+                    </div>
+
+                    <div class="contact-card">
+                        <h3 class="card-title"><i data-lucide="mail"></i> Contact Information</h3>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>First Name</label>
+                                <input type="text" name="first_name" value="{{ first_name }}" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Last Name</label>
+                                <input type="text" name="last_name" value="{{ last_name }}" required>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Email Address</label>
+                            <input type="email" name="email" value="{{ email }}" required>
+                        </div>
+                        <div class="form-field">
+                            <label>Phone Number</label>
+                            <input type="text" name="phone" value="{{ phone }}">
+                        </div>
+                        <div class="form-field">
+                            <label>Address</label>
+                            <input type="text" name="address" value="{{ address }}">
+                        </div>
+                        <div class="form-field">
+                            <label>Date of Birth</label>
+                            <input type="date" name="dob" value="{{ dob }}">
+                        </div>
+                        <div class="form-field">
+                            <label>Bio</label>
+                            <textarea name="bio">{{ bio }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Academic Info -->
+        <div class="tab-content" id="academic">
+            <div class="academic-grid">
+                <div class="card">
+                    <h3 class="card-title"><i data-lucide="graduation-cap"></i> Academic Details</h3>
+                    <div class="form-field">
+                        <label>Student ID</label>
+                        <input type="text" name="student_id" value="{{ student_id }}" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label>Major</label>
+                        <input type="text" name="major" value="{{ major }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Minor</label>
+                        <input type="text" name="minor" value="{{ minor }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Academic Year</label>
+                        <input type="text" name="academic_year" value="{{ academic_year }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Expected Graduation</label>
+                        <input type="text" name="expected_grad" value="{{ expected_grad }}" readonly>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title"><i data-lucide="book-open"></i> Academic Progress</h3>
+                    <div class="form-field">
+                        <label>Current GPA</label>
+                        <input type="text" name="gpa" value="{{ gpa }}">
+                    </div>
+                    <div class="form-field">
+                        <label>Credits Completed</label>
+                        <input type="text" name="credits_completed" value="{{ credits_completed }}">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label>Credits Max</label>
+                        <input type="text" name="credits_max" value="{{ credits_max }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+lucide.createIcons();
+
+document.querySelectorAll('.tab-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        const targetTab = trigger.getAttribute('data-tab');
+        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        trigger.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+    });
+});
+</script>
+{% endblock %}
