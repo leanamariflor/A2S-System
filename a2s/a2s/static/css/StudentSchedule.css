@@ -1,0 +1,45 @@
+/* Container */
+.schedule-container {
+    max-width: 900px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Table styling */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Table header */
+.schedule-table thead {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Table body */
+.schedule-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* No classes message */
+.no-classes {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #666;
+}

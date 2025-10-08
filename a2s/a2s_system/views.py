@@ -2,13 +2,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import User
 from supabase import create_client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import StudentProfile  # your model
+from .models import User,StudentProfile,Enrollment,Curriculum,Grade
 from datetime import datetime
+from django.core.management.base import BaseCommand
+from django.shortcuts import render, get_object_or_404
 
 
 SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
@@ -127,23 +128,29 @@ def student_dashboard(request):
     student_user = request.user
     profile, _ = StudentProfile.objects.get_or_create(user=student_user)
 
-    # Count active courses (replace with your actual logic)
-    active_courses_count = profile.courses.count() if hasattr(profile, 'courses') else 0
+    student_program = profile.program  # <- This is your major/program
+    curriculum_data = []
+
+    if student_program != "Undeclared":
+        try:
+            curriculum_obj = Curriculum.objects.get(program=student_program)
+            curriculum_data = curriculum_obj.data.get("curriculum", [])
+        except Curriculum.DoesNotExist:
+            curriculum_data = []
 
     context = {
         "student": student_user,
-        "current_semester": "Fall 2025",  # or dynamically fetch
-        "active_courses_count": active_courses_count,
+        "student_program": student_program,   # <-- pass it here
+        "curriculum_json": curriculum_data,
         "gpa": profile.gpa or 0.0,
+        "credits_completed": profile.credits_completed or 0,
+        "credits_required": profile.credits_required or 0,
+        "year_level": profile.year_level,
+        "academic_standing": profile.academic_standing,
     }
 
-    response = render(request, "StudentDashboard.html", context)
-    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response['Pragma'] = 'no-cache'
-    response['Expires'] = '0'
-    return response
+    return render(request, "StudentDashboard.html", context)
 
-#@login_required(login_url='Login')#
 
 @login_required(login_url='Login')
 def teacher_dashboard(request):
@@ -231,6 +238,7 @@ def student_base(request):
 
 def teacher_base(request):
     return render(request, "teacher_base.html")
+
 @login_required(login_url='Login')
 @csrf_exempt
 def update_student_profile(request):
@@ -350,178 +358,77 @@ def student_profile(request):
 
     return render(request, "StudentProfile.html", context)
 
-    student_user = request.user
-
-    try:
-        profile = student_user.studentprofile
-    except StudentProfile.DoesNotExist:
-        profile = StudentProfile.objects.create(user=student_user)
-
-    # Calculate progress
-    credits_completed = profile.credits_completed or 0
-    credits_max = profile.credits_required or 0
-    progress_percentage = (credits_completed / credits_max) * 100 if credits_max else 0
-
-    context = {
-    "first_name": student_user.first_name,
-    "last_name": student_user.last_name,
-    "email": student_user.email,
-    "phone": profile.phone or "",
-    "address": profile.address or "",
-    "dob": profile.dob or "",
-    "bio": profile.bio or "",
-    "student_id": student_user.id_number,
-    "major": profile.program,
-    "academic_year": profile.year_level,
-    "expected_graduation": profile.expected_graduation,
-    "gpa": profile.gpa or 0,
-    "credits_completed": credits_completed,
-    "credits_max": credits_max,
-    "progress_percentage": progress_percentage,
-    "achievements": profile.achievements.all(),
-    
-    # Sidebar variables
-    "sidebar_program": profile.program or "",
-    "sidebar_year": profile.year_level or "",
-}
    
-    
-    return render(request, "StudentProfile.html", context)
+def student_schedule(request):
+    # Get the student's profile
+    student_profile = request.user.studentprofile
 
-    if request.method != "POST":
-        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+    # Get all enrollments for this student
+    enrollments = Enrollment.objects.filter(student=student_profile).order_by('schedule_day', 'start_time')
 
+    # Optional: group by day for table display
+    schedule_by_day = {}
+    for enrollment in enrollments:
+        day = enrollment.schedule_day
+        if day not in schedule_by_day:
+            schedule_by_day[day] = []
+        schedule_by_day[day].append(enrollment)
+
+    return render(request, "StudentSchedule.html", {"schedule_by_day": schedule_by_day})
+
+
+
+def student_courses(request):
+    student_profile = request.user.studentprofile
+    enrollments = Enrollment.objects.filter(student=student_profile).select_related('course')
+    return render(request, "StudentCourses.html", {"enrollments": enrollments})
+
+
+def student_curriculum(request):
+    student_profile = request.user.studentprofile
+    enrollments = Enrollment.objects.filter(student=student_profile).select_related('course')
+    return render(request, "StudentCurriculum.html", {"enrollments": enrollments})
+
+
+
+
+def get_curriculum_json(request, program):
     try:
-        data = json.loads(request.body)
-        user = request.user
-        profile, _ = StudentProfile.objects.get_or_create(user=user)
-
-        # --- Update User fields ---
-        user.first_name = data.get('first_name', user.first_name)
-        user.last_name = data.get('last_name', user.last_name)
-        user.email = data.get('email', user.email)
-        user.save()
-
-        # --- Helper function for date conversion ---
-        def parse_date(date_str):
-            if date_str:
-                try:
-                    return datetime.strptime(date_str, "%Y-%m-%d").date()
-                except ValueError:
-                    return None
-            return None
-
-        # --- Update StudentProfile fields ---
-        profile.phone = data.get('phone', profile.phone)
-        profile.address = data.get('address', profile.address)
-        profile.dob = parse_date(data.get('dob')) or profile.dob
-        profile.bio = data.get('bio', profile.bio)
-        profile.program = data.get('program') or profile.program
-        profile.year_level = int(data['year_level']) if 'year_level' in data and data['year_level'] else profile.year_level
-        profile.gpa = float(data['gpa']) if 'gpa' in data and data['gpa'] else profile.gpa
-        profile.credits_completed = int(float(data['credits_completed'])) if 'credits_completed' in data and data['credits_completed'] else profile.credits_completed
-        profile.credits_required = int(float(data['credits_required'])) if 'credits_required' in data and data['credits_required'] else profile.credits_required
-        profile.academic_standing = data.get('academic_standing', profile.academic_standing)
-        profile.expected_graduation = parse_date(data.get('expected_graduation')) or profile.expected_graduation
-
-        profile.save()
-
-        # --- Return JSON response with formatted dates ---
-        return JsonResponse({
-            'status': 'success',
-            'first_name': user.first_name or "",
-            'last_name': user.last_name or "",
-            'program': profile.program or "",
-            'year_level': profile.year_level  or 0,
-            'dob': profile.dob.strftime("%Y-%m-%d") if profile.dob else "",
-            'expected_graduation': profile.expected_graduation.strftime("%Y-%m-%d") if profile.expected_graduation else "",
-        })
-
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            user = request.user
-            profile, _ = StudentProfile.objects.get_or_create(user=user)
-
-            # Update User
-            user.first_name = data.get('first_name', user.first_name)
-            user.last_name = data.get('last_name', user.last_name)
-            user.email = data.get('email', user.email)
-            user.save()
-
-            # Update StudentProfile fields
-            profile.phone = data.get('phone', profile.phone)
-            profile.address = data.get('address', profile.address)
-            profile.dob = data.get('dob') or profile.dob
-            profile.bio = data.get('bio', profile.bio)
-            profile.program = data.get('program') or profile.program
-            profile.dob = data.get('dob') or profile.dob
+        curriculum = Curriculum.objects.get(program=program)
+        return JsonResponse({"curriculum": curriculum.data["curriculum"]})  # only array
+    except Curriculum.DoesNotExist:
+        return JsonResponse({"error": "Curriculum not found"}, status=404)
 
 
 
-            # Convert numeric fields safely
-            if 'year_level' in data:
-                profile.year_level = int(data['year_level'])
+# a2s_system/views.py
+from django.shortcuts import render
+from .models import Grade
 
-            if 'gpa' in data:
-                profile.gpa = float(data['gpa'])
+def student_grades(request):
+    student = request.user.studentprofile
 
-            if 'credits_completed' in data:
-                profile.credits_completed = int(float(data['credits_completed']))
+    # Get filter values from GET parameters
+    selected_year = request.GET.get('school_year')
+    selected_semester = request.GET.get('semester')
 
-            if 'credits_required' in data:
-                profile.credits_required = int(float(data['credits_required']))
+    # Get distinct years and semesters for dropdowns
+    years = Grade.objects.filter(student=student).values_list('school_year', flat=True).distinct()
+    semesters = Grade.objects.filter(student=student).values_list('semester', flat=True).distinct()
 
-            profile.academic_standing = data.get('academic_standing', profile.academic_standing)
-            profile.expected_graduation = data.get('expected_graduation') or profile.expected_graduation
+    # Filter grades based on selections
+    grades = Grade.objects.filter(student=student)
+    if selected_year:
+        grades = grades.filter(school_year=selected_year)
+    if selected_semester:
+        grades = grades.filter(semester=selected_semester)
 
-            profile.save()
+    grades = grades.order_by('course__course_code')
 
-            return JsonResponse({
-                'status': 'success',
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'program': profile.program,
-                'year_level': profile.year_level,
-                'dob': profile.dob.strftime("%Y-%m-%d") if profile.dob else "",
-                'expected_graduation': profile.expected_graduation.strftime("%Y-%m-%d") if profile.expected_graduation else "",
-            })
-
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            user = request.user
-            profile = user.studentprofile
-
-            # Update User fields
-            user.first_name = data.get('first_name', user.first_name)
-            user.last_name = data.get('last_name', user.last_name)
-            user.email = data.get('email', user.email)
-            user.save()
-
-            # Update StudentProfile fields
-            profile.phone = data.get('phone', profile.phone)
-            profile.address = data.get('address', profile.address)
-            profile.dob = data.get('dob', profile.dob)
-            profile.bio = data.get('bio', profile.bio)
-            profile.program = data.get('program', profile.program)
-            profile.year_level = data.get('year_level', profile.year_level)
-            profile.gpa = data.get('gpa', profile.gpa)
-            profile.credits_completed = data.get('credits_completed', profile.credits_completed)
-            profile.credits_required = data.get('credits_required', profile.credits_required)
-            profile.academic_standing = data.get('academic_standing', profile.academic_standing)
-            profile.expected_graduation = data.get('expected_graduation', profile.expected_graduation)
-            profile.save()
-
-            return JsonResponse({'status': 'success', 'message': 'Profile updated successfully'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+    return render(request, "studentGrades.html", {
+        "grades": grades,
+        "years": years,
+        "semesters": semesters,
+        "selected_year": selected_year,
+        "selected_semester": selected_semester,
+    })

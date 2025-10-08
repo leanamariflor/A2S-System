@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Curriculum
 
-# Register your models here.
+@admin.register(Curriculum)
+class CurriculumAdmin(admin.ModelAdmin):
+    list_display = ("program",)
+    search_fields = ("program",)

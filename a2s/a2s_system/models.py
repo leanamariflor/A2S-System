@@ -3,6 +3,16 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.postgres.fields import JSONField  # or models.JSONField in Django 3.1+
+
+
+class Curriculum(models.Model):
+    program = models.CharField(max_length=50)  # e.g., BSIT, BSCS, etc.
+    data = models.JSONField()  # stores the actual curriculum content (from your JSON file)
+
+    def __str__(self):
+        return self.program
+
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -50,11 +60,20 @@ class Course(models.Model):
 class Grade(models.Model):
     student = models.ForeignKey('StudentProfile', on_delete=models.CASCADE)
     course = models.ForeignKey('Course', on_delete=models.CASCADE)
-    grade = models.CharField(max_length=10, blank=True, null=True)
+    
+    # New fields for detailed grading
+    semester = models.CharField(max_length=20, default="1st Semester")  # e.g., "1st Sem"
+    school_year = models.CharField(max_length=9, default=2324)  # e.g., "2324"
+    midterm = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    final = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    final_grade = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    status = models.CharField(max_length=10, blank=True, null=True)  # e.g., "PASSED", "FAILED"
+    
     remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.student} - {self.course} ({self.grade})"
+        return f"{self.student.user.get_full_name()} - {self.course.course_code} ({self.final_grade})"
+
 
 
 class Achievement(models.Model):
@@ -75,3 +94,17 @@ def create_student_profile(sender, instance, created, **kwargs):
 def save_student_profile(sender, instance, **kwargs):
     if instance.is_student:
         instance.studentprofile.save()
+
+
+class Enrollment(models.Model):
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    schedule_day = models.CharField(max_length=10, choices=[
+        ('Mon','Monday'), ('Tue','Tuesday'), ('Wed','Wednesday'),
+        ('Thu','Thursday'), ('Fri','Friday')
+    ])
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.student.user.get_full_name()} - {self.course.course_name}"

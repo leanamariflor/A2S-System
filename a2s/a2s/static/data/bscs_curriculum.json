@@ -1,0 +1,99 @@
+{
+  "program": "Bachelor of Science in Computer Science",
+  "curriculum": [
+    {
+      "year": "First Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {"subject_code": "CS101", "description": "Introduction to Computer Science", "units": 3, "school_year": "2324", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "MATH101", "description": "Calculus 1", "units": 4, "school_year": "2324", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "ENG101", "description": "English Communication", "units": 3, "school_year": "2324", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "PE101", "description": "Physical Fitness 1", "units": 2, "school_year": "2324", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "HUM101", "description": "Art Appreciation", "units": 3, "school_year": "2324", "semester": "First Semester", "final_grade": "PASSED"}
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {"subject_code": "CS102", "description": "Programming Fundamentals", "units": 3, "school_year": "2324", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "MATH102", "description": "Discrete Mathematics", "units": 3, "school_year": "2324", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "SOC101", "description": "Introduction to Sociology", "units": 3, "school_year": "2324", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "PE102", "description": "Physical Fitness 2", "units": 2, "school_year": "2324", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "PHILO101", "description": "Ethics", "units": 3, "school_year": "2324", "semester": "Second Semester", "final_grade": "PASSED"}
+          ]
+        }
+      ]
+    },
+    {
+      "year": "Second Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {"subject_code": "CS201", "description": "Data Structures", "units": 3, "school_year": "2425", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "CS202", "description": "Object-Oriented Programming", "units": 3, "school_year": "2425", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "MATH201", "description": "Probability and Statistics", "units": 3, "school_year": "2425", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "CS203", "description": "Computer Organization", "units": 3, "school_year": "2425", "semester": "First Semester", "final_grade": "PASSED"},
+            {"subject_code": "PE201", "description": "PATHFit 3", "units": 2, "school_year": "2425", "semester": "First Semester", "final_grade": "PASSED"}
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {"subject_code": "CS204", "description": "Algorithms", "units": 3, "school_year": "2425", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "CS205", "description": "Database Systems", "units": 3, "school_year": "2425", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "CS206", "description": "Software Engineering", "units": 3, "school_year": "2425", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "IT201", "description": "Networking 1", "units": 3, "school_year": "2425", "semester": "Second Semester", "final_grade": "PASSED"},
+            {"subject_code": "PE202", "description": "PATHFit 4", "units": 2, "school_year": "2425", "semester": "Second Semester", "final_grade": "PASSED"}
+          ]
+        }
+      ]
+    },
+    {
+      "year": "Third Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {"subject_code": "CS301", "description": "Operating Systems", "units": 3, "school_year": "2526", "semester": "First Semester", "final_grade": "CURRENT"},
+            {"subject_code": "CS302", "description": "Artificial Intelligence", "units": 3, "school_year": "2526", "semester": "First Semester", "final_grade": "CURRENT"},
+            {"subject_code": "CS303", "description": "Web Development", "units": 3, "school_year": "2526", "semester": "First Semester", "final_grade": "CURRENT"},
+            {"subject_code": "CS304", "description": "Mobile App Development", "units": 3, "school_year": "2526", "semester": "First Semester", "final_grade": "CURRENT"},
+            {"subject_code": "CS305", "description": "Computer Graphics", "units": 3, "school_year": "2526", "semester": "First Semester", "final_grade": "CURRENT"}
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {"subject_code": "CS306", "description": "Machine Learning", "units": 3, "school_year": "2526", "semester": "Second Semester", "final_grade": "RECOMMENDED"},
+            {"subject_code": "CS307", "description": "Cybersecurity Fundamentals", "units": 3, "school_year": "2526", "semester": "Second Semester", "final_grade": "RECOMMENDED"},
+            {"subject_code": "CS308", "description": "Cloud Computing", "units": 3, "school_year": "2526", "semester": "Second Semester", "final_grade": "RECOMMENDED"},
+            {"subject_code": "CS309", "description": "Capstone Prep", "units": 3, "school_year": "2526", "semester": "Second Semester", "final_grade": "RECOMMENDED"}
+          ]
+        }
+      ]
+    },
+    {
+      "year": "Fourth Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {"subject_code": "CS401", "description": "Capstone Project 1", "units": 3, "school_year": "", "semester": "First Semester", "final_grade": "RECOMMENDED"},
+            {"subject_code": "CS402", "description": "Advanced Algorithms", "units": 3, "school_year": "", "semester": "First Semester", "final_grade": "RECOMMENDED"},
+            {"subject_code": "CS403", "description": "Data Mining", "units": 3, "school_year": "", "semester": "First Semester", "final_grade": "RECOMMENDED"},
+            {"subject_code": "CS404", "description": "Software Project Management", "units": 3, "school_year": "", "semester": "First Semester", "final_grade": "RECOMMENDED"}
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {"subject_code": "CS405", "description": "Capstone Project 2", "units": 12, "school_year": "", "semester": "Second Semester", "final_grade": "RECOMMENDED"}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curriculum</title>
+</head>
+<body>
+    <h1>{{ curriculum.program }}</h1>
+    {% for year in curriculum.curriculum %}
+        <h2>{{ year.year }}</h2>
+        {% for term in year.terms %}
+            <h3>{{ term.term }}</h3>
+            <ul>
+            {% for subject in term.subjects %}
+                <li>{{ subject.subject_code }} - {{ subject.description }} ({{ subject.units }} units) - {{ subject.final_grade }}</li>
+            {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endfor %}
+</body>
+</html>

@@ -71,13 +71,9 @@ body {
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   font-weight: 600;
-}
-
-.card-description {
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  margin-left: 20px;
 }
 
 /* Quick Action Grid */
@@ -210,4 +206,192 @@ body {
 
 .tab-content.active {
   display: block;
+}
+
+
+/* === Curriculum Table Styles === */
+.curriculum-table {
+  margin-top: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.curriculum-table h2 {
+  font-size: 1.4rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.curriculum-table h3 {
+  font-size: 1.1rem;
+  color: var(--foreground);
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  border-left: 4px solid var(--primary);
+  padding-left: 10px;
+}
+
+.curriculum-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.curriculum-table thead {
+  background-color: var(--primary);
+  color: #fff;
+  text-align: left;
+}
+
+.curriculum-table th,
+.curriculum-table td {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.curriculum-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.curriculum-table th {
+  font-weight: 600;
+}
+
+.curriculum-table td {
+  color: #333;
+}
+
+.curriculum-table table:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.curriculum-content{
+  flex: 1;
+  padding-right: 8px;
+    margin-top: -50px;
+
+}
+
+
+/* === Curriculum Section Layout === */
+.curriculum-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.curriculum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.curriculum-controls {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+/* Left side buttons */
+.curriculum-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Right side dropdown */
+.year-dropdown {
+  margin-right: 10px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 0.9rem;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.year-dropdown:hover {
+  border-color: var(--primary);
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.15);
+}
+
+
+/* Table styling (unchanged but included for clarity) */
+.curriculum-table {
+  margin-top: 0.5rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow-x: auto;
+}
+
+.curriculum-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.curriculum-table th,
+.curriculum-table td {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.curriculum-table thead {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+/* Buttons */
+.filter-btn {
+  background-color: #f4f5f7;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+  .curriculum-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .year-dropdown {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .curriculum-buttons {
+    justify-content: flex-start;
+  }
 }

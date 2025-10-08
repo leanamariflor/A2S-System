@@ -1,0 +1,70 @@
+{% extends "student_base.html" %}
+{% load static %}
+
+{% block title %}Curriculum{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/StudentCurriculum.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="curriculum-container">
+  <h2>Bachelor of Science in Information Technology</h2>
+
+  <div class="filter-buttons">
+    <button onclick="filterSubjects('CURRENT')">Current</button>
+    <button onclick="filterSubjects('PASSED')">Completed</button>
+    <button onclick="filterSubjects('RECOMMENDED')">Recommended</button>
+  </div>
+
+  <div id="curriculumTable"></div>
+</div>
+
+<script>
+async function loadCurriculum() {
+  const response = await fetch("{% static 'mock_data/curriculum.json' %}");
+  const data = await response.json();
+  window.curriculumData = data.curriculum;
+  renderTable('PASSED'); // default view
+}
+
+function renderTable(status) {
+  const container = document.getElementById('curriculumTable');
+  let html = '';
+
+  window.curriculumData.forEach(year => {
+    year.terms.forEach(term => {
+      const filteredSubjects = term.subjects.filter(
+        s => s.final_grade.toUpperCase() === status
+      );
+
+      if (filteredSubjects.length > 0) {
+        html += `<h3>${year.year} - ${term.term}</h3>`;
+        html += `<table>
+          <thead><tr><th>Code</th><th>Description</th><th>Units</th><th>Year</th><th>Semester</th></tr></thead><tbody>`;
+
+        filteredSubjects.forEach(sub => {
+          html += `<tr>
+            <td>${sub.subject_code}</td>
+            <td>${sub.description}</td>
+            <td>${sub.units}</td>
+            <td>${sub.school_year}</td>
+            <td>${sub.semester}</td>
+          </tr>`;
+        });
+
+        html += `</tbody></table>`;
+      }
+    });
+  });
+
+  container.innerHTML = html || "<p>No subjects found.</p>";
+}
+
+function filterSubjects(status) {
+  renderTable(status);
+}
+
+loadCurriculum();
+</script>
+{% endblock %}

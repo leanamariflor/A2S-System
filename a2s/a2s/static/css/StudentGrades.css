@@ -1,0 +1,98 @@
+/* ==================== UNIQUE STUDENT GRADES STYLES ==================== */
+:root {
+  --sg-bg: #f4f5f7;
+  --sg-text: #121212;
+  --sg-primary: #6f73ff;
+  --sg-card-bg: #ffffff;
+  --sg-border: #e0e0e0;
+  --sg-text-muted: #6b7280;
+}
+
+.sg-container {
+  background-color: var(--sg-bg);
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--sg-text);
+}
+
+.sg-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sg-dropdown {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--sg-border);
+  background-color: var(--sg-card-bg);
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.sg-button {
+  background-color: var(--sg-primary);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sg-button:hover {
+  opacity: 0.85;
+}
+
+.sg-table-container {
+  background-color: var(--sg-card-bg);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  overflow-x: auto;
+}
+
+.sg-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sg-table th {
+  background-color: var(--sg-primary);
+  color: #fff;
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.sg-table td {
+  padding: 10px 12px;
+  color: var(--sg-text);
+  border-bottom: 1px solid var(--sg-border);
+}
+
+.sg-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sg-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sg-dropdown {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .sg-button {
+    width: 100%;
+  }
+}

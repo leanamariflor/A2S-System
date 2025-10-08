@@ -359,6 +359,46 @@
   transform: scale(1.05);
 }
 
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin: 1rem 0 2rem; /* Adjust top margin to move higher */
+}
+
+.save-button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.5rem 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.save-button:hover {
+    background: #3730a3;
+    transform: scale(1.05);
+}
+
+.cancel-button {
+    background: #e5e7eb;
+    color: var(--foreground);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.5rem 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cancel-button:hover {
+    background: #d1d5db;
+}
+
+
 /* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
   .profile-grid,

@@ -1,0 +1,509 @@
+{
+  "program": "Bachelor of Science in Information Technology",
+  "curriculum": [
+    {
+      "year": "First Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {
+              "subject_code": "PHILO031",
+              "description": "Ethics",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT121",
+              "description": "Fundamentals of Programming",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT111",
+              "description": "Introduction to Computing",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+             {
+              "subject_code": "MATH031",
+              "description": "Mathematics in the Modern World",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "PE103",
+              "description": "Movement Enhancement / PATHFit 1-Movement Competency Training",
+              "units": 2,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "NSTP111",
+              "description": "National Service Training Program 1",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "ENGL031",
+              "description": "Purposive Communication",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "PSYCH031",
+              "description": "Understanding the Self",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            }
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {
+              "subject_code": "HUM031",
+              "description": "Art Appreciation",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT112",
+              "description": "Discrete Structures 1",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "PE104",
+              "description": "Fitness Exercises / PATHFit 2-Exercise-based Fitness Activities",
+              "units": 2,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT122",
+              "description": "Intermediate Programming",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CS132",
+              "description": "Introduction to Computer Systems",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "NSTP112",
+              "description": "National Service Training Program 2",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT201",
+              "description": "Platform-based Development 2 (Web)",
+              "units": 1,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "SOCSCI031",
+              "description": "Readings in Philippine History",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "STS031",
+              "description": "Science, Technology and Society",
+              "units": 3,
+              "school_year": "2324",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "year": "Second Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {
+              "subject_code": "CSIT221",
+              "description": "Data Structures and Algorithms",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT227",
+              "description": "Object-Oriented Programming 1",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "SDG031",
+              "description": "General Education Elective 1",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "IT227",
+              "description": "Networking 1",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT227",
+              "description": "Object-oriented Programming 1",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "PE205",
+              "description": "PATHFIT 1 / PATHFit 3-Menu of Sports, Dance, Recreation and Martial Arts, Group Exercise, Outdoor and Adventure Activities",
+              "units": 2,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT104",
+              "description": "Platform-based Development 1 (Multimedia)",
+              "units": 1,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT213",
+              "description": "Social Issues and Professional Practice",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "SOCSCI032",
+              "description": "Social Issues and Professional Practice",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "First Semester",
+              "final_grade": "PASSED"
+            }
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {
+              "subject_code": "ESO36B",
+              "description": "General Education Elective 2",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT238",
+              "description": "Human Computer Interaction",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code":"CSIT226",
+              "description": "Information Management 1",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+
+            },
+            {
+              "subject_code": "IT228",
+              "description": "Networking 2",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {
+              "subject_code": "CSIT228",
+              "description": "Object-Oriented Programming 2",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {     
+              "subject_code": "PE206",
+              "description": "PATHFIT 2 / PATHFit 4-Menu of Sports, Dance, Recreation and Martial Arts, Group Exercise, Outdoor and Adventure Activities",
+              "units": 2,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },
+            {     
+              "subject_code": "CSIT284",
+              "description": "Platform-based Development 3 (Mobile)",
+              "units": 1,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            },             {     
+              "subject_code": "CSIT212",
+              "description": "Quantitative Methods",
+              "units": 3,
+              "school_year": "2425",
+              "semester": "Second Semester",
+              "final_grade": "PASSED"
+            }
+
+          ]
+        }
+      ]
+    },
+    {
+      "year": "Third Year",
+      "terms": [
+        {
+          "term": "First Term",
+          "subjects": [
+            {
+              "subject_code": "CSIT321",
+              "description": "Applications Development and Emerging Technologies",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            },
+            {
+              "subject_code": "CSIT340",
+              "description": "CSIT Elective 1",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            },
+            {
+              "subject_code": "IT365",
+              "description": "Data Analytics 1",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            },            {
+              "subject_code": "CSIT327",
+              "description": "Information Management 2",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            },            {
+              "subject_code": "IT317",
+              "description": "Project Management for IT",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            },            
+            {
+              "subject_code": "ESO38",
+              "description": "Technopreneurship",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            },
+            {
+              "subject_code": "RIZAL031",
+              "description": "The Life and Works of Rizal",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "First Semester",
+              "final_grade": "CURRENT"
+            }
+          ]
+        },
+        {
+          "term": "Second Term",
+          "subjects": [
+            {
+              "subject_code": "IT332",
+              "description": "Capstone and Research 1",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "CSITELECT2",
+              "description": "CSIT Elective 2",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            },           
+             {
+              "subject_code": "ITFREEEL1",
+              "description": "Free Elective 1",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            },            
+            {
+              "subject_code": "CSIT385",
+              "description": "Information Assurance and Security 1",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            },            
+            {
+              "subject_code": "IT334",
+              "description": "IS Strategy",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            },           
+             {
+              "subject_code": "IT344",
+              "description": "Systems Administration and Maintenance",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "IT342",
+              "description": "Systems Integration and Architecture 1",
+              "units": 3,
+              "school_year": "2526",
+              "semester": "Second Semester",
+              "final_grade": "RECOMMENDED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "year":"Fourth Year",
+      "terms" : [
+        {
+            "term":"First Term",
+            "subjects" : [
+              {
+              "subject_code": "IT441",
+              "description": "Capstone and Research 2",
+              "units": 3,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "CSITELCE3",
+              "description": "CSIT Elective 3",
+              "units": 3,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "CSITELCE4",
+              "description": "CSIT Elective 4",
+              "units": 3,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "IT-FREEEL2",
+              "description": "Free Elective 2",
+              "units": 3,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "GE-CCS3",
+              "description": "General Education Elective 3",
+              "units": 3,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+            },
+            {
+              "subject_code": "IT386",
+              "description": "Information Assurance and Security 2",
+              "units": 3,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+            }
+            ]
+        },
+        {
+            "term":"Second Term",
+            "subjects" :[
+              {
+              "subject_code": "IT412",
+              "description": "OJT/Practicum",
+              "units": 12,
+              "school_year": "",
+              "semester": "First Semester",
+              "final_grade": "RECOMMENDED"
+              }
+            ]
+        }
+
+      ]
+    }
+    
+    
+
+    
+  ]
+}

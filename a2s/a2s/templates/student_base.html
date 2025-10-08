@@ -42,8 +42,7 @@
     <div class="dashboard-container">
       <!-- Sidebar -->
       <aside class="dashboard-sidebar">
-        <!-- Student Info -->
-        <!-- Student Info -->
+      
   <div class="sidebar-student-info">
     <div class="student-avatar">
       {% if student_user.first_name and student_user.last_name %}
@@ -76,18 +75,18 @@
             <i data-lucide="user"></i>
             <span>Profile</span>
           </a>
-          <button class="nav-button">
+          <a href="{% url 'StudentSchedule' %}" class="nav-button">
             <i data-lucide="calendar"></i>
             <span>Schedule</span>
-          </button>
-          <button class="nav-button">
+          </a>
+          <a href="{% url 'StudentGrades' %}" class="nav-button">
             <i data-lucide="clipboard"></i>
             <span>Grades</span>
-          </button>
-          <button class="nav-button">
+          </a>
+          <a href="{% url 'StudentCourses' %}" class="nav-button">
             <i data-lucide="book"></i>
             <span>Courses</span>
-          </button>
+          </a>
           <button class="nav-button">
             <i data-lucide="award"></i>
             <span>Degree Audit</span>
@@ -110,6 +109,7 @@
     <script>
       lucide.createIcons();
 
+      
           const yearElem = document.getElementById('student-year');
         if (yearElem) {
             const year = parseInt(yearElem.textContent) || 0;
