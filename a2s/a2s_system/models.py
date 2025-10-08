@@ -56,23 +56,34 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
-
 class Grade(models.Model):
-    student = models.ForeignKey('StudentProfile', on_delete=models.CASCADE)
-    course = models.ForeignKey('Course', on_delete=models.CASCADE)
-    
-    # New fields for detailed grading
-    semester = models.CharField(max_length=20, default="1st Semester")  # e.g., "1st Sem"
-    school_year = models.CharField(max_length=9, default=2324)  # e.g., "2324"
+    student = models.ForeignKey('StudentProfile', on_delete=models.CASCADE, related_name='grades')
+
+    # Keep original relation but add readable fields for Supabase import
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, blank=True, null=True)
+
+    # Redundant fields for Supabase import and quick access
+    course_code = models.CharField(max_length=50, blank=True, null=True)
+    course_name = models.CharField(max_length=100, blank=True, null=True)
+
+
+    faculty = models.CharField(max_length=100, blank=True, null=True)
+    units = models.IntegerField(default=3)
+
+    # Detailed grading fields
     midterm = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
     final = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
     final_grade = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
-    status = models.CharField(max_length=10, blank=True, null=True)  # e.g., "PASSED", "FAILED"
-    
+    status = models.CharField(max_length=10, blank=True, null=True)  # e.g. "PASSED", "FAILED"
+
+    # Academic term info
+    school_year = models.CharField(max_length=9, default="2324")  # e.g., "2324"
+    semester = models.CharField(max_length=20, default="First")   # e.g., "First", "Second"
+
     remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.student.user.get_full_name()} - {self.course.course_code} ({self.final_grade})"
+        return f"{self.student.user.get_full_name()} - {self.course_code} ({self.final_grade})"
 
 
 

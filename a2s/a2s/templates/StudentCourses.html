@@ -4,44 +4,111 @@
 {% block title %}My Courses{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/StudentCourses.css' %}" />
+<link rel="stylesheet" href="{% static 'css/student_courses.css' %}" />
 {% endblock %}
 
 {% block content %}
-<div class="courses-container">
-  <h2>My Courses</h2>
-  <table id="coursesTable" border="1" cellpadding="8">
-    <thead>
-      <tr>
-        <th>Course Code</th>
-        <th>Course Name</th>
-        <th>Units</th>
-        <th>Instructor</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Rows will be dynamically inserted here -->
-    </tbody>
-  </table>
+<div class="courses-dashboard">
+
+  <!-- Header Card -->
+  <div class="header-card">
+    <h2>My Courses</h2>
+    <p>{{ current_year }} • {{ active_courses }} active courses</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="filter-buttons">
+    <button class="tab-btn active" data-target="current">Current</button>
+    <button class="tab-btn" data-target="completed">Completed</button>
+    <button class="tab-btn" data-target="recommended">Recommended</button>
+  </div>
+
+  <!-- Semester Title -->
+  <h3 class="semester-title">Enrolled Courses - First Semester</h3>
+
+  <!-- Purple Background Container -->
+  <div class="courses-purple-box">
+    <!-- Courses List -->
+    <div id="coursesList" class="course-list"></div>
+  </div>
+
 </div>
 
 <script>
-  // Fetch and display the mockup data
-  fetch("{% static 'data/courses.json' %}")
-    .then(response => response.json())
-    .then(data => {
-      const tableBody = document.querySelector("#coursesTable tbody");
-      data.forEach(course => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${course.course_code}</td>
-          <td>${course.course_name}</td>
-          <td>${course.units}</td>
-          <td>${course.instructor}</td>
-        `;
-        tableBody.appendChild(row);
+const courseList = document.querySelector("#coursesList");
+const buttons = document.querySelectorAll(".tab-btn");
+let allCourses = [];
+
+// Load data
+fetch("{% static 'data/bsit_curriculum.json' %}")
+  .then(res => res.json())
+  .then(data => {
+    data.curriculum.forEach(year => {
+      year.terms.forEach(term => {
+        term.subjects.forEach(sub => {
+          let percent = 0;
+
+          // Completed courses show 100%
+          if(sub.final_grade === "PASSED" || (typeof sub.final_grade === "number" && sub.final_grade <= 3.0)){
+            percent = 100;
+          } 
+          // Current grades
+          else if(sub.final_grade && !isNaN(sub.final_grade)){
+            percent = parseFloat(sub.final_grade) / 5 * 100; 
+          }
+
+          allCourses.push({
+            code: sub.subject_code,
+            name: sub.description,
+            units: sub.units,
+            grade: sub.final_grade,
+            progress: percent
+          });
+        });
       });
-    })
-    .catch(error => console.error("Error loading courses:", error));
+    });
+    showCourses("current");
+  })
+  .catch(err => console.error(err));
+
+function showCourses(type) {
+  courseList.innerHTML = "";
+  let filtered = [];
+
+  if (type === "current") filtered = allCourses.filter(c => c.grade === "CURRENT" || c.grade === null);
+  else if (type === "completed") filtered = allCourses.filter(c => c.grade === "PASSED" || (typeof c.grade === "number" && c.grade <= 3.0));
+  else if (type === "recommended") filtered = allCourses.filter(c => c.grade === "RECOMMENDED");
+
+  if (filtered.length === 0) {
+    courseList.innerHTML = `<p class="empty-msg">No ${type} courses found.</p>`;
+    return;
+  }
+
+  filtered.forEach(c => {
+    const div = document.createElement("div");
+    div.classList.add("course-item");
+    div.innerHTML = `
+      <div class="course-info">
+        <h4>${c.code} - ${c.name}</h4>
+        <p>${c.units} Units</p>
+      </div>
+      <div class="course-progress">
+        <div class="progress-bar">
+          <div class="progress-fill ${c.progress === 100 ? 'completed' : ''}" style="width:${c.progress}%"></div>
+        </div>
+        <span>${Math.round(c.progress)}%</span>
+      </div>
+    `;
+    courseList.appendChild(div);
+  });
+}
+
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    buttons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    showCourses(btn.dataset.target);
+  });
+});
 </script>
 {% endblock %}

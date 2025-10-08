@@ -6,10 +6,13 @@ from supabase import create_client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import os
 from .models import User,StudentProfile,Enrollment,Curriculum,Grade
 from datetime import datetime
 from django.core.management.base import BaseCommand
 from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+
 
 
 SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
@@ -123,25 +126,41 @@ def register(request):
 
     return render(request, "Register.html")
 
+
+
 @login_required(login_url='Login')
 def student_dashboard(request):
     student_user = request.user
     profile, _ = StudentProfile.objects.get_or_create(user=student_user)
 
-    student_program = profile.program  # <- This is your major/program
+    student_program = profile.program  # e.g., "BSIT"
     curriculum_data = []
+    calendar_data = []
 
-    if student_program != "Undeclared":
+    # --- Load curriculum JSON from DB ---
+    if student_program and student_program != "Undeclared":
         try:
             curriculum_obj = Curriculum.objects.get(program=student_program)
             curriculum_data = curriculum_obj.data.get("curriculum", [])
         except Curriculum.DoesNotExist:
             curriculum_data = []
 
+    # --- Load academic calendar JSON from static/data ---
+    calendar_path = os.path.join(settings.BASE_DIR, 'a2s', 'static', 'data', 'academic_calendar.json')
+
+    try:
+        with open(calendar_path, 'r', encoding='utf-8') as f:
+            calendar_data = json.load(f)
+        print("Loaded calendar_data:", calendar_data)  # debug output
+    except Exception as e:
+        print("Error loading academic calendar JSON:", e)
+        calendar_data = []
+
     context = {
         "student": student_user,
-        "student_program": student_program,   # <-- pass it here
-        "curriculum_json": curriculum_data,
+        "student_program": student_program,
+        "curriculum_json":  json.dumps(curriculum_data),
+        "calendar_json": json.dumps(calendar_data),  # send JSON as string to template
         "gpa": profile.gpa or 0.0,
         "credits_completed": profile.credits_completed or 0,
         "credits_required": profile.credits_required or 0,
@@ -230,7 +249,7 @@ def landing_page(request):
     return render(request, "LandingPage.html")
 
 
-def settings(request):
+def user_settings(request):
     return render(request, "Settings.html")
 
 def student_base(request):
@@ -401,34 +420,39 @@ def get_curriculum_json(request, program):
 
 
 
-# a2s_system/views.py
-from django.shortcuts import render
-from .models import Grade
+
+@login_required(login_url='Login')
+
 
 def student_grades(request):
-    student = request.user.studentprofile
+    # Get the logged-in student's profile
+    student_profile = request.user.studentprofile
 
-    # Get filter values from GET parameters
+    # Dropdown filter values
     selected_year = request.GET.get('school_year')
     selected_semester = request.GET.get('semester')
 
-    # Get distinct years and semesters for dropdowns
-    years = Grade.objects.filter(student=student).values_list('school_year', flat=True).distinct()
-    semesters = Grade.objects.filter(student=student).values_list('semester', flat=True).distinct()
+    # Start with no grades shown
+    grades = Grade.objects.none()
 
-    # Filter grades based on selections
-    grades = Grade.objects.filter(student=student)
-    if selected_year:
-        grades = grades.filter(school_year=selected_year)
-    if selected_semester:
-        grades = grades.filter(semester=selected_semester)
+    # Populate dropdowns with all available options for THIS student only
+    years = Grade.objects.filter(student=student_profile).values_list('school_year', flat=True).distinct()
+    semesters = Grade.objects.filter(student=student_profile).values_list('semester', flat=True).distinct()
 
-    grades = grades.order_by('course__course_code')
+    # If both filters selected, fetch filtered data
+    if selected_year and selected_semester:
+        grades = Grade.objects.filter(
+            student=student_profile,
+            school_year=selected_year,
+            semester=selected_semester
+        )
 
-    return render(request, "studentGrades.html", {
-        "grades": grades,
-        "years": years,
-        "semesters": semesters,
-        "selected_year": selected_year,
-        "selected_semester": selected_semester,
-    })
+    context = {
+        'grades': grades,
+        'years': years,
+        'semesters': semesters,
+        'selected_year': selected_year,
+        'selected_semester': selected_semester,
+    }
+
+    return render(request, 'StudentGrades.html', context)

@@ -8,6 +8,16 @@
   --sg-text-muted: #6b7280;
 }
 
+/* Purple background container */
+.grades-purple-box {
+  width: 100%;
+  background: #6f73ff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+
 .sg-container {
   background-color: var(--sg-bg);
   padding: 2rem;

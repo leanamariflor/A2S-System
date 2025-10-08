@@ -1,0 +1,82 @@
+.sg-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Controls (dropdowns + buttons) */
+.sg-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sg-controls div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sg-dropdown {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.sg-button {
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: none;
+  background: #595cff;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Purple background box */
+.grades-purple-box {
+  width: 100%;
+  background: #f3f0ff;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+/* Table */
+.sg-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sg-table th, .sg-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.sg-table th {
+  background: #595cff;
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.sg-table tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.sg-table button {
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: none;
+  background: #595cff;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+}

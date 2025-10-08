@@ -395,3 +395,176 @@ body {
     justify-content: flex-start;
   }
 }
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap; 
+}
+
+.calendar-controls label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-right: 4px;
+  color: #ffffff;
+}
+
+.calendar-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 10px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 3px solid var(--primary);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+#month-title {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+  color: var(--primary);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.calendar-nav button {
+  padding: 6px 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.calendar-row {
+  display: flex;
+  gap: 5px;
+}
+
+.calendar-cell {
+  flex: 1;
+  padding: 12px;
+  background: #fff;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-weight: 500;
+}
+
+/* Weekday header */
+.calendar-cell.header {
+  background: var(--primary);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Event styles */
+.event-badge {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.75rem;
+  border-left: 4px solid;
+  padding-left: 4px;
+}
+
+.event-holiday { border-color: #ff4d4d; color: #c00; }
+.event-exam { border-color: #3399ff; color: #036; }
+.event-ceremony { border-color: #ff9900; color: #b85c00; }
+.event-deadline { border-color: #66cc33; color: #3a7d00; }
+
+.empty {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Highlight today */
+.today-cell {
+  border: 2px solid #4CAF50;
+  border-radius: 6px;
+  background-color: #e6ffe6;
+}
+
+/* Events stacked nicely */
+.event-badge {
+  display: block;
+  margin-top: 2px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+/* Hover effect */
+.event-badge:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Modal overlay */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal box */
+.modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+/* Close button */
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Dropdown styling */
+select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background-color: #f9f9f9;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}

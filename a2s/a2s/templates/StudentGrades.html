@@ -5,7 +5,7 @@
 {% block title %}A2S Student Grades{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/StudentGrades.css' %}" />
+<link rel="stylesheet" href="{% static 'css/student_grades.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -34,6 +34,8 @@
   </form>
 
   <!-- Grades Table -->
+  <div class="grades-purple-box">
+
   <div class="sg-table-container">
     <table class="sg-table">
       <thead>
@@ -50,25 +52,27 @@
         </tr>
       </thead>
       <tbody>
-        {% for grade in grades %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ grade.course.course_code }}</td>
-          <td>{{ grade.course.course_name }}</td>
-          <td>{{ grade.course.description|default:"N/A" }}</td>
-          <td>{{ grade.course.units|default:"3" }}</td>
-          <td>{{ grade.midterm }}</td>
-          <td>{{ grade.final }}</td>
-          <td>{{ grade.final_grade }}</td>
-          <td>{{ grade.status }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="9" style="text-align:center;">No grades found for selected config.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
+  {% for grade in grades %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ grade.course_code }}</td>
+    <td>{{ grade.course_name }}</td>
+    <td>{{ grade.faculty }}</td>
+    <td>{{ grade.units }}</td>
+    <td>{{ grade.midterm }}</td>
+    <td>{{ grade.final }}</td>
+    <td>{{ grade.final_grade }}</td>
+    <td>{{ grade.status }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="9" style="text-align:center;">No grades found.</td>
+  </tr>
+  {% endfor %}
+</tbody>
+
     </table>
+  </div>
   </div>
 </div>
 {% endblock %}

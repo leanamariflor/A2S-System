@@ -1,0 +1,117 @@
+.courses-dashboard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header card full width */
+.header-card {
+  width: 100%;
+  background: linear-gradient(135deg, #595cff, #4e50f0);
+  color: white;
+  padding: 25px 30px;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  text-align: left;
+}
+
+/* Tabs/buttons full width */
+.filter-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.tab-btn {
+  padding: 8px 18px;
+  border-radius: 25px;
+  border: none;
+  background: #e0e0e0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tab-btn.active {
+  background: #595cff;
+  color: white;
+}
+
+/* Semester title above courses box */
+.semester-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Purple background container */
+.courses-purple-box {
+  width: 100%;
+  background: #6f73ff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Each course item */
+.course-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.course-info h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.course-info p {
+  margin: 3px 0 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Progress bar */
+.course-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 180px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #595cff;
+  border-radius: 5px;
+  transition: width 0.5s ease, background 0.5s ease;
+}
+
+/* Green color for completed courses */
+.progress-fill.completed {
+  background: #28a745;
+}
+
+.course-progress span {
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.empty-msg {
+  text-align: center;
+  color: #888;
+  padding: 30px 0;
+}
