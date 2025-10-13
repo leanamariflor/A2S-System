@@ -103,12 +103,35 @@
     </div>
   </div>
 
-  <div class="tab-content" id="calendar">
-    <div class="card">
-      <div class="card-header"><div class="card-title">Academic Calendar</div><div class="card-description">Important academic dates</div></div>
-      <div class="card-content"><p>Calendar content placeholder.</p></div>
+ <!-- Calendar Tab -->
+<div class="tab-content" id="calendar">
+  <div class="calendar-controls">
+  <label for="calendarSemesterSelect">Semester:</label>
+  <select id="calendarSemesterSelect"></select>
+
+  <label for="calendarYearSelect">Year:</label>
+  <select id="calendarYearSelect"></select>
+</div>
+
+  <div class="calendar-container">
+    <h2 id="month-title"></h2>
+    <div class="calendar-nav">
+      <button id="prev-month">< Prev</button>
+      <button id="next-month">Next ></button>
     </div>
+    <div id="calendar-grid"></div>
   </div>
+</div>
+
+<!-- Event Modal -->
+<div id="eventModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="eventName"></h3>
+    <p><strong>Type:</strong> <span id="eventType"></span></p>
+    <p><strong>Date:</strong> <span id="eventDate"></span></p>
+  </div>
+</div>
 
   <div class="tab-content" id="map">
     <div class="card">
@@ -119,11 +142,12 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  lucide.createIcons();
+document.addEventListener("DOMContentLoaded", function () {
+  lucide.createIcons(); // Initialize Lucide icons
+
+  // -------------------- Tabs --------------------
   const tabTriggers = document.querySelectorAll('.tab-trigger');
   const tabContents = document.querySelectorAll('.tab-content');
-
   tabTriggers.forEach(trigger => {
     trigger.addEventListener('click', () => {
       const target = trigger.dataset.tab;
@@ -133,6 +157,195 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById(target).classList.add('active');
     });
   });
+
+  // -------------------- Calendar --------------------
+
+  const calendarGrid = document.getElementById("calendar-grid");
+  const monthTitle = document.getElementById("month-title");
+  const prevBtn = document.getElementById("prev-month");
+  const nextBtn = document.getElementById("next-month");
+  const calendarYearSelect = document.getElementById("calendarYearSelect");
+  const calendarSemesterSelect = document.getElementById("calendarSemesterSelect");
+
+  let currentDate = new Date();
+  let currentYear = currentDate.getFullYear();
+  let currentMonth = currentDate.getMonth();
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  // -------------------- Load Calendar Data --------------------
+  let calendarData = [];
+try {
+    calendarData = JSON.parse('{{ calendar_json|escapejs }}');  // parse JSON string
+    if (!Array.isArray(calendarData)) {
+        console.error("Calendar JSON is not an array:", calendarData);
+        calendarData = [];
+    }
+} catch (e) {
+    console.error("Error parsing calendar JSON:", e);
+}
+console.log("calendarData:", calendarData);  // debug
+
+  if (!Array.isArray(calendarData)) {
+    console.error("Calendar data is not an array:", calendarData);
+    calendarData = [];
+  }
+
+  // Flatten events
+  let allEvents = [];
+  calendarData.forEach(sem => {
+    sem.events.forEach(ev => {
+      allEvents.push({
+        date: new Date(ev.date),
+        name: ev.name,
+        type: ev.type,
+        semester: sem.semester
+      });
+    });
+  });
+
+  const eventColors = {
+    "Holiday": "#ffcccc",
+    "Class Start": "#cce5ff",
+    "Class End": "#d4edda",
+    "Exam": "#fff3cd",
+    "Deadline": "#f8d7da",
+    "Ceremony": "#e2e3e5",
+    "Special Non-Working Day": "#f0b3ff"
+  };
+
+  // Populate dropdowns
+  const yearsSet = new Set(allEvents.map(e => e.date.getFullYear()));
+  const semestersSet = new Set(allEvents.map(e => e.semester));
+
+  calendarYearSelect.innerHTML = `<option value="All">All</option>` + 
+    Array.from(yearsSet).map(y => `<option value="${y}">${y}</option>`).join("");
+
+  calendarSemesterSelect.innerHTML = `<option value="All">All</option>` + 
+    Array.from(semestersSet).map(s => `<option value="${s}">${s}</option>`).join("");
+
+  function renderCalendar() {
+    const selectedYear = calendarYearSelect.value;
+    const selectedSemester = calendarSemesterSelect.value;
+
+    calendarGrid.innerHTML = '';
+    monthTitle.textContent = `${months[currentMonth]} ${currentYear}`;
+
+    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const headerRow = document.createElement('div');
+    headerRow.className = 'calendar-row';
+    weekdays.forEach(day => {
+      const cell = document.createElement('div');
+      cell.className = 'calendar-cell header';
+      cell.textContent = day;
+      headerRow.appendChild(cell);
+    });
+    calendarGrid.appendChild(headerRow);
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+    let row = document.createElement('div');
+    row.className = 'calendar-row';
+
+    for (let i = 0; i < firstDay; i++) {
+      const emptyCell = document.createElement('div');
+      emptyCell.className = 'calendar-cell empty';
+      row.appendChild(emptyCell);
+    }
+
+    for (let d = 1; d <= lastDate; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'calendar-cell';
+      cell.innerHTML = `<span class="date-number">${d}</span>`;
+
+      // Add events
+      allEvents.forEach(ev => {
+        if (
+          ev.date.getFullYear() === currentYear &&
+          ev.date.getMonth() === currentMonth &&
+          ev.date.getDate() === d &&
+          (selectedYear === "All" || ev.date.getFullYear() == selectedYear) &&
+          (selectedSemester === "All" || ev.semester === selectedSemester)
+        ) {
+                  const badge = document.createElement('span');
+        badge.className = 'event-badge';
+        badge.style.backgroundColor = eventColors[ev.type] || "#eee";
+        badge.style.display = 'block';
+        badge.style.fontSize = "0.7rem";
+        badge.style.padding = "2px 4px";
+        badge.style.borderRadius = "4px";
+        badge.style.marginTop = "2px";
+
+        // Truncate long text
+        const maxLength = 12;
+        badge.textContent = ev.name.length > maxLength ? ev.name.substring(0, maxLength) + "..." : ev.name;
+
+        // Add click event to show full details
+        badge.title = ev.name; // simple tooltip on hover
+         badge.addEventListener('click', () => {
+          document.getElementById("eventName").textContent = ev.name;
+          document.getElementById("eventType").textContent = ev.type;
+          document.getElementById("eventDate").textContent = ev.date.toDateString();
+          modal.style.display = "flex";
+      });
+        cell.appendChild(badge);
+
+        }
+      });
+
+      row.appendChild(cell);
+      if ((d + firstDay) % 7 === 0 || d === lastDate) {
+        calendarGrid.appendChild(row);
+        row = document.createElement('div');
+        row.className = 'calendar-row';
+      }
+    }
+  }
+
+  prevBtn.addEventListener('click', () => {
+    currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+    renderCalendar();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+    currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+    renderCalendar();
+  });
+
+calendarYearSelect.addEventListener('change', () => {
+    const selectedYear = calendarYearSelect.value;
+
+    if (selectedYear !== "All") {
+        // Find first month in that year that has events
+        const eventsInYear = allEvents.filter(ev => ev.date.getFullYear() == selectedYear);
+        if (eventsInYear.length > 0) {
+            // Set currentMonth to the first month with an event
+            currentMonth = eventsInYear[0].date.getMonth();
+        } else {
+            // If no events, default to January
+            currentMonth = 0;
+        }
+        currentYear = parseInt(selectedYear);
+    }
+
+    renderCalendar();
 });
-</script>
+
+  calendarSemesterSelect.addEventListener('change', renderCalendar);
+
+  renderCalendar();
+
+    const modal = document.getElementById("eventModal");
+const closeBtn = modal.querySelector(".close");
+
+// Close modal
+closeBtn.addEventListener('click', () => modal.style.display = "none");
+window.addEventListener('click', (e) => {
+    if (e.target === modal) modal.style.display = "none";
+});
+
+});
+
+</Script>
 {% endblock %}

@@ -171,14 +171,26 @@ def student_dashboard(request):
     return render(request, "StudentDashboard.html", context)
 
 
-@login_required(login_url='Login')
+#@login_required(login_url='Login')
 def teacher_dashboard(request):
-    context = {}
-    response = render(request, "TeacherDashboard.html", context)
-    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response['Pragma'] = 'no-cache'
-    response['Expires'] = '0'
-    return response
+    calendar_data = []
+
+    # --- Load academic calendar JSON from static/data ---
+    calendar_path = os.path.join(settings.BASE_DIR, 'a2s', 'static', 'data', 'academic_calendar.json')
+
+    try:
+        with open(calendar_path, 'r', encoding='utf-8') as f:
+            calendar_data = json.load(f)
+        print("Loaded calendar_data:", calendar_data)  # debug output
+    except Exception as e:
+        print("Error loading academic calendar JSON:", e)
+        calendar_data = []
+
+    context = {
+        "calendar_json": json.dumps(calendar_data),  # send JSON as string to template
+    }
+
+    return render(request, "TeacherDashboard.html", context)
 
 def logout_view(request):
     logout(request)
@@ -188,7 +200,7 @@ def logout_view(request):
     response['Expires'] = '0'
     return response
 
-#@login_required(login_url='Login')#
+@login_required(login_url='Login')
 def student_profile(request):
     context = {
         "first_name": "John",
@@ -209,7 +221,7 @@ def student_profile(request):
     }
     return render(request, "StudentProfile.html", context)
 
-#@login_required(login_url='Login')#
+@login_required(login_url='Login')#
 def teacher_profile(request):
     context = {
         "first_name": "Robert",
