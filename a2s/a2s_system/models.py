@@ -44,9 +44,21 @@ class StudentProfile(models.Model):
     expected_graduation = models.DateField(blank=True, null=True)
 
 
-class TeacherProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    department = models.CharField(max_length=100)
+
+class TeacherAchievement(models.Model):
+    teacher = models.ForeignKey(
+        'TeacherProfile',
+        on_delete=models.CASCADE,
+        related_name="teacher_achievements"  # <-- changed to avoid clash
+    )
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    icon = models.CharField(max_length=50, default="award")
+
+    def __str__(self):
+        return f"{self.teacher.user.get_full_name()} - {self.title}"
+
+
 
 class Course(models.Model):
     course_name = models.CharField(max_length=100)
@@ -95,6 +107,40 @@ class Achievement(models.Model):
 
     def __str__(self):
         return f"{self.student.user.get_full_name()} - {self.title}"
+    
+class TeacherProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    specialization = models.CharField(max_length=100, blank=True, null=True)
+    
+    achievements = models.ManyToManyField('Achievement', blank=True, related_name='teacher_profiles')
+
+    # Position choices
+    POSITION_CHOICES = [
+        ("Full-Time Faculty", "Full-Time Faculty"),
+        ("Part-Time Faculty", "Part-Time Faculty"),
+        ("Visiting Lecturer", "Visiting Lecturer"),
+        ("Adjunct Faculty", "Adjunct Faculty"),
+    ]
+    position = models.CharField(max_length=50, choices=POSITION_CHOICES, default="Full-Time Faculty")
+
+    # Department/College choices (CIT University)
+    DEPARTMENT_CHOICES = [
+        ("CEA", "Engineering and Architecture"),
+        ("CCS", "Computer Studies"),
+        ("CASE", "Arts, Sciences and Education"),
+        ("CMBA", "Management, Business and Accountancy"),
+        ("CNAHS", "Nursing and Allied Health Sciences"),
+        ("CCJ", "Criminal Justice"),
+    ]
+    department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} Profile"
+
 
 @receiver(post_save, sender=User)
 def create_student_profile(sender, instance, created, **kwargs):
@@ -105,6 +151,17 @@ def create_student_profile(sender, instance, created, **kwargs):
 def save_student_profile(sender, instance, **kwargs):
     if instance.is_student:
         instance.studentprofile.save()
+
+@receiver(post_save, sender=User)
+def create_teacher_profile(sender, instance, created, **kwargs):
+    if created and instance.is_teacher:
+        TeacherProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_teacher_profile(sender, instance, **kwargs):
+    if instance.is_teacher:
+        instance.teacherprofile.save()
+
 
 
 class Enrollment(models.Model):

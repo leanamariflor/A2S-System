@@ -443,6 +443,39 @@
   transition: all 0.2s ease;
 }
 
+/* Hide all editable fields by default */
+.read-only .editable-field {
+    display: none;
+}
+
+/* Show only in edit mode */
+.edit-mode .editable-field {
+    display: block;
+}
+
+
+.editable-field select {
+    width: 100%;
+    margin-top: 5px;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    transition: all 0.2s ease;
+}
+/* Hide all editable inputs, textareas, and selects in read-only */
+.read-only .editable-field input,
+.read-only .editable-field textarea,
+.read-only .editable-field select {
+    display: none !important;
+}
+
+/* Show only in edit mode */
+.edit-mode .editable-field input,
+.edit-mode .editable-field textarea,
+.edit-mode .editable-field select {
+    display: block !important;
+}
+
 /* ================== TOAST ================== */
 .toast {
   min-width: 250px;

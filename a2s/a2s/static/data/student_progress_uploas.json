@@ -1,0 +1,79 @@
+{
+  "teacher_info": {
+    "name": "Prof. Maria Lleanamariflor Belaguas",
+    "email": "maria.belaguas@cit.edu",
+    "academic_year": "2025–2026",
+    "semester": "1st Semester"
+  },
+
+  "uploads": [
+    {
+      "id": 1,
+      "course_code": "IT317",
+      "course_title": "Project Management I",
+      "section": "G5",
+      "last_uploaded": "2025-09-28T15:30:00",
+      "file_name": "IT317_G5_ProgressReport.xlsx",
+      "file_type": "xlsx",
+      "status": "Completed",
+      "summary": {
+        "total_students": 35,
+        "attendance_rate": "94%",
+        "average_grade": "1.75",
+        "notes": "All students submitted their midterm projects. 2 students have incomplete attendance."
+      },
+      "file_url": "/media/uploads/IT317_G5_ProgressReport.xlsx"
+    },
+    {
+      "id": 2,
+      "course_code": "CSIT340",
+      "course_title": "Industry Elective 2",
+      "section": "G5",
+      "last_uploaded": "2025-09-30T09:45:00",
+      "file_name": "CSIT340_G5_AttendanceScores.csv",
+      "file_type": "csv",
+      "status": "Processing",
+      "summary": {
+        "total_students": 32,
+        "attendance_rate": "89%",
+        "average_grade": "2.00",
+        "notes": "File uploaded and pending review for late submissions."
+      },
+      "file_url": "/media/uploads/CSIT340_G5_AttendanceScores.csv"
+    },
+    {
+      "id": 3,
+      "course_code": "CSIT340",
+      "course_title": "Industry Elective 2",
+      "section": "G4",
+      "last_uploaded": "2025-10-01T18:20:00",
+      "file_name": "CSIT340_G4_SemestralProgress.pdf",
+      "file_type": "pdf",
+      "status": "Completed",
+      "summary": {
+        "total_students": 30,
+        "attendance_rate": "96%",
+        "average_grade": "1.50",
+        "notes": "Excellent participation and punctuality. Grades synced with dashboard."
+      },
+      "file_url": "/media/uploads/CSIT340_G4_SemestralProgress.pdf"
+    },
+    {
+      "id": 4,
+      "course_code": "CSIT210",
+      "course_title": "Database Systems II",
+      "section": "G3",
+      "last_uploaded": null,
+      "file_name": null,
+      "file_type": null,
+      "status": "Not Uploaded",
+      "summary": {
+        "total_students": 28,
+        "attendance_rate": "-",
+        "average_grade": "-",
+        "notes": "No progress file uploaded yet for this course."
+      },
+      "file_url": null
+    }
+  ]
+}

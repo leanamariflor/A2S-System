@@ -211,3 +211,145 @@ body {
 .tab-content.active {
   display: block;
 }
+
+/* ===================== CALENDAR ===================== */
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.calendar-controls label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--foreground);
+}
+
+.calendar-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 10px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 3px solid var(--primary);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+#month-title {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+  color: var(--primary);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.calendar-nav button {
+  padding: 6px 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav button:hover {
+  background: #4e52e0;
+}
+
+#calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.calendar-row {
+  display: flex;
+  gap: 5px;
+}
+
+.calendar-cell {
+  flex: 1;
+  padding: 12px;
+  background: #fff;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-weight: 500;
+}
+
+.calendar-cell.header {
+  background: var(--primary);
+  color: #fff;
+  font-weight: bold;
+}
+
+.calendar-cell.today {
+  background-color: #d7d8ff;
+  border: 2px solid var(--primary);
+  color: #000;
+  font-weight: bold;
+}
+
+/* ===================== EVENT BADGES ===================== */
+.event-badge {
+  display: block;
+  margin-top: 2px;
+  padding: 2px 4px;
+  border-left: 4px solid;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: 0.2s;
+}
+
+.event-badge:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.event-holiday { border-color: #ff4d4d; color: #c00; }
+.event-exam { border-color: #3399ff; color: #036; }
+.event-meeting { border-color: #ff9900; color: #b85c00; }
+.event-deadline { border-color: #66cc33; color: #3a7d00; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  .tabs {
+    margin: 1rem;
+  }
+  .tab-trigger {
+    font-size: 0.85rem;
+  }
+  .welcome-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Dropdown styling */
+select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background-color: #f9f9f9;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}

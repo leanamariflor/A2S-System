@@ -8,6 +8,10 @@
   --text-muted: #6b7280;     /* Secondary text */
 }
 
+.date{
+    color: var(--foreground);
+
+}
 /* Global Styles */
 body {
   margin: 0;
@@ -491,11 +495,12 @@ body {
   box-shadow: none;
 }
 
-/* Highlight today */
-.today-cell {
-  border: 2px solid #4CAF50;
-  border-radius: 6px;
-  background-color: #e6ffe6;
+.calendar-cell.today {
+  background-color:  #c6c7ed;     
+  border: 2px solid  #6f73ff;     
+  box-shadow: 0 0 6px rgba(191, 127, 240, 0.5);
+  color: #000;
+  font-weight: bold;
 }
 
 /* Events stacked nicely */

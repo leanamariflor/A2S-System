@@ -43,17 +43,29 @@
     <!-- Sidebar -->
     <aside class="dashboard-sidebar">
       <!-- Teacher Info -->
-      <div class="sidebar-teacher-info">
-        <div class="teacher-avatar">
-          <span>PR</span>
-        </div>
-        <div class="teacher-details">
-          <h3>Prof. Revilleza</h3>
-          <p class="teacher-id">Faculty ID: T-2025-010</p>
-          <p class="teacher-program">Department of IT</p>
-          <p class="teacher-year">Full-Time Faculty</p>
-        </div>
-      </div>
+     <div class="sidebar-teacher-info">
+  <div class="teacher-avatar">
+    {% if request.user.first_name and request.user.last_name %}
+      <span>{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}</span>
+    {% else %}
+      <span>TC</span>
+    {% endif %}
+  </div>
+  <div class="teacher-details">
+    <h3 id="teacher-name">
+      Prof. {{ request.user.first_name }} {{ request.user.last_name }}
+    </h3>
+    <p class="teacher-id">Faculty ID: {{ request.user.id_number }}</p>
+    <p class="teacher-program">
+      {% if request.user.teacherprofile.department %}
+        {{ request.user.teacherprofile.get_department_display }}
+      {% else %}
+        Department: Not Assigned
+      {% endif %}
+    </p>
+  </div>
+</div>
+
 
       <!-- Navigation -->
       <nav class="sidebar-nav">
@@ -66,20 +78,20 @@
           <span>My Profile</span>
         </a>
         <button class="nav-button">
-          <i data-lucide="users"></i>
-          <span>My Classes</span>
-        </button>
-        <button class="nav-button">
-          <i data-lucide="file-text"></i>
-          <span>Assignments</span>
+          <i data-lucide="calendar"></i>
+          <span>Schedule</span>
         </button>
         <button class="nav-button">
           <i data-lucide="clipboard-list"></i>
-          <span>Submissions</span>
+          <span>Grades</span>
         </button>
+        <a href="{% url 'TeacherCourses' %}" class="nav-button active">
+          <i data-lucide="book"></i>
+          <span>Courses</span>
+        </a>
         <button class="nav-button">
           <i data-lucide="bar-chart-3"></i>
-          <span>Analytics</span>
+          <span>Reports</span>
         </button>
         <a href="{% url 'settings' %}" class="nav-button">
           <i data-lucide="settings"></i>
