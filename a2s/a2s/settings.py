@@ -22,7 +22,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = "a2s_system.User"
+AUTH_USER_MODEL = "authentication.User"
 
 
 # Application definition
@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'authentication',
+    'students',
+    'faculty',
     'a2s_system'
 ]
 
@@ -52,14 +55,14 @@ ROOT_URLCONF = 'a2s.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'a2s' / 'templates'],
+        'DIRS': [BASE_DIR / 'a2s' / 'templates'],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'a2s_system.context_processors.student_info',
+                'students.context_processors.student_info',
             ],
         },
     },
@@ -119,7 +122,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / 'a2s' / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'a2s' / 'static'] 
+
 
 
 # Default primary key field type

@@ -1,0 +1,140 @@
+  {% load static %}
+
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}Student Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'students/css/student_base.css' %}" />
+      {% block extra_css %}{% endblock %}
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  </head>
+  <body class="page-container">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content container">
+        <div class="header-left">
+          <div class="header-icon">
+            <i data-lucide="graduation cap"></i>
+          </div>
+          <div class="header-text">
+            <h1>A2S Next-Gen: Academic To Success</h1>
+            <p>Student Portal</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="notification-button">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <a href="{% url 'Logout' %}" class="logout-button">
+            <i data-lucide="log-out"></i>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="dashboard-sidebar">
+      
+  <div class="sidebar-student-info">
+    <div class="student-avatar">
+      {% if student_user.first_name and student_user.last_name %}
+        <span>{{ student_user.first_name|slice:":1" }}{{ student_user.last_name|slice:":1" }}</span>
+      {% else %}
+        <span>ST</span>
+      {% endif %}
+    </div>
+  <div class="student-details">
+    <h3 id="student-name">{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+    <p class="student-id">Student ID: {{ request.user.id_number }}</p>
+    <div class="student-info">
+  <p class="student-program" id="student-program">{{ request.user.studentprofile.program }}</p>
+  <p class="student-year" id="student-year">{{ request.user.studentprofile.year_level }} year</p>
+</div>
+
+
+  </div>
+
+  </div>
+
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+          <a href="{% url 'StudentDashboard' %}" class="nav-button">
+            <i data-lucide="home"></i>
+            <span>Overview</span>
+          </a>
+          <a href="{% url 'StudentProfile' %}" class="nav-button">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+          </a>
+          <a href="{% url 'StudentSchedule' %}" class="nav-button">
+            <i data-lucide="calendar"></i>
+            <span>Schedule</span>
+          </a>
+          <a href="{% url 'StudentGrades' %}" class="nav-button">
+            <i data-lucide="clipboard"></i>
+            <span>Grades</span>
+          </a>
+          <a href="{% url 'StudentCourses' %}" class="nav-button">
+            <i data-lucide="book"></i>
+            <span>Courses</span>
+          </a>
+          <button class="nav-button">
+            <i data-lucide="award"></i>
+            <span>Degree Audit</span>
+          </button>
+          <a href="{% url 'settings' %}" class="nav-button">
+            <i data-lucide="settings"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content (child templates fill this block) -->
+      <main class="dashboard-main">
+        {% block content %}
+        <p>Welcome! This is the student dashboard.</p>
+        {% endblock %}
+      </main>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      
+          const yearElem = document.getElementById('student-year');
+        if (yearElem) {
+            const year = parseInt(yearElem.textContent) || 0;
+            yearElem.textContent = getYearSuffix(year);
+        }
+
+        function getYearSuffix(year) {
+            if (year === 1) return "1st Year";
+            if (year === 2) return "2nd Year";
+            if (year === 3) return "3rd Year";
+            return year + "th Year";
+        }
+
+      const tabTriggers = document.querySelectorAll('.tab-trigger');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          const targetTab = trigger.getAttribute('data-tab');
+          tabTriggers.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          trigger.classList.add('active');
+          document.getElementById(targetTab).classList.add('active');
+        });
+      });
+
+      
+    </script>
+
+  </body>
+  </html>

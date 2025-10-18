@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("a2s_system.urls")),  # use app-level urls
+    path('admin/', admin.site.urls),
+    path('', include('authentication.urls')),
+    path('students/', include('students.urls')),
+    path('faculty/', include('faculty.urls')),
+
 ]

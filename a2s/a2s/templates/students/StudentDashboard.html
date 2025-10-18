@@ -1,0 +1,177 @@
+{% extends "students/student_base.html" %}
+{% load static %}
+
+{% block title %}A2S Student Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'students/css/StudentDashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Welcome Section -->
+<div class="welcome-card">
+  <div class="welcome-content">
+    <div class="welcome-text">
+      <h2>Welcome back, {{ student.first_name }}</h2>
+      <p>{{ current_semester }} • {{ active_courses_count }} active courses</p>
+      <p class="date">{{ today }}</p>
+    </div>
+    <div class="welcome-gpa">
+      <div class="gpa-value">{{ student.gpa }}</div>
+      <div class="gpa-label">Current GPA</div>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard Tabs -->
+<div class="tabs">
+  <div class="tab-list">
+    <button class="tab-trigger active" data-tab="dashboard">Overview</button>
+    <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
+    <button class="tab-trigger" data-tab="curriculum">Curriculum</button>
+    <button class="tab-trigger" data-tab="grades">Progress</button>
+  </div>
+
+  <!-- Overview -->
+  <div class="tab-content active" id="dashboard">
+    <div class="cards-row">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Current Courses</div>
+          <div class="card-description">{{ current_semester|default:"Ongoing" }} • {{ active_courses_count }} enrolled courses</div>
+        </div>
+        <div class="card-content">
+          {% if current_courses %}
+            <div class="course-list">
+              {% for course in current_courses %}
+                <div class="course-item">
+                  <div class="course-details">
+                    <div class="course-code">{{ course.subject_code }}</div>
+                    <div class="course-name">{{ course.description }}</div>
+                  </div>
+                  <div class="course-units">{{ course.units }} units</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No current courses available.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Notifications</div>
+          <div class="card-description">Important updates for you</div>
+        </div>
+        <div class="card-content">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-details">
+                <div class="task-title">Assignment 3 Deadline</div>
+                <div class="task-due">Due: Oct 5, 2025</div>
+              </div>
+              <div class="task-type">Urgent</div>
+            </div>
+            <div class="task-item">
+              <div class="task-details">
+                <div class="task-title">Midterm Exam Schedule</div>
+                <div class="task-due">Starts: Nov 10, 2025</div>
+              </div>
+              <div class="task-type">Exam</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Curriculum -->
+  <div class="tab-content" id="curriculum">
+    <div class="card curriculum-card">
+      <div class="card-header curriculum-header">
+        <div class="card-title">Curriculum</div>
+
+        <div class="curriculum-controls">
+          <select id="yearSelect" class="year-dropdown">
+            <option value="All">All Years</option>
+            <option value="First Year">1st Year</option>
+            <option value="Second Year">2nd Year</option>
+            <option value="Third Year">3rd Year</option>
+            <option value="Fourth Year">4th Year</option>
+          </select>
+
+          <div class="curriculum-buttons">
+            <button class="filter-btn active" data-filter="All">All</button>
+            <button class="filter-btn" data-filter="PASSED">Completed</button>
+            <button class="filter-btn" data-filter="CURRENT">Current</button>
+            <button class="filter-btn" data-filter="RECOMMENDED">Recommended</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-content curriculum-content">
+        <div id="curriculum-container" class="curriculum-table">
+          <p>Loading curriculum data...</p>
+          <p>Program: {{ student.program }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="tab-content" id="calendar">
+    <div class="calendar-controls">
+      <label for="calendarSemesterSelect">Semester:</label>
+      <select id="calendarSemesterSelect"></select>
+
+      <label for="calendarYearSelect">Year:</label>
+      <select id="calendarYearSelect"></select>
+    </div>
+
+    <div class="calendar-container">
+      <h2 id="month-title"></h2>
+      <div class="calendar-nav">
+        <button id="prev-month">&lt; Prev</button>
+        <button id="next-month">Next &gt;</button>
+      </div>
+      <div id="calendar-grid"></div>
+    </div>
+  </div>
+
+  <!-- Grades -->
+  <div class="tab-content" id="grades">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Grades</div>
+        <div class="card-description">View your scores and feedback</div>
+      </div>
+      <div class="card-content">
+        <p>Grades overview UI placeholder.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Event Modal -->
+<div id="eventModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="eventName"></h3>
+    <p><strong>Type:</strong> <span id="eventType"></span></p>
+    <p><strong>Date:</strong> <span id="eventDate"></span></p>
+  </div>
+</div>
+
+<!-- Pass context data to JS -->
+<script>
+  const curriculumJSON = JSON.parse('{{ curriculum_json|escapejs }}');
+  const calendarJSON = JSON.parse('{{ calendar_json|escapejs }}');
+  const studentProgram = "{{ student_program }}";
+</script>
+
+<script src="{% static 'students/js/StudentDashboard.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A2S Next-Gen – Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cantata+One&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'authentication/register.css' %}">
+</head>
+<body>
+  <div class="page">
+    <div class="bg">
+      <img src="https://api.builder.io/api/v1/image/assets/TEMP/a41907df79b0778f05c49348fe7979f9888204ab?width=5102" alt="" />
+    </div>
+
+    <main class="container">
+      <section class="card">
+        <div class="logo">
+          <img src="https://api.builder.io/api/v1/image/assets/TEMP/3ee0ace2a9bca705b23ae0468bae9fcd7b0c7e14?width=290" alt="Graduation cap" />
+        </div>
+        <h1 class="title">Join A2S Next-Gen</h1>
+        <p class="subtitle">Create your account to start your academic success journey</p>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form class="form" action="{% url 'Register' %}" method="post">
+          {% csrf_token %}
+          <div class="grid-2">
+            <div class="field">
+              <label for="first_name">First Name</label>
+              <input id="first_name" name="first_name" type="text" placeholder="Firstname" required />
+            </div>
+            <div class="field">
+              <label for="last_name">Last Name</label>
+              <input id="last_name" name="last_name" type="text" placeholder="Lastname" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email Address or Institutional Email</label>
+            <input id="email" name="email" type="email" placeholder="Enter your email or Institutional address" required />
+          </div>
+
+          <div class="field">
+            <label for="id_number">Student ID</label>
+            <input id="id_number" name="id_number" type="text" placeholder="00-0000-000" pattern="\d{2}-\d{4}-\d{3}" required />
+          </div>
+
+          <div class="field">
+            <label for="role">Role</label>
+            <div class="select-wrap">
+              <select id="role" name="role" required>
+                <option value="">Select Your Role</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+              </select>
+              <img class="caret" src="https://api.builder.io/api/v1/image/assets/TEMP/07082b8e90e0b04db6b750e948e599bcbdb6173e?width=72" alt="" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="Create Password" required />
+            </div>
+            <div class="field">
+              <label for="password2">Confirm Password</label>
+              <input id="password2" name="password2" type="password" placeholder="Confirm Password" required />
+            </div>
+          </div>
+
+          <div class="terms">
+            <input id="agree" name="agree" type="checkbox" required />
+            <label for="agree">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+          </div>
+
+          <button class="btn" type="submit">Register</button>
+
+          <p class="signin">Already have an account? <a href="{% url 'Login' %}">Sign in here</a></p>
+        </form>
+      </section>
+
+      <section class="hero">
+        <div class="cap">
+          <img src="https://api.builder.io/api/v1/image/assets/TEMP/c658fb43bbec56439f4ed1d162541faa8a09acd8?width=1010" alt="Large graduation cap" />
+        </div>
+        <h2 class="hero-title">A2S NEXT-GEN: ACADEMIC TO SUCCESS</h2>
+        <p class="hero-sub">Transform your academic journey with intelligent analytics, personalized learning paths, and seamless career integration.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
