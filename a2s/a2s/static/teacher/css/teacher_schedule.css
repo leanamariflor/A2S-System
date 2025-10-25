@@ -1,0 +1,98 @@
+
+
+/* ==================== STUDENT SCHEDULE STYLES ==================== */
+:root {
+  --sched-bg: #f4f5f7;
+  --sched-text: #121212;
+  --sched-primary: #6f73ff;
+  --sched-card-bg: #ffffff;
+  --sched-border: #d1d5db;
+  --sched-muted: #6b7280;
+}
+
+.schedule-page {
+  background-color: var(--sched-bg);
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--sched-text);
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--sched-primary);
+}
+
+.schedule-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* ensures equal column width */
+  background-color: var(--sched-card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid var(--sched-border);
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.6rem;
+  height: 40px; /* consistent height for time blocks */
+}
+
+.schedule-table th {
+  background-color: var(--sched-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.time-label {
+  background-color: #eef2ff;
+  font-weight: 500;
+  width: 10%;
+}
+
+.schedule-cell {
+  position: relative;
+  width: 15%;
+}
+
+.subject-box {
+  background-color: var(--sched-primary);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.subject-box strong {
+  font-size: 1rem;
+}
+
+/* Stretch columns evenly across the screen */
+.schedule-table th,
+.schedule-table td:not(.time-label) {
+  width: calc(90% / 6);
+}
+
+/* Grid visible even when empty */
+.schedule-table td {
+  background-color: #fff;
+}
+
+.schedule-table tr:hover td {
+  background-color: #f9fafc;
+}

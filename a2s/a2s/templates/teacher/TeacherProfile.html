@@ -1,11 +1,11 @@
-{% extends "faculty/teacher_base.html" %}
+{% extends "teacher/teacher_base.html" %}
 {% load static %}
 
 
 {% block title %}Teacher Profile - A2S{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'faculty/css/TeacherProfile.css' %}">
+<link rel="stylesheet" href="{% static 'teacher/css/teacher_profile.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -29,7 +29,6 @@
             <div class="tab-list">
                 <button class="tab-trigger active" data-tab="personal">Personal Info</button>
                 <button class="tab-trigger" data-tab="academic">Academic Info</button>
-                <button class="tab-trigger" data-tab="achievements">Achievements</button>
             </div>
 
             <!-- Personal Info -->
@@ -201,27 +200,7 @@
                 </div>
             </div>
 
-            <!-- Achievements -->
-            <div class="tab-content" id="achievements">
-                <div class="card">
-                    <h3 class="card-title"><i data-lucide="award"></i> Professional Achievements</h3>
-                    <div class="achievements-grid" id="achievements-container">
-                        {% for ach in achievements %}
-                        <div class="achievement-card">
-                            <i data-lucide="award"></i>
-                            <h4>{{ ach.title }}</h4>
-                            <p>{{ ach.description|default:'' }}</p>
-                            <div class="editable-field">
-                                <input type="text" name="achievement_{{ forloop.counter }}_title" value="{{ ach.title }}">
-                                <input type="text" name="achievement_{{ forloop.counter }}_description" value="{{ ach.description }}">
-                            </div>
-                        </div>
-                        {% empty %}
-                        <p>No recorded achievements yet.</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+            
 
         </div> <!-- end tabs -->
     </div> <!-- end profile-container -->
@@ -234,101 +213,9 @@
 
 </div>
 
-<script>
-lucide.createIcons();
-
-// Tabs
-document.querySelectorAll('.tab-trigger').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-        const target = trigger.getAttribute('data-tab');
-        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        trigger.classList.add('active');
-        document.getElementById(target).classList.add('active');
-    });
-});
-
-// Edit Mode
-const editButton = document.getElementById('edit-profile-button');
-const profileContainer = document.getElementById('profile-container');
-const profileActions = document.getElementById('profile-actions');
-const saveButton = document.getElementById('save-profile-button');
-const cancelButton = document.getElementById('cancel-profile-button');
-
-function toggleEditMode(enable) {
-    if(enable) {
-        profileContainer.classList.add('edit-mode');
-        profileContainer.classList.remove('read-only');
-        profileActions.style.display = 'flex';
-    } else {
-        profileContainer.classList.remove('edit-mode');
-        profileContainer.classList.add('read-only');
-        profileActions.style.display = 'none';
-    }
-}
 
 
-
-editButton.addEventListener('click', () => {
-    const isEditing = profileContainer.classList.contains('edit-mode');
-    toggleEditMode(!isEditing);
-});
-
-// Cancel changes
-cancelButton.addEventListener('click', () => {
-    toggleEditMode(false);
-    // reset inputs to original values
-    document.querySelectorAll('.editable-field input, .editable-field textarea, .editable-field select').forEach(input => {
-        const displayEl = document.querySelector(`.field-value[data-field="${input.name}"]`);
-        if(displayEl) {
-            if(input.tagName.toLowerCase() === 'select') {
-                input.value = displayEl.textContent;
-            } else {
-                input.value = displayEl.textContent;
-            }
-        }
-    });
-});
-
-// Save changes
-saveButton.addEventListener('click', () => {
-    const formData = {};
-    document.querySelectorAll('#profile-container .editable-field input, #profile-container .editable-field textarea, #profile-container .editable-field select').forEach(input => {
-        formData[input.name] = input.value;
-    });
-
-    fetch("{% url 'UpdateTeacherProfile' %}", {
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'X-CSRFToken':'{{ csrf_token }}'
-        },
-        body: JSON.stringify(formData)
-    }).then(res => res.json()).then(data => {
-        if(data.status==='success'){
-            for(const key in formData){
-                const display = document.querySelector(`.field-value[data-field="${key}"]`);
-                if(display) display.textContent = formData[key];
-            }
-            const fullNameEl = document.querySelector('[data-field="full_name"]');
-            if(fullNameEl) fullNameEl.textContent = `${formData.first_name} ${formData.last_name}`;
-            toggleEditMode(false);
-            alert("Profile updated successfully!");
-        } else alert("Error: "+(data.message||"Unknown"));
-    }).catch(err=>{
-        console.error(err);
-        alert("An error occurred.");
-    });
-});
-
-// Live update while typing/selecting
-document.querySelectorAll('.editable-field input, .editable-field textarea, .editable-field select').forEach(input => {
-    input.addEventListener('input', () => {
-        const el = document.querySelector(`.field-value[data-field="${input.name}"]`);
-        if(el) el.textContent = input.value;
-    });
-});
-</script>
+<script src="{% static 'teacher/js/TeacherProfile.js' %}"></script>
 
 
 {% endblock %}

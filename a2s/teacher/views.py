@@ -6,14 +6,17 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from supabase import create_client
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import date
+
 
 import json
 import os
 
-from faculty.models import TeacherProfile
+from teacher.models import TeacherProfile, Schedule
 from students.models import Curriculum, Course, Enrollment
+
+
 
 
 
@@ -84,7 +87,7 @@ def teacher_dashboard(request):
         "current_semester": current_semester,
     }
 
-    return render(request, "faculty/TeacherDashboard.html", context)
+    return render(request, "teacher/TeacherDashboard.html", context)
 
 COLLEGE_CHOICES = [
     ("CEA", "Engineering and Architecture"),
@@ -133,31 +136,47 @@ def teacher_profile(request):
         "college_choices": COLLEGE_CHOICES,
         "position_choices": POSITION_CHOICES,
     }
-    return render(request, "faculty/TeacherProfile.html", context)
+    return render(request, "teacher/TeacherProfile.html", context)
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from teacher.models import TeacherProfile, Schedule
 
 @login_required(login_url="Login")
 def teacher_courses(request):
-    teacher = request.user
-    courses_data = {}
+    teacher_profile = TeacherProfile.objects.get(user=request.user)
 
-    file_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "teacher_courses.json")
+    # Get all schedules for this teacher
+    schedules = Schedule.objects.filter(teacher=teacher_profile).order_by("subject_code", "section")
 
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            courses_data = json.load(f)
-    except Exception as e:
-        print("Error loading teacher_courses.json:", e)
+    courses_list = []
+    seen = set()
+    for sched in schedules:
+        # Skip online combined sections (sections with '/')
+        if '/' in sched.section:
+            continue
+
+        key = f"{sched.subject_code}-{sched.section}"
+        if key not in seen:
+            courses_list.append({
+                "course_code": sched.subject_code,
+                "section": sched.section,
+                "action": "view"
+            })
+            seen.add(key)
+
+    # Sort by course code and section
+    courses_list.sort(key=lambda x: (x["course_code"], x["section"]))
 
     context = {
-        "teacher_name": teacher.get_full_name(),
-        "school_year": courses_data.get("school_year", "N/A"),
-        "active_courses": courses_data.get("active_courses", 0),
-        "courses": courses_data.get("courses", [])
+        "teacher_name": request.user.get_full_name(),
+        "school_year": "2025-2026",
+        "active_courses": len(courses_list),
+        "courses": courses_list,
     }
 
-    return render(request, "faculty/TeacherCourses.html", context)
+    return render(request, "teacher/TeacherCourses.html", context)
 
 
 @login_required(login_url="Login")
@@ -198,7 +217,7 @@ def course_grades(request, course_id):
 
 
 def teacher_base(request):
-    return render(request, "faculty/teacher_base.html")
+    return render(request, "teacher/teacher_base.html")
 
 
 
@@ -229,3 +248,53 @@ def get_curriculum_json(request, program):
         return JsonResponse({"curriculum": curriculum.data["curriculum"]}, safe=False)
     except Curriculum.DoesNotExist:
         return JsonResponse({"error": "Curriculum not found"}, status=404)
+
+
+
+
+@login_required(login_url="Login")
+def teacher_schedule(request):
+    days = ['M', 'T', 'W', 'TH', 'F', 'SAT']
+
+    # Generate 30-min time slots from 07:00 AM to 09:00 PM
+    start_time = datetime.strptime("07:00 AM", "%I:%M %p")
+    end_time = datetime.strptime("09:00 PM", "%I:%M %p")
+    hours = []
+    current = start_time
+    while current <= end_time:
+        hours.append(current.strftime("%I:%M %p"))
+        current += timedelta(minutes=30)
+
+    # Get logged-in teacher profile
+    teacher_profile = TeacherProfile.objects.get(user=request.user)
+    raw_scheds = Schedule.objects.filter(teacher=teacher_profile)
+
+    # Build schedule grid
+    schedule_grid = {day: {} for day in days}
+
+    for s in raw_scheds:
+        day = s.day.strip().upper()
+        start_dt = datetime.combine(datetime.today(), s.start_time)
+        end_dt = datetime.combine(datetime.today(), s.end_time)
+        blocks = int((end_dt - start_dt).total_seconds() // (30 * 60))
+        current_dt = start_dt
+
+        for i in range(blocks):
+            time_str = current_dt.strftime("%I:%M %p")
+            if i == 0:
+                schedule_grid[day][time_str] = {
+                    'code': s.subject_code,
+                    'section': s.section,
+                    'room': s.room,
+                    'blocks': blocks,
+                }
+            else:
+                schedule_grid[day][time_str] = {'occupied': True}
+            current_dt += timedelta(minutes=30)
+
+    context = {
+        'days': days,
+        'hours': hours,
+        'schedule_grid': schedule_grid,
+    }
+    return render(request, 'teacher/TeacherSchedule.html', context)

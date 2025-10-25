@@ -19,7 +19,7 @@ class User(AbstractUser):
 def create_profiles(sender, instance, created, **kwargs):
     """Automatically create related profiles based on role."""
     from students.models import StudentProfile
-    from faculty.models import TeacherProfile
+    from teacher.models import TeacherProfile
 
     if created:
         if instance.is_student:

@@ -1,10 +1,10 @@
-{% extends "faculty/teacher_base.html" %}
+{% extends "teacher/teacher_base.html" %}
 {% load static %}
 
 {% block title %}Courses{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'faculty/css/TeacherCourses.css' %}">
+<link rel="stylesheet" href="{% static 'teacher/css/teacher_courses.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -22,20 +22,38 @@
     <div class="left-panel">
       <h3>My Enrolled Courses</h3>
       <table class="course-table" id="courseTable">
-        <thead>
-          <tr>
-            <th>Course Code</th>
-            <th>Section</th>
-            <th>Meeting Days</th>
-            <th>Time</th>
-            <th>Room</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="courseBody">
-          <tr><td colspan="6" class="loading">Loading courses...</td></tr>
-        </tbody>
-      </table>
+  <thead>
+    <tr>
+      <th>Course Code</th>
+      <th>Section</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if courses %}
+      {% for course in courses %}
+      <tr>
+        <td><strong>{{ course.course_code }}</strong></td>
+        <td>{{ course.section }}</td>
+        <td>
+          {% if course.action == "view" %}
+            <button class="view-btn">View Roster</button>
+          {% elif course.action == "upload" %}
+            <button class="upload-btn">Upload Grades</button>
+          {% else %}
+            <button disabled>Unavailable</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="3">No courses assigned.</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
     </div>
 
     <!-- Right Section: Management and Upload -->

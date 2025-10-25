@@ -1,0 +1,111 @@
+{% extends "teacher/teacher_base.html" %}
+{% load static %}
+
+{% block title %}A2S Teacher Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'teacher/css/teacher_dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="welcome-card">
+  <div class="welcome-content">
+    <div class="welcome-text">
+     <h2>Welcome back, Professor {{ last_name }}</h2>
+      <p>{{ department }} • {{ current_semester }}</p>
+    </div>
+    <div class="welcome-gpa">
+      <div class="gpa-value">317</div>
+      <div class="gpa-label">Total Students</div>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard Tabs -->
+<div class="tabs">
+  <div class="tab-list">
+    <button class="tab-trigger active" data-tab="overview">Overview</button>
+    <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
+  </div>
+
+  <!-- Overview Tab -->
+  <div class="tab-content active" id="overview">
+
+
+    <div class="cards-row">
+      <!-- Current Courses Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Current Courses</div>
+          <div class="card-description">2025-2026 • 8 enrolled courses</div>
+        </div>
+        <div class="card-content">
+          <div class="course-list">
+            <div class="course-item"><div class="course-details"><div class="course-code">IT317 - G5</div><div class="course-name">Project Management 1</div></div><div class="course-units">38 students</div></div>
+            <div class="course-item"><div class="course-details"><div class="course-code">CSIT340 - G4</div><div class="course-name">Industry Elective 2</div></div><div class="course-units">40 students</div></div>
+            <div class="course-item"><div class="course-details"><div class="course-code">CSIT340 - G4</div><div class="course-name"></div></div><div class="course-units"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Alerts Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Alerts</div>
+          <div class="card-description">Student notifications requiring attention</div>
+        </div>
+        <div class="card-content">
+          <div class="task-list">
+            <div class="task-item"><div class="task-details"><div class="task-title">John Doe Junior BamBam</div><div class="task-due">GPA dropped below 2.0</div></div><div class="task-type">GPA!</div></div>
+            <div class="task-item"><div class="task-details"><div class="task-title">Jackie Chenban</div><div class="task-due">Missing multiple classes</div></div><div class="task-type">Attendance</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses Tab -->
+  <div class="tab-content" id="courses">
+    <div class="card">
+      <div class="card-header"><div class="card-title">My Courses</div><div class="card-description">Courses you are currently handling</div></div>
+      <div class="card-content">
+        <div class="course-list">
+          <div class="course-item"><div class="course-details"><div class="course-code">IT317</div><div class="course-name">Systems Integration</div><div class="course-instructor">Prof. Revilleza</div></div><div class="course-units">3 units</div></div>
+          <div class="course-item"><div class="course-details"><div class="course-code">CSIT327</div><div class="course-name">Database Systems</div><div class="course-instructor">Prof. Revilleza</div></div><div class="course-units">3 units</div></div>
+          <div class="course-item"><div class="course-details"><div class="course-code">IT315</div><div class="course-name">Web Development</div><div class="course-instructor">Prof. Revilleza</div></div><div class="course-units">3 units</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Calendar Tab -->
+<div class="tab-content" id="calendar">
+  <div class="calendar-controls">
+  <label for="calendarSemesterSelect">Semester:</label>
+  <select id="calendarSemesterSelect"></select>
+
+  <label for="calendarYearSelect">Year:</label>
+  <select id="calendarYearSelect"></select>
+</div>
+
+  <div class="calendar-container">
+    <h2 id="month-title"></h2>
+    <div class="calendar-nav">
+      <button id="prev-month">&lt; Prev</button>
+      <button id="next-month">Next &gt;</button>
+    </div>
+    <div id="calendar-grid"></div>
+  </div>
+</div>
+
+  
+<script>
+  window.calendarJSON = JSON.parse('{{ calendar_json|escapejs }}');
+</script>
+
+
+<script src="{% static 'teacher/js/TeacherDashboard.js' %}"></script>
+
+{% endblock %}

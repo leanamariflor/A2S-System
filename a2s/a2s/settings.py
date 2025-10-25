@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'students',
-    'faculty',
+    'teacher',
     'a2s_system'
 ]
 

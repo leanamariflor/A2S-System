@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Teacher Dashboard{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'faculty/css/teacher_base.css' %}" />
+  <link rel="stylesheet" href="{% static 'teacher/css/teacher_base.css' %}" />
     {% block extra_css %}{% endblock %}
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
@@ -66,7 +66,7 @@
 
       <!-- Navigation -->
       <nav class="sidebar-nav">
-        <a href="{% url 'TeacherDashboard' %}" class="nav-button active">
+        <a href="{% url 'TeacherDashboard' %}" class="nav-button">
           <i data-lucide="home"></i>
           <span>Dashboard</span>
         </a>
@@ -74,15 +74,15 @@
           <i data-lucide="user"></i>
           <span>My Profile</span>
         </a>
-        <button class="nav-button">
+        <a href="{% url 'TeacherSchedule' %}" class="nav-button">
           <i data-lucide="calendar"></i>
           <span>Schedule</span>
-        </button>
+        </a>
         <button class="nav-button">
           <i data-lucide="clipboard-list"></i>
           <span>Grades</span>
         </button>
-        <a href="{% url 'TeacherCourses' %}" class="nav-button active">
+        <a href="{% url 'TeacherCourses' %}" class="nav-button">
           <i data-lucide="book"></i>
           <span>Courses</span>
         </a>

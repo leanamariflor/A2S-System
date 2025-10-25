@@ -34,12 +34,15 @@ class TeacherProfile(models.Model):
     def __str__(self):
         return f"{self.user.get_full_name()}"
 
-
-class TeacherAchievement(models.Model):
-    teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, related_name="teacher_achievements")
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
-    icon = models.CharField(max_length=50, default="award")
+class Schedule(models.Model):
+    teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, related_name="schedules")
+    subject_code = models.CharField(max_length=20)
+    section = models.CharField(max_length=50)
+    day = models.CharField(max_length=20)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    room = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.teacher.user.get_full_name()} - {self.title}"
+        return f"{self.teacher.user.get_full_name()} - {self.subject_code}"
+

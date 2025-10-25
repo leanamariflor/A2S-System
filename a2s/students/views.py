@@ -14,6 +14,8 @@ from .models import StudentProfile, Enrollment, Grade,Schedule
 from students.models import Curriculum
 from authentication.models import User
 
+
+
 # -----------------------------
 # Supabase Setup
 # -----------------------------
@@ -82,7 +84,7 @@ def student_dashboard(request):
         "credits_required": profile.credits_required or 0,
         "year_level": profile.year_level,
         "academic_standing": profile.academic_standing,
-        "current_semester": current_semester,  # ✅ Added
+        "current_semester": current_semester,  
     }
 
     return render(request, "students/StudentDashboard.html", context)
@@ -373,9 +375,7 @@ def student_schedule_json(request, student_id):
 
     return JsonResponse({"student_id": student_id, "schedule": schedule})
 
-from datetime import datetime, timedelta
-from django.shortcuts import render
-from .models import Schedule
+
 
 def student_schedule(request):
     days = ['M', 'T', 'W', 'TH', 'F', 'SAT']
