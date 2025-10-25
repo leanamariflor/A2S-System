@@ -1,40 +1,52 @@
-
 {% extends "students/student_base.html" %}
 {% load static %}
+{% load dict_filters %}
 
-
-{% block title %}My Schedule{% endblock %}
+{% block title %}My Schedule - A2S{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'students/css/StudentSchedule.css' %}" />
+<link rel="stylesheet" href="{% static 'students/css/student_schedule.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="schedule-page sg-container">
+  <h2 class="page-title">My Class Schedule</h2>
 
-<table border="1" cellpadding="5">
-    <thead>
+  <div class="schedule-wrapper">
+    <table class="schedule-table">
+      <thead>
         <tr>
-            <th>Day</th>
-            <th>Course</th>
-            <th>Start Time</th>
-            <th>End Time</th>
+          <th>Time</th>
+          {% for day in days %}
+            <th>{{ day }}</th>
+          {% endfor %}
         </tr>
-    </thead>
-    <tbody>
-        {% for day, enrollments in schedule_by_day.items %}
-            {% for enrollment in enrollments %}
-            <tr>
-                <td>{{ day }}</td>
-                <td>{{ enrollment.course.course_name }}</td>
-                <td>{{ enrollment.start_time }}</td>
-                <td>{{ enrollment.end_time }}</td>
-            </tr>
-            {% endfor %}
-        {% empty %}
-            <tr>
-                <td colspan="4">No classes enrolled yet.</td>
-            </tr>
+      </thead>
+      <tbody>
+        {% for hour in hours %}
+        <tr>
+          <td class="time-label">{{ hour }}</td>
+          {% for day in days %}
+            {% with cell=schedule_grid|dict_get:day|dict_get:hour %}
+              {% if cell %}
+                {% if cell.code %}
+                  <td class="schedule-cell" rowspan="{{ cell.blocks }}">
+                    <div class="subject-box">
+                      <strong>{{ cell.code }}</strong><br>
+                      {{ cell.section }}<br>
+                      {{ cell.room }}
+                    </div>
+                  </td>
+                {% endif %}
+              {% else %}
+                <td></td>
+              {% endif %}
+            {% endwith %}
+          {% endfor %}
+        </tr>
         {% endfor %}
-    </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

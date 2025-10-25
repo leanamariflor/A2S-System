@@ -63,98 +63,75 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = `<p style="color:red;">Program not set for this student.</p>`;
   }
 
-  // -------------------- Render Function --------------------
-  function renderCurriculum(curriculum) {
-    container.innerHTML = "";
+   // ================= SUPABASE FETCH + GPA =================
+  // Make sure supabase client is initialized in another script before this
+  async function fetchGradesAndRenderGPA() {
+    try {
+      const { data: grades, error } = await supabase
+        .from('grades')
+        .select('*')
+        .eq('student_id', '{{ student.id }}');
 
-    if (!curriculum.length) {
-      container.innerHTML = "<p>No curriculum data available for this program.</p>";
-      return;
-    }
+      if (error) {
+        console.error("Supabase error fetching grades:", error);
+        return;
+      }
 
-    curriculum.forEach(year => {
-      const yearBlock = document.createElement("div");
-      yearBlock.classList.add("year-block");
-      yearBlock.innerHTML = `<h3>${year.year}</h3>`;
+      const gpaPerYear = {};
+      grades.forEach(grade => {
+        // Only calculate 1st and 2nd year for now
+        const yearNum = grade.school_year; // adjust if your data format is different
+        if (!gpaPerYear[yearNum]) gpaPerYear[yearNum] = { totalPoints: 0, totalUnits: 0 };
 
-      year.terms.forEach(term => {
-        const table = document.createElement("table");
-
-        const header = `
-          <thead>
-            <tr>
-              <th>Term</th>
-              <th>Subject Code</th>
-              <th>Description</th>
-              <th>Units</th>
-              <th>School Year</th>
-              <th>Semester</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-        `;
-
-        const rows = term.subjects.map(subj => `
-          <tr data-status="${subj.final_grade}">
-            <td>${term.term}</td>
-            <td>${subj.subject_code}</td>
-            <td>${subj.description}</td>
-            <td>${subj.units}</td>
-            <td>${subj.school_year}</td>
-            <td>${subj.semester}</td>
-            <td>${subj.final_grade}</td>
-          </tr>
-        `).join("");
-
-        table.innerHTML = header + `<tbody>${rows}</tbody>`;
-        yearBlock.appendChild(table);
+        if (grade.final_grade !== null && grade.final_grade !== "") {
+          gpaPerYear[yearNum].totalPoints += grade.final_grade * grade.units;
+          gpaPerYear[yearNum].totalUnits += grade.units;
+        }
       });
 
-      container.appendChild(yearBlock);
-    });
+      // Convert to GPA
+      for (const year in gpaPerYear) {
+        const data = gpaPerYear[year];
+        gpaPerYear[year] = data.totalUnits > 0 ? (data.totalPoints / data.totalUnits).toFixed(2) : "N/A";
+      }
+
+      // Render GPA in container
+      const gpaContainer = document.getElementById("gpaPerYearContainer");
+      gpaContainer.innerHTML = "";
+      for (const [year, gpa] of Object.entries(gpaPerYear)) {
+        const p = document.createElement("p");
+        p.textContent = `Year ${year}: GPA = ${gpa}`;
+        gpaContainer.appendChild(p);
+      }
+
+      // Render Chart.js bar chart
+      const ctx = document.getElementById("progressChart").getContext("2d");
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(gpaPerYear),
+          datasets: [{
+            label: 'GPA per Year',
+            data: Object.values(gpaPerYear),
+            backgroundColor: '#6a5acd'
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 5
+            }
+          }
+        }
+      });
+
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  // -------------------- Filters --------------------
-  const yearSelect = document.getElementById("yearSelect");
-  const buttons = document.querySelectorAll(".filter-btn");
-
-function filterCurriculum() {
-  const selectedYear = yearSelect.value;
-  const activeBtn = document.querySelector(".filter-btn.active");
-  const selectedStatus = activeBtn ? activeBtn.dataset.filter.toUpperCase() : "ALL";
-
-  let filtered = allData;
-
-  // Filter by year
-  if (selectedYear !== "All") {
-    filtered = filtered.filter(y => y.year.toLowerCase() === selectedYear.toLowerCase());
-  }
-
-  // Filter by status
-  if (selectedStatus !== "ALL") {
-    filtered = filtered.map(year => ({
-      ...year,
-      terms: year.terms.map(term => ({
-        ...term,
-        subjects: term.subjects.filter(s => {
-          return (s.final_grade || "").toUpperCase() === selectedStatus;
-        })
-      })).filter(term => term.subjects.length > 0)
-    })).filter(year => year.terms.length > 0);
-  }
-
-  renderCurriculum(filtered);
-}
-
-  yearSelect.addEventListener("change", filterCurriculum);
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      buttons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      filterCurriculum();
-    });
-  });
-
+  fetchGradesAndRenderGPA();
 
   // ================= CALENDAR =================
   const calendarGrid = document.getElementById("calendar-grid");

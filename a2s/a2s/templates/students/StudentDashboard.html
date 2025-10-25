@@ -4,10 +4,11 @@
 {% block title %}A2S Student Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'students/css/StudentDashboard.css' %}">
+<link rel="stylesheet" href="{% static 'students/css/student_dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Welcome Section -->
 <div class="welcome-card">
@@ -30,7 +31,7 @@
     <button class="tab-trigger active" data-tab="dashboard">Overview</button>
     <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
     <button class="tab-trigger" data-tab="curriculum">Curriculum</button>
-    <button class="tab-trigger" data-tab="grades">Progress</button>
+    <button class="tab-trigger" data-tab="progress">Progress</button>
   </div>
 
   <!-- Overview -->
@@ -141,18 +142,22 @@
     </div>
   </div>
 
-  <!-- Grades -->
-  <div class="tab-content" id="grades">
+  <!-- Grades / Progress -->
+  <div class="tab-content" id="progress">
     <div class="card">
       <div class="card-header">
-        <div class="card-title">Grades</div>
-        <div class="card-description">View your scores and feedback</div>
+        <div class="card-title">Progress</div>
+        <div class="card-description">View your semester GPA and course completion</div>
       </div>
+      <div id="gpaPerYearContainer" style="margin-top: 20px;"></div>
+
       <div class="card-content">
-        <p>Grades overview UI placeholder.</p>
+        <canvas id="progressChart" width="400" height="200"></canvas>
+        <div id="completionContainer" style="margin-top:20px;"></div>
       </div>
     </div>
   </div>
+
 </div>
 
 <!-- Event Modal -->
@@ -167,6 +172,7 @@
 
 <!-- Pass context data to JS -->
 <script>
+  
   const curriculumJSON = JSON.parse('{{ curriculum_json|escapejs }}');
   const calendarJSON = JSON.parse('{{ calendar_json|escapejs }}');
   const studentProgram = "{{ student_program }}";

@@ -2,6 +2,7 @@
 from django.db import models
 from authentication.models import User
 
+
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     program = models.CharField(max_length=100, default='Undeclared')
@@ -71,12 +72,27 @@ class Enrollment(models.Model):
     def __str__(self):
         return f"{self.student.user.get_full_name()} - {self.course.course_name}"
 
+
 class Curriculum(models.Model):
     program = models.CharField(max_length=50)
     data = models.JSONField()
 
     class Meta:
-        db_table = 'a2s_system_curriculum' 
+        db_table = 'a2s_system_curriculum'
 
     def __str__(self):
         return self.program
+
+
+class Schedule(models.Model):
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='schedules')
+    code = models.CharField(max_length=20)
+    section = models.CharField(max_length=20)
+    room = models.CharField(max_length=100)
+    day = models.CharField(max_length=20, default="TBA")
+    time_start = models.TimeField(default="00:00")
+    time_end = models.TimeField(default="00:00")
+
+
+    def __str__(self):
+        return f"{self.student.user.username} - {self.code} ({self.section})"

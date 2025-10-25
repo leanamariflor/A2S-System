@@ -13,7 +13,8 @@ import json
 import os
 
 from faculty.models import TeacherProfile
-from students.models import Curriculum
+from students.models import Curriculum, Course, Enrollment
+
 
 
 
@@ -83,7 +84,7 @@ def teacher_dashboard(request):
         "current_semester": current_semester,
     }
 
-    return render(request, "TeacherDashboard.html", context)
+    return render(request, "faculty/TeacherDashboard.html", context)
 
 COLLEGE_CHOICES = [
     ("CEA", "Engineering and Architecture"),
@@ -132,7 +133,7 @@ def teacher_profile(request):
         "college_choices": COLLEGE_CHOICES,
         "position_choices": POSITION_CHOICES,
     }
-    return render(request, "TeacherProfile.html", context)
+    return render(request, "faculty/TeacherProfile.html", context)
 
 
 
@@ -156,7 +157,7 @@ def teacher_courses(request):
         "courses": courses_data.get("courses", [])
     }
 
-    return render(request, "TeacherCourses.html", context)
+    return render(request, "faculty/TeacherCourses.html", context)
 
 
 @login_required(login_url="Login")
@@ -197,7 +198,7 @@ def course_grades(request, course_id):
 
 
 def teacher_base(request):
-    return render(request, "teacher_base.html")
+    return render(request, "faculty/teacher_base.html")
 
 
 

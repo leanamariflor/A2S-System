@@ -6,13 +6,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from supabase import create_client
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import json
 import os
 
-from .models import StudentProfile, Enrollment, Grade
+from .models import StudentProfile, Enrollment, Grade,Schedule
 from students.models import Curriculum
-
 from authentication.models import User
 
 # -----------------------------
@@ -231,7 +230,7 @@ def student_grades(request):
     if selected_year and selected_sem:
         grades = Grade.objects.filter(student=profile, school_year=selected_year, semester=selected_sem)
 
-    return render(request, "StudentGrades.html", {
+    return render(request, "students/StudentGrades.html", {
         "grades": grades,
         "years": years,
         "semesters": semesters,
@@ -351,7 +350,76 @@ def student_base(request):
 
 def get_curriculum_json(request, program):
     try:
-        curriculum = Curriculum.objects.get(program=program)
+        curriculum = Curriculum.objects.get(program__iexact=program)
         return JsonResponse(curriculum.data, safe=False)
     except Curriculum.DoesNotExist:
         return JsonResponse({'error': f'No curriculum found for {program}'}, status=404)
+    
+
+    
+
+def student_schedule_json(request, student_id):
+    student_profile = StudentProfile.objects.get(id=student_id)
+    enrollments = Enrollment.objects.filter(student=student_profile)
+
+    schedule = []
+    for e in enrollments:
+        schedule.append({
+            "code": e.course.course_code,
+            "section": getattr(e.course, 'section', 'N/A'),
+            "room": getattr(e, 'room', 'N/A'),
+            "time": f"{e.schedule_day} {e.start_time.strftime('%I:%M%p')}-{e.end_time.strftime('%I:%M%p')}"
+        })
+
+    return JsonResponse({"student_id": student_id, "schedule": schedule})
+
+from datetime import datetime, timedelta
+from django.shortcuts import render
+from .models import Schedule
+
+def student_schedule(request):
+    days = ['M', 'T', 'W', 'TH', 'F', 'SAT']
+
+    # Generate time slots as strings
+    start_time = datetime.strptime("07:00 AM", "%I:%M %p")
+    end_time = datetime.strptime("09:00 PM", "%I:%M %p")
+    hours = []
+    current = start_time
+    while current <= end_time:
+        hours.append(current.strftime("%I:%M %p"))
+        current += timedelta(minutes=30)
+
+    # Fetch schedules
+    raw_scheds = Schedule.objects.filter(student__user=request.user)
+
+    # Build a grid keyed by day and every half-hour slot
+    schedule_grid = {day: {} for day in days}
+
+    for s in raw_scheds:
+        day = s.day.strip().upper()
+        start_dt = datetime.combine(datetime.today(), s.time_start)
+        end_dt = datetime.combine(datetime.today(), s.time_end)
+
+        blocks = int((end_dt - start_dt).total_seconds() // (30 * 60))
+        # Fill every 30-min slot for this course
+        current_dt = start_dt
+        for i in range(blocks):
+            time_str = current_dt.strftime("%I:%M %p")
+            # Only set the first block with course info, the rest will be marked as occupied
+            if i == 0:
+                schedule_grid[day][time_str] = {
+                    'code': s.code,
+                    'section': s.section,
+                    'room': s.room,
+                    'blocks': blocks,
+                }
+            else:
+                schedule_grid[day][time_str] = {'occupied': True}
+            current_dt += timedelta(minutes=30)
+
+    context = {
+        'days': days,
+        'hours': hours,
+        'schedule_grid': schedule_grid,
+    }
+    return render(request, 'students/StudentSchedule.html', context)
