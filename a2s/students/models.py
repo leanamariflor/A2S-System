@@ -54,6 +54,9 @@ class Grade(models.Model):
     school_year = models.CharField(max_length=9, default="2324")
     semester = models.CharField(max_length=20, default="First")
     remarks = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True)  
+    teacher = models.ForeignKey('teacher.TeacherProfile', on_delete=models.SET_NULL, null=True)
+
 
     def __str__(self):
         return f"{self.student.user.get_full_name()} - {self.course_code}"
@@ -96,3 +99,17 @@ class Schedule(models.Model):
 
     def __str__(self):
         return f"{self.student.user.username} - {self.code} ({self.section})"
+
+
+
+class CourseAssignment(models.Model):
+    student = models.ForeignKey('StudentProfile', on_delete=models.CASCADE, related_name='course_assignments')
+    teacher = models.ForeignKey('teacher.TeacherProfile', on_delete=models.CASCADE, related_name='student_assignments')
+    course_code = models.CharField(max_length=50)
+    section = models.CharField(max_length=50, default="G1") 
+
+    class Meta:
+        unique_together = ('student', 'teacher', 'course_code', 'section')
+
+    def __str__(self):
+        return f"{self.student.user.get_full_name()} - {self.course_code} {self.section} ({self.teacher.user.get_full_name()})"

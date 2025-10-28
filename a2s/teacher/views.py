@@ -8,83 +8,112 @@ from django.conf import settings
 from supabase import create_client
 from datetime import datetime, timedelta
 from datetime import date
+from django.views.decorators.http import require_GET
 
 
-import json
-import os
+from django.http import HttpResponse
+import json, os, csv
+
 
 from teacher.models import TeacherProfile, Schedule
-from students.models import Curriculum, Course, Enrollment
-
-
-
-
-
+from students.models import Curriculum, Course, Enrollment, StudentProfile
+from students.models import CourseAssignment, Grade
 
 # -----------------------------
 # Supabase Setup
 # -----------------------------
 SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4OTkyMjYsImV4cCI6MjA3NDQ3NTIyNn0.RYUzh-HS52HbiMGWhQiGkcf9OY0AeRsm0fuXruw0sEc"
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
+SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODg5OTIyNiwiZXhwIjoyMDc0NDc1MjI2fQ.b8Q1La_ZM8YSm6yt8Hw2qvNRS9GDkaLcbHWpb3ZK9eM"
+supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 # -----------------------------
 # Teacher Views
 # -----------------------------
 
+
 @login_required(login_url="Login")
 def teacher_dashboard(request):
     teacher_user = request.user
 
-    # --- Get Teacher Profile ---
+    # --- Teacher Profile ---
     try:
         profile = TeacherProfile.objects.get(user=teacher_user)
     except TeacherProfile.DoesNotExist:
         profile = None
 
-    # --- Load Academic Calendar ---
-    calendar_data = []
-    calendar_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "academic_calendar.json")
+    # --- Get all schedules of this teacher ---
+    schedules = Schedule.objects.filter(teacher=profile).order_by("subject_code", "section")
 
+    course_data = []
+    total_students_all = set()
+
+    for sched in schedules:
+        course_code = sched.subject_code
+        section = sched.section
+
+        if "/" in section:
+            continue
+
+        # Count unique students per course-section under this teacher
+        student_ids = CourseAssignment.objects.filter(
+            teacher=profile,
+            course_code=course_code,
+            section=section
+        ).values_list("student_id", flat=True).distinct()
+
+        student_count = len(student_ids)
+        total_students_all.update(student_ids)
+
+        course_data.append({
+            "course_code": course_code,
+            "section": section,
+            "student_count": student_count,
+        })
+
+    # Remove duplicates and sort
+    seen = set()
+    unique_courses = []
+    for c in course_data:
+        key = f"{c['course_code']}-{c['section']}"
+        if key not in seen:
+            unique_courses.append(c)
+            seen.add(key)
+
+    total_courses = len(unique_courses)
+    total_students = len(total_students_all)
+
+    # --- Academic Calendar ---
+    calendar_data = []
+    calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
     try:
         with open(calendar_path, "r", encoding="utf-8") as f:
             calendar_data = json.load(f)
-    except Exception as e:
-        print("Error loading academic calendar:", e)
+    except Exception:
         calendar_data = []
 
-    # --- Determine Current Semester ---
     current_semester = "Unknown Semester"
     today = date.today()
-
     for sem in calendar_data:
         start_event = next((e for e in sem["events"] if "Start of Classes" in e["name"]), None)
         end_event = next((e for e in sem["events"] if "End of Classes" in e["name"]), None)
-
         if start_event and end_event:
             start_date = datetime.strptime(start_event["date"], "%Y-%m-%d").date()
             end_date = datetime.strptime(end_event["date"], "%Y-%m-%d").date()
-
             if start_date <= today <= end_date:
                 current_semester = sem["semester"]
                 break
 
-    # --- Stats ---
-    total_courses = Course.objects.filter(grade__faculty=teacher_user.get_full_name()).distinct().count()
-    total_students = Enrollment.objects.filter(course__grade__faculty=teacher_user.get_full_name()).count()
-
-    # --- Context Data ---
     context = {
         "teacher": teacher_user,
         "first_name": teacher_user.first_name,
         "last_name": teacher_user.last_name,
         "department": profile.department if profile else "N/A",
         "position": profile.position if profile else "N/A",
+        "courses": unique_courses,
         "total_courses": total_courses,
         "total_students": total_students,
-        "calendar_json": json.dumps(calendar_data),
         "current_semester": current_semester,
+        "calendar_json": json.dumps(calendar_data),
     }
 
     return render(request, "teacher/TeacherDashboard.html", context)
@@ -138,11 +167,6 @@ def teacher_profile(request):
     }
     return render(request, "teacher/TeacherProfile.html", context)
 
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from teacher.models import TeacherProfile, Schedule
-
 @login_required(login_url="Login")
 def teacher_courses(request):
     teacher_profile = TeacherProfile.objects.get(user=request.user)
@@ -192,30 +216,6 @@ def api_teacher_courses(request):
 
     return JsonResponse(data)
 
-def teacher_progress_uploads(request):
-    import json, os
-    from django.conf import settings
-
-    file_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "student_progress_uploads.json")
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    return render(request, "teacher_courses.html", {"upload_data": data})
-
-def course_grades(request, course_id):
-    import json, os
-    from django.conf import settings
-
-    file_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "student_grades.json")
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    # Find course by ID
-    course = next((c for c in data["courses"] if c["course_id"] == course_id), None)
-    return render(request, "teacher_course_grades.html", {"course": course})
-
-
-
 def teacher_base(request):
     return render(request, "teacher/teacher_base.html")
 
@@ -248,9 +248,6 @@ def get_curriculum_json(request, program):
         return JsonResponse({"curriculum": curriculum.data["curriculum"]}, safe=False)
     except Curriculum.DoesNotExist:
         return JsonResponse({"error": "Curriculum not found"}, status=404)
-
-
-
 
 @login_required(login_url="Login")
 def teacher_schedule(request):
@@ -298,3 +295,296 @@ def teacher_schedule(request):
         'schedule_grid': schedule_grid,
     }
     return render(request, 'teacher/TeacherSchedule.html', context)
+
+def add_grade(request, student_id, course_code):
+    student = get_object_or_404(StudentProfile, id=student_id)
+    
+    # Check if teacher is assigned for this course
+    assignment_exists = CourseAssignment.objects.filter(
+        student=student,
+        teacher=request.user.teacherprofile,
+        course_code=course_code
+    ).exists()
+
+    if not assignment_exists:
+        return HttpResponse("You are not assigned to this student for this course.", status=403)
+
+    if request.method == 'POST':
+        form = GradeForm(request.POST)
+        if form.is_valid():
+            grade = form.save(commit=False)
+            grade.student = student
+            grade.course_code = course_code
+            grade.faculty = request.user.get_full_name()
+            grade.save()
+            return redirect('my_advisees')
+    else:
+        form = GradeForm()
+    
+    return render(request, 'faculty/add_grade.html', {'form': form, 'student': student, 'course_code': course_code})
+
+def my_course_advisees(request):
+    teacher = request.user.teacherprofile
+    assignments = teacher.student_assignments.all()  # thanks to related_name
+    return render(request, 'faculty/course_advisees.html', {'assignments': assignments})
+
+@login_required(login_url="Login")
+def api_teacher_courses(request):
+    """
+    Return all courses assigned to the logged-in teacher from Supabase, with debug logging.
+    """
+    teacher_id = request.user.id
+
+    try:
+        response = supabase.table("students_courseassignment") \
+            .select("course_code, section") \
+            .eq("teacher_id", teacher_id) \
+            .execute()
+        
+        
+        courses = []
+        if response.data:
+            seen = set()
+            for item in response.data:
+                key = f"{item['course_code']}-{item.get('section','')}"
+                if key not in seen:
+                    courses.append({
+                        "course_code": item["course_code"],
+                        "section": item.get("section", ""),
+                    })
+                    seen.add(key)
+
+        return JsonResponse({"courses": courses}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required(login_url="Login")
+@require_GET
+def get_course_students(request, course_code, section):
+    """
+    Returns all students enrolled in a course & section with full info, including full_name and year_level.
+    """
+    try:
+        # Fetch course assignments and embed student info
+        response = supabase.table("students_courseassignment") \
+            .select("id, course_code, section, student_id") \
+            .eq("course_code", course_code) \
+            .eq("section", section) \
+            .execute()
+        
+        students_list = []
+
+        if response.data:
+            for sca in response.data:
+                student_id = sca.get("student_id")
+                
+                # Fetch student profile from students_studentprofile table
+                student_profile = supabase.table("students_studentprofile") \
+                    .select("user_id, program, year_level") \
+                    .eq("id", student_id) \
+                    .single().execute()
+                
+                if student_profile.data:
+                    user_id = student_profile.data.get("user_id")
+
+                    # Fetch user's first_name and last_name from auth.users
+                    user_data = supabase.table("authentication_user") \
+                        .select("first_name, last_name") \
+                        .eq("id", user_id) \
+                        .single().execute()
+                    
+                    full_name = ""
+                    if user_data.data:
+                        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
+                    
+                    students_list.append({
+                        "id": sca["id"],
+                        "full_name": full_name,
+                        "course_code": sca["course_code"],
+                        "section": sca["section"],
+                        "year_level": student_profile.data.get("year_level", ""),
+                        "program": student_profile.data.get("program")
+                    })
+
+        return JsonResponse({"students": students_list})
+
+    except Exception as e:
+        print("Error fetching students:", e)
+        return JsonResponse({"students": [], "error": str(e)}, status=500)
+
+
+@login_required(login_url="Login")
+def teacher_classlist(request, course_code, section):
+    """
+    Renders a full page showing all students in the specified course & section.
+    Pulls data from Supabase.
+    """
+    try:
+        # Get all student assignments for the given course and section
+        response = supabase.table("students_courseassignment") \
+            .select("id, course_code, section, student_id") \
+            .eq("course_code", course_code) \
+            .eq("section", section) \
+            .execute()
+
+        students_list = []
+
+        if response.data:
+            for sca in response.data:
+                student_id = sca.get("student_id")
+
+                # Fetch student profile
+                student_profile = supabase.table("students_studentprofile") \
+                    .select("user_id, program, year_level") \
+                    .eq("id", student_id) \
+                    .single().execute()
+
+                if student_profile.data:
+                    user_id = student_profile.data.get("user_id")
+
+                    # Fetch name from auth table
+                    user_data = supabase.table("authentication_user") \
+                        .select("first_name, last_name") \
+                        .eq("id", user_id) \
+                        .single().execute()
+
+                    full_name = ""
+                    if user_data.data:
+                        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
+
+                    students_list.append({
+                        "id": sca["id"],
+                        "full_name": full_name,
+                        "program": student_profile.data.get("program"),
+                        "year_level": student_profile.data.get("year_level"),
+                    })
+
+        context = {
+            "course_code": course_code,
+            "section": section,
+            "students": students_list,
+        }
+
+        return render(request, "teacher/TeacherClassList.html", context)
+
+    except Exception as e:
+        print("Error fetching class list:", e)
+        return render(request, "teacher/TeacherClassList.html", {
+            "course_code": course_code,
+            "section": section,
+            "students": [],
+            "error": str(e)
+        })
+
+@login_required(login_url="Login")
+def student_status(request, student_id):
+    student = get_object_or_404(StudentProfile, id=student_id)
+    teacher = request.user.teacherprofile
+
+    # Optional: Fetch user info from Supabase
+    user_data = supabase.table("authentication_user") \
+        .select("first_name, last_name, username, id_number") \
+        .eq("id", student.user_id) \
+        .single().execute()
+
+    full_name = ""
+    username = ""
+    student_number = ""
+    if user_data.data:
+        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
+        username = user_data.data.get('username', '')
+        student_number = user_data.data.get('id_number', '')
+
+    # Fetch teacher’s courses for this student
+    teacher_assignments = CourseAssignment.objects.filter(student=student, teacher=teacher)
+    teacher_courses = teacher_assignments.values_list("course_code", flat=True)
+
+    # Fetch grades
+    grades = Grade.objects.filter(student=student, course_code__in=teacher_courses).values(
+        "course_code", "course_name", "midterm", "final_grade", "remarks", "semester", "school_year"
+    )
+
+    # Back button
+    course_code, section = "", ""
+    first_assignment = teacher_assignments.first()
+    if first_assignment:
+        course_code = first_assignment.course_code
+        section = first_assignment.section
+
+    context = {
+        "student": student,
+        "full_name": full_name,
+        "username": username,
+        "student_number": student_number,
+        "grades": grades,
+        "course_code": course_code,
+        "section": section,
+        "student_id": student.id,  # ✅ pass student_id for export
+    }
+
+    return render(request, "teacher/StudentStatus.html", context)
+
+
+def export_student_report(request, student_id):
+    # Replace this with actual student/grades fetching
+    student = get_object_or_404(Student, id=student_id)
+    grades = student.grades.all()
+
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{student.full_name}_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
+    for g in grades:
+        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
+
+    return response
+
+
+@login_required(login_url="Login")
+def export_student_report(request, student_id):
+    teacher = request.user.teacherprofile
+    student = get_object_or_404(StudentProfile, id=student_id)
+
+    # Get courses this teacher teaches for this student
+    teacher_courses = CourseAssignment.objects.filter(
+        student=student,
+        teacher=teacher
+    ).values_list("course_code", flat=True)
+
+    # Fetch only those grades
+    grades = Grade.objects.filter(student=student, course_code__in=teacher_courses)
+
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{student.user.get_full_name()}_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
+
+    for g in grades:
+        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
+
+    return response
+
+
+@login_required(login_url="Login")
+@csrf_exempt
+def update_grade_notes(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        grade_id = data.get("grade_id")
+        note_text = data.get("notes", "")
+
+        try:
+            grade = Grade.objects.get(id=grade_id, teacher=request.user.teacherprofile)
+            grade.notes = note_text
+            grade.save()
+            return JsonResponse({"status": "success", "notes": grade.notes})
+        except Grade.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Grade not found or permission denied."})
+    
+    return JsonResponse({"status": "error", "message": "Invalid request method."})

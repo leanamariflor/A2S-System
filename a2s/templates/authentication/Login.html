@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cantata+One&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'authentication/login.css' %}">
+  <link rel="stylesheet" href="{% static 'css/authentication/login.css' %}">
 
 </head>
 <body>
@@ -51,7 +51,6 @@
              <input id="remember" name="remember" type="checkbox" {% if remembered_email %}checked{% endif %} />
               <label for="remember">Remember Me</label>
             </div>
-           <a href="{% url 'ForgotPassword' %}" class="forgot">Forgot Password?</a>
           </div>
 
           <button class="btn" type="submit" id="login-btn">Sign In</button>

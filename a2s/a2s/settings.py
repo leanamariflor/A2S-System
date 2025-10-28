@@ -55,7 +55,7 @@ ROOT_URLCONF = 'a2s.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'a2s' / 'templates'],  
+        'DIRS': [BASE_DIR /'templates'],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / 'a2s' / 'static'] 
+STATICFILES_DIRS = [BASE_DIR / 'static'] 
 
 
 

@@ -1,0 +1,145 @@
+{% extends "teacher/teacher_base.html" %}
+{% load static %}
+
+{% block title %}Student Status{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/status.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="student-status-page">
+    <!-- Header -->
+    <div class="header-card">
+        <h2>Name: {{ full_name }}</h2>
+        <p>Student ID: {{ student_number }}</p>
+        <p>Email: {{ username }}</p>
+    </div>
+
+    <a href="{% url 'teacher_classlist' course_code=course_code section=section %}" class="back-btn">← Back to Class List</a>
+
+    <div class="main-content">
+        <div class="left-panel">
+            <h3>Grades</h3>
+            <table class="student-grade-table">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Midterm</th>
+                        <th>Final Grade</th>
+                        <th>Remarks</th>
+                        <th>Semester</th>
+                        <th>School Year</th>
+                        <th>Notes</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in grades %}
+                    <tr data-grade-id="{{ g.id }}">
+                        <td>{{ g.course_code }}</td>
+                        <td>{{ g.course_name }}</td>
+                        <td>{{ g.midterm|default:"-" }}</td>
+                        <td>{{ g.final_grade|default:"-" }}</td>
+                        <td>{{ g.remarks|default:"-" }}</td>
+                        <td>{{ g.semester }}</td>
+                        <td>{{ g.school_year }}</td>
+                        <td class="note-cell">{{ g.notes|default:"-" }}</td>
+                        <td>
+                            {% if g.teacher_id == request.user.teacherprofile.id %}
+                            <button class="edit-note-btn" data-grade-id="{{ g.id }}" data-note="{{ g.notes|default:'' }}">Edit</button>
+                            {% else %}
+                            <span>-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">No grades found for this student.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Advisor Notes -->
+            <div class="advisor-notes">
+                <h3>Advisor Notes</h3>
+                {% if student_notes %}
+                    <p>{{ student_notes }}</p>
+                {% else %}
+                    <p>No notes for this student yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Export Button -->
+            <a href="{% url 'export_student_report' student_id=student_id %}" class="view-btn">Export Report</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="noteModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Edit Note</h3>
+        <textarea id="noteText" rows="4" cols="50"></textarea>
+        <button id="saveNoteBtn">Save</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("noteModal");
+    const noteText = document.getElementById("noteText");
+    const saveBtn = document.getElementById("saveNoteBtn");
+    const closeBtn = modal.querySelector(".close");
+    let currentGradeId = null;
+    let currentNoteCell = null;
+
+    // Open modal
+    document.querySelectorAll(".edit-note-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            currentGradeId = this.dataset.gradeId;
+            noteText.value = this.dataset.note;
+            currentNoteCell = this.closest("tr").querySelector(".note-cell");
+            modal.style.display = "block";
+        });
+    });
+
+    // Close modal
+    closeBtn.addEventListener("click", () => modal.style.display = "none");
+    window.addEventListener("click", e => { if(e.target == modal) modal.style.display = "none"; });
+
+    // Save note
+    saveBtn.addEventListener("click", function() {
+        if (!currentGradeId) return;
+        fetch("{% url 'update_grade_notes' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                grade_id: currentGradeId,
+                notes: noteText.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                currentNoteCell.textContent = data.notes || "-";
+                modal.style.display = "none";
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(err => alert("Error: " + err));
+    });
+});
+</script>
+{% endblock %}

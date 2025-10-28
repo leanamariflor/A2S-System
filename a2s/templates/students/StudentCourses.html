@@ -4,7 +4,7 @@
 {% block title %}My Courses{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'students/css/student_courses.css' %}" />
+<link rel="stylesheet" href="{% static 'css/students/student_courses.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -39,5 +39,5 @@
   const SEMESTER_END = "{{ semester_end|default:'' }}";
 </script>
 
-<script src="{% static 'students/js/StudentCourses.js' %}"></script>
+<script src="{% static 'js/students/StudentCourses.js' %}"></script>
 {% endblock %}

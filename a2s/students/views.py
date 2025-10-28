@@ -48,7 +48,7 @@ def student_dashboard(request):
         pass
 
     # --- Load Academic Calendar ---
-    calendar_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "academic_calendar.json")
+    calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
     try:
         with open(calendar_path, "r", encoding="utf-8") as f:
             calendar_data = json.load(f)
@@ -138,10 +138,7 @@ def student_schedule(request):
 
 @login_required(login_url='Login')
 def student_courses(request):
-    import json, os
-    from datetime import datetime
-    from django.conf import settings
-    from .models import StudentProfile, Curriculum
+    
 
     student_user = request.user
     profile, _ = StudentProfile.objects.get_or_create(user=student_user)

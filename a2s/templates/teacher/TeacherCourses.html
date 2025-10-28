@@ -1,0 +1,81 @@
+{% extends "teacher/teacher_base.html" %}
+{% load static %}
+
+{% block title %}Courses{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/teacher_course.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="course-dashboard">
+  <div class="header-card">
+    <h2>Registered Subjects</h2>
+    <p id="schoolYear">{{ school_year }}</p>
+    <span id="activeCourses">{{ active_courses }} active courses</span>
+  </div>
+
+  <div class="content-wrapper">
+  <div class="main-content">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <h3>Teaching Load</h3>
+      <table class="course-table" id="courseTable">
+        <thead>
+          <tr>
+            <th>Subject Code</th>
+            <th>Section</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in courses %}
+          <tr class="course-row">
+            <td><strong>{{ course.course_code }}</strong></td>
+            <td>{{ course.section }}</td>
+            <td>
+              <a href="{% url 'teacher_classlist' course.course_code course.section %}" 
+                 class="view-btn">View Class List</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3">No courses assigned.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="section-management">
+        <h4>Section Management</h4>
+        <label>Select Section</label>
+        <select id="sectionSelect">
+          <option value="">Select Section</option>
+          {% for course in courses %}
+          <option value="{{ course.course_code }}|{{ course.section }}">
+            {{ course.course_code }} - {{ course.section }}
+          </option>
+          {% endfor %}
+        </select>
+        <div class="btn-group">
+          <button id="viewSectionBtn" class="view-sections-btn">View Section</button>
+          <button id="showAllBtn" class="add-course-btn">Show All</button>
+        </div>
+      </div>
+
+      <div class="student-progress">
+        <h4>Student Progress Upload</h4>
+        <p>Semestral Attendance & Scores</p>
+        <button class="upload-file-btn">Upload Student Files</button>
+        <small>Supported formats: .csv, .xlsx, .pdf</small>
+      </div>
+    </div>
+  </div>
+  </div>
+
+</div>
+
+
+<script src="{% static 'js/teacher/TeacherCourses.js' %}"></script>
+{% endblock %}

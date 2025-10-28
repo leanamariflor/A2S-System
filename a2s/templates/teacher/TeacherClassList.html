@@ -1,0 +1,44 @@
+{% extends "teacher/teacher_base.html" %}
+{% load static %}
+
+{% block title %}Class List: {{ course_code }} - {{ section }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/teacher_classlists.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="class-list-page">
+  <div class="class-list-header">
+    <h2>Class List: {{ course_code }} - {{ section }}</h2>
+    <p>Review the enrolled students for this section.</p>
+  </div>
+
+  <a href="{% url 'TeacherCourses' %}" class="back-btn">← Back to Courses</a>
+
+  <table class="class-list-table">
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Subject Code</th>
+        <th>Section</th>
+        <th>Year Level</th>
+        <th>Program</th>
+        <th>Action</th>
+
+      </tr>
+    </thead>
+    <tbody id="studentTableBody">
+      <tr><td colspan="4">Loading students...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<script src="{% static 'js/teacher/TeacherClassList.js' %}"></script>
+<script>
+  const COURSE_CODE = "{{ course_code }}";
+  const SECTION = "{{ section }}";
+</script>
+{% endblock %}
