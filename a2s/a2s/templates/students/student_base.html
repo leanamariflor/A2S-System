@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}Student Dashboard{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'students/css/student_base.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/students/student_base.css' %}" />
       {% block extra_css %}{% endblock %}
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
@@ -84,10 +84,10 @@
             <i data-lucide="book"></i>
             <span>Courses</span>
           </a>
-          <a href="{% url 'StudentDegreeAudit' %}" class="nav-button">
+          <button class="nav-button">
             <i data-lucide="award"></i>
             <span>Degree Audit</span>
-          </a>
+          </button>
           <a href="{% url 'settings' %}" class="nav-button">
             <i data-lucide="settings"></i>
             <span>Settings</span>
@@ -98,7 +98,6 @@
       <!-- Main Content (child templates fill this block) -->
       <main class="dashboard-main">
         {% block content %}
-        <p>Welcome! This is the student dashboard.</p>
         {% endblock %}
       </main>
     </div>
