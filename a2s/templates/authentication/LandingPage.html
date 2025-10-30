@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A2S NEXT-GEN</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/authentication/favicon.ico' %}">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/authentication/LandingPage.css' %}">
 </head>
@@ -15,7 +16,6 @@
       <h1>A2S NEXT–GEN</h1>
       <p>Academic to Success<br>Transform your academic journey with intelligent analytics, personalized learning paths, and seamless career integration.</p>
       <div class="hero-buttons">
-        <button>Get Started</button>
        <a href="{% url 'Login' %}"><button>Sign-In</button></a>
 
     
@@ -61,7 +61,7 @@
     <div class="cta-content">
       <h2>Ready to Transform Your Academic Journey?</h2>
       <p>Join thousands of students and educators already using A2S Next–Gen to achieve academic excellence.</p>
-      <button>Start your Success Story</button>
+       <a href="{% url 'Login' %}"><button>Start your Success Story</button></a>
     </div>
   </section>
 

@@ -11,6 +11,8 @@ urlpatterns = [
     path('StudentCourses/', views.student_courses, name='StudentCourses'),
     path('StudentGrades/', views.student_grades, name='StudentGrades'),
     path('StudentCurriculum/', views.student_curriculum, name='StudentCurriculum'),
+   path('StudentDegreeAudit/', views.student_degree_audit, name='StudentDegreeAudit'),
+
 
    
 

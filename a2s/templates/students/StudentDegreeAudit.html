@@ -1,0 +1,414 @@
+{% extends "students/student_base.html" %}
+
+{% load static %}
+
+{% block title %}Degree Audit - A2S{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/students/student_degree_audit.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="degree-audit-header">
+  <div class="header-content">
+    <div>
+      <h1>Degree Audit</h1>
+      <p class="subtitle">{{ student_program }} • Track your academic progress</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary">
+        <i data-lucide="download"></i>
+        Export PDF
+      </button>
+      <button class="btn-primary">
+        <i data-lucide="printer"></i>
+        Print Audit
+      </button>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="semester-badge">{{ current_semester }}</span>
+    <span class="year-badge">Academic Year 2024-2025</span>
+  </div>
+</div>
+
+<!-- Progress Overview -->
+<div class="progress-overview">
+  <div class="progress-card">
+    <div class="progress-visual">
+      <svg class="progress-circle" viewBox="0 0 200 200">
+        <circle class="progress-bg" cx="100" cy="100" r="90" />
+        <circle class="progress-fill" cx="100" cy="100" r="90" 
+                style="--progress: {{ completion_percentage }};" />
+      </svg>
+      <div class="progress-center">
+        <span class="progress-percentage">{{ completion_percentage }}%</span>
+        <span class="progress-label">Complete</span>
+      </div>
+    </div>
+    <div class="progress-details">
+      <h3>Overall Progress</h3>
+      <p>Keep up the great work on your academic journey!</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i data-lucide="book-open"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ completed_units }}/{{ total_units }}</span>
+        <span class="stat-label">Credits Earned</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i data-lucide="target"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ credits_remaining }}</span>
+        <span class="stat-label">Credits Remaining</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i data-lucide="award"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ current_gpa|floatformat:2 }}</span>
+        <span class="stat-label">Current GPA</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i data-lucide="calendar"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ profile.expected_graduation|default:"TBD" }}</span>
+        <span class="stat-label">Expected Graduation</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Course Requirements Tabs -->
+<div class="requirements-section">
+  <div class="section-header">
+    <h2>Course Requirements</h2>
+    <p>Track your progress across all degree requirements</p>
+  </div>
+
+  <div class="category-tabs">
+    <button class="tab-btn active" data-category="general-ed">
+      <i data-lucide="book"></i>
+      <span>General Education</span>
+      <span class="tab-count">{{ gen_ed_courses|length }}</span>
+    </button>
+    <button class="tab-btn" data-category="major-core">
+      <i data-lucide="code"></i>
+      <span>Major Core</span>
+      <span class="tab-count">{{ major_core_courses|length }}</span>
+    </button>
+    <button class="tab-btn" data-category="electives">
+      <i data-lucide="star"></i>
+      <span>Electives</span>
+      <span class="tab-count">{{ elective_courses|length }}</span>
+    </button>
+    <button class="tab-btn" data-category="minor">
+      <i data-lucide="layers"></i>
+      <span>Minor</span>
+      <span class="tab-count">{{ minor_courses|length }}</span>
+    </button>
+  </div>
+
+  <!-- General Education Content -->
+  <div class="category-content active" data-category="general-ed">
+    <div class="courses-grid">
+      {% for course in gen_ed_courses %}
+      <div class="course-card {% if course.status == 'PASSED' %}completed{% elif course.status == 'CURRENT' %}in-progress{% else %}pending{% endif %}">
+        <div class="course-header">
+          <div class="course-title">
+            <h4>{{ course.code }}</h4>
+            <span class="course-units">{{ course.units }} units</span>
+          </div>
+          <div class="course-status-badge">
+            {% if course.status == 'PASSED' %}
+              <i data-lucide="check-circle"></i>
+              <span>Completed</span>
+            {% elif course.status == 'CURRENT' %}
+              <i data-lucide="clock"></i>
+              <span>In Progress</span>
+            {% else %}
+              <i data-lucide="circle"></i>
+              <span>Remaining</span>
+            {% endif %}
+          </div>
+        </div>
+        <p class="course-name">{{ course.title }}</p>
+        {% if course.status == 'PASSED' %}
+        <div class="course-grade">
+          <span class="grade-label">Final Grade:</span>
+          <span class="grade-value">Passed</span>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p>No general education courses found.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Major Core Content -->
+  <div class="category-content" data-category="major-core">
+    <div class="courses-grid">
+      {% for course in major_core_courses %}
+      <div class="course-card {% if course.status == 'PASSED' %}completed{% elif course.status == 'CURRENT' %}in-progress{% else %}pending{% endif %}">
+        <div class="course-header">
+          <div class="course-title">
+            <h4>{{ course.code }}</h4>
+            <span class="course-units">{{ course.units }} units</span>
+          </div>
+          <div class="course-status-badge">
+            {% if course.status == 'PASSED' %}
+              <i data-lucide="check-circle"></i>
+              <span>Completed</span>
+            {% elif course.status == 'CURRENT' %}
+              <i data-lucide="clock"></i>
+              <span>In Progress</span>
+            {% else %}
+              <i data-lucide="circle"></i>
+              <span>Remaining</span>
+            {% endif %}
+          </div>
+        </div>
+        <p class="course-name">{{ course.title }}</p>
+        {% if course.status == 'PASSED' %}
+        <div class="course-grade">
+          <span class="grade-label">Final Grade:</span>
+          <span class="grade-value">Passed</span>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p>No major core courses found.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Electives Content -->
+  <div class="category-content" data-category="electives">
+    <div class="courses-grid">
+      {% for course in elective_courses %}
+      <div class="course-card {% if course.status == 'PASSED' %}completed{% elif course.status == 'CURRENT' %}in-progress{% else %}pending{% endif %}">
+        <div class="course-header">
+          <div class="course-title">
+            <h4>{{ course.code }}</h4>
+            <span class="course-units">{{ course.units }} units</span>
+          </div>
+          <div class="course-status-badge">
+            {% if course.status == 'PASSED' %}
+              <i data-lucide="check-circle"></i>
+              <span>Completed</span>
+            {% elif course.status == 'CURRENT' %}
+              <i data-lucide="clock"></i>
+              <span>In Progress</span>
+            {% else %}
+              <i data-lucide="circle"></i>
+              <span>Remaining</span>
+            {% endif %}
+          </div>
+        </div>
+        <p class="course-name">{{ course.title }}</p>
+        {% if course.status == 'PASSED' %}
+        <div class="course-grade">
+          <span class="grade-label">Final Grade:</span>
+          <span class="grade-value">Passed</span>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p>No elective courses found.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Minor Content -->
+  <div class="category-content" data-category="minor">
+    <div class="courses-grid">
+      {% for course in minor_courses %}
+      <div class="course-card {% if course.status == 'PASSED' %}completed{% elif course.status == 'CURRENT' %}in-progress{% else %}pending{% endif %}">
+        <div class="course-header">
+          <div class="course-title">
+            <h4>{{ course.code }}</h4>
+            <span class="course-units">{{ course.units }} units</span>
+          </div>
+          <div class="course-status-badge">
+            {% if course.status == 'PASSED' %}
+              <i data-lucide="check-circle"></i>
+              <span>Completed</span>
+            {% elif course.status == 'CURRENT' %}
+              <i data-lucide="clock"></i>
+              <span>In Progress</span>
+            {% else %}
+              <i data-lucide="circle"></i>
+              <span>Remaining</span>
+            {% endif %}
+          </div>
+        </div>
+        <p class="course-name">{{ course.title }}</p>
+        {% if course.status == 'PASSED' %}
+        <div class="course-grade">
+          <span class="grade-label">Final Grade:</span>
+          <span class="grade-value">Passed</span>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p>No minor courses found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- What-If Grade Calculator -->
+<div class="calculator-section">
+  <div class="calculator-card">
+    <div class="calculator-header">
+      <div>
+        <h3>What-If Grade Calculator</h3>
+        <p>Predict how a future grade will impact your GPA</p>
+      </div>
+      <i data-lucide="calculator" class="calculator-icon"></i>
+    </div>
+    
+    <form id="whatIfForm" class="calculator-form">
+      <div class="form-group">
+        <label for="courseSelect">Select Course</label>
+        <select id="courseSelect" required>
+          <option value="">Choose a course...</option>
+          {% for course in not_started_courses %}
+          <option value="{{ course.code }}" data-units="{{ course.units }}">
+            {{ course.code }} - {{ course.title }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="gradeSelect">Expected Grade</label>
+        <select id="gradeSelect" required>
+          <option value="">Select grade...</option>
+          <option value="1.00">1.00 (Excellent)</option>
+          <option value="1.25">1.25</option>
+          <option value="1.50">1.50</option>
+          <option value="1.75">1.75</option>
+          <option value="2.00">2.00 (Good)</option>
+          <option value="2.25">2.25</option>
+          <option value="2.50">2.50</option>
+          <option value="2.75">2.75</option>
+          <option value="3.00">3.00 (Pass)</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-calculate">
+        <i data-lucide="trending-up"></i>
+        Calculate Impact
+      </button>
+    </form>
+
+    <div id="calculatorResult" class="calculator-result" style="display: none;">
+      <div class="result-header">
+        <i data-lucide="info"></i>
+        <span>Predicted Outcome</span>
+      </div>
+      <div class="result-body">
+        <div class="result-item">
+          <span class="result-label">Current GPA:</span>
+          <span class="result-value">{{ current_gpa|floatformat:2 }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Predicted GPA:</span>
+          <span id="predictedGPA" class="result-value highlighted">-</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Change:</span>
+          <span id="gpaChange" class="result-value change">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Achievements Section -->
+{% if achievements %}
+<div class="achievements-section">
+  <div class="section-header">
+    <h2>
+      <i data-lucide="trophy"></i>
+      Your Achievements
+    </h2>
+    <p>Milestones you've reached during your academic journey</p>
+  </div>
+  
+  <div class="achievements-grid">
+    {% for achievement in achievements %}
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="{{ achievement.icon|default:'star' }}"></i>
+      </div>
+      <h4>{{ achievement.title }}</h4>
+      <p>{{ achievement.description }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Recommended Courses -->
+{% if recommended_courses %}
+<div class="recommendations-section">
+  <div class="section-header">
+    <h2>
+      <i data-lucide="lightbulb"></i>
+      Recommended Next Courses
+    </h2>
+    <p>Based on your current progress and year level</p>
+  </div>
+  
+  <div class="recommendations-grid">
+    {% for course in recommended_courses %}
+    <div class="recommendation-card">
+      <div class="recommendation-header">
+        <span class="course-code">{{ course.code }}</span>
+        <span class="course-units">{{ course.units }} units</span>
+      </div>
+      <h4>{{ course.title }}</h4>
+      <button class="btn-add-to-plan">
+        <i data-lucide="plus"></i>
+        Add to Plan
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+  const currentGPA = parseFloat("{{ current_gpa|floatformat:2 }}") || 0;
+  const completedUnits = parseInt("{{ completed_units }}") || 0;
+  const allCoursesData = JSON.parse('{{ all_courses_json|escapejs }}');
+</script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+<script src="{% static 'js/students/StudentDegreeAudit.js' %}"></script>
+
+{% endblock %}

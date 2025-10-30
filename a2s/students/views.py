@@ -420,3 +420,180 @@ def student_schedule(request):
         'schedule_grid': schedule_grid,
     }
     return render(request, 'students/StudentSchedule.html', context)
+
+
+
+
+@login_required(login_url='Login')
+def student_degree_audit(request):
+    """
+    Dynamic Degree Audit page showing student's academic progress,
+    course completion, GPA, achievements, and recommended courses
+    """
+    student_user = request.user
+    profile, _ = StudentProfile.objects.get_or_create(user=student_user)
+    student_program = profile.program if profile.program and profile.program != "Undeclared" else None
+
+    # Initialize data structures
+    curriculum_data = []
+    all_courses = []
+    completed_courses = []
+    in_progress_courses = []
+    not_started_courses = []
+    
+    # Course categories
+    gen_ed_courses = []
+    major_core_courses = []
+    elective_courses = []
+    minor_courses = []
+    
+    total_units = 0
+    completed_units = 0
+    in_progress_units = 0
+    
+    # Load curriculum data
+    if student_program:
+        try:
+            curriculum_obj = Curriculum.objects.get(program=student_program)
+            curriculum_data = curriculum_obj.data.get("curriculum", [])
+            
+            # Process all courses from curriculum
+            for year in curriculum_data:
+                for term in year.get("terms", []):
+                    for subject in term.get("subjects", []):
+                        course_info = {
+                            'code': subject.get('subject_code', 'N/A'),
+                            'title': subject.get('description', 'N/A'),
+                            'units': subject.get('units', 3),
+                            'semester': f"{year.get('year', '')} - {term.get('term', '')}",
+                            'status': subject.get('final_grade', 'RECOMMENDED'),
+                            'school_year': subject.get('school_year', ''),
+                            'year': year.get('year', '')
+                        }
+                        
+                        all_courses.append(course_info)
+                        total_units += course_info['units']
+                        
+                        # Categorize by status
+                        if course_info['status'] == 'PASSED':
+                            completed_courses.append(course_info)
+                            completed_units += course_info['units']
+                        elif course_info['status'] == 'CURRENT':
+                            in_progress_courses.append(course_info)
+                            in_progress_units += course_info['units']
+                        else:  # RECOMMENDED or other
+                            not_started_courses.append(course_info)
+                        
+                        # Categorize by type (using common patterns)
+                        code = course_info['code'].upper()
+                        
+                        # General Education patterns
+                        if any(prefix in code for prefix in ['GE', 'ENGL', 'MATH', 'PHILO', 'HUM', 'SOCSCI', 'NATSCI', 'HIST', 'PSYCH', 'PE', 'NSTP']):
+                            gen_ed_courses.append(course_info)
+                        # Electives
+                        elif 'ELEC' in code or 'ELCE' in code or 'FREEEL' in code:
+                            elective_courses.append(course_info)
+                        # Major courses (IT/CSIT)
+                        elif 'IT' in code or 'CSIT' in code or 'CS' in code:
+                            major_core_courses.append(course_info)
+                        # Everything else goes to minor/specialization
+                        else:
+                            minor_courses.append(course_info)
+                            
+        except Curriculum.DoesNotExist:
+            pass
+    
+    # Calculate completion percentage
+    completion_percentage = (completed_units / total_units * 100) if total_units > 0 else 0
+    credits_remaining = total_units - completed_units
+    
+    # Get current GPA
+    current_gpa = float(profile.gpa) if profile.gpa else 0.0
+    
+    # Get achievements
+    achievements = profile.achievements.all()
+    
+    # Recommend courses for next semester based on:
+    # 1. Courses with RECOMMENDED status
+    # 2. Next semester courses (based on current year level)
+    recommended_courses = []
+    
+    current_year_level = profile.year_level
+    if curriculum_data and current_year_level <= len(curriculum_data):
+        current_year_data = curriculum_data[current_year_level - 1] if current_year_level > 0 else None
+        
+        if current_year_data:
+            # Get next term's courses
+            for term in current_year_data.get('terms', []):
+                for subject in term.get('subjects', []):
+                    if subject.get('final_grade', '').upper() == 'RECOMMENDED':
+                        recommended_courses.append({
+                            'code': subject.get('subject_code', 'N/A'),
+                            'title': subject.get('description', 'N/A'),
+                            'units': subject.get('units', 3),
+                            'semester': term.get('term', 'N/A')
+                        })
+    
+    # Limit to top 6 recommendations
+    recommended_courses = recommended_courses[:6]
+    
+    # Load academic calendar for semester info
+    calendar_path = os.path.join(settings.BASE_DIR, 'a2s', 'static', 'data', 'academic_calendar.json')
+    current_semester = "Unknown Semester"
+    try:
+        with open(calendar_path, 'r', encoding='utf-8') as f:
+            calendar_data = json.load(f)
+            today = datetime.now().date()
+            
+            for sem in calendar_data:
+                start_event = next((e for e in sem["events"] if "Start of Classes" in e["name"]), None)
+                end_event = next((e for e in sem["events"] if "End of Classes" in e["name"]), None)
+                
+                if start_event and end_event:
+                    start_date = datetime.strptime(start_event["date"], "%Y-%m-%d").date()
+                    end_date = datetime.strptime(end_event["date"], "%Y-%m-%d").date()
+                    
+                    if start_date <= today <= end_date:
+                        current_semester = sem["semester"]
+                        break
+    except Exception as e:
+        print("Error loading academic calendar:", e)
+    
+    context = {
+        'student': student_user,
+        'profile': profile,
+        'student_program': student_program or "No Program Assigned",
+        'current_semester': current_semester,
+        
+        # Progress metrics
+        'total_units': total_units,
+        'completed_units': completed_units,
+        'in_progress_units': in_progress_units,
+        'credits_remaining': credits_remaining,
+        'completion_percentage': round(completion_percentage, 1),
+        'current_gpa': current_gpa,
+        
+        # Categorized courses
+        'gen_ed_courses': gen_ed_courses,
+        'major_core_courses': major_core_courses,
+        'elective_courses': elective_courses,
+        'minor_courses': minor_courses,
+        
+        # Status-based courses
+        'completed_courses': completed_courses,
+        'in_progress_courses': in_progress_courses,
+        'not_started_courses': not_started_courses,
+        
+        # Achievements and recommendations
+        'achievements': achievements,
+        'recommended_courses': recommended_courses,
+        
+        # All courses for What-If calculator
+        'all_courses_json': json.dumps([{
+            'code': c['code'],
+            'title': c['title'],
+            'units': c['units']
+        } for c in all_courses]),
+    }
+    
+    return render(request, 'students/StudentDegreeAudit.html', context)
