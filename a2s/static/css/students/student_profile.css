@@ -10,12 +10,37 @@
   --shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-/* ================== MAIN CONTENT ================== */
-.main-content {
-  padding: 2rem;
+/* ================== GENERAL ================== */
+body, .main-content {
   background-color: var(--background);
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
+}
+
+.card, .contact-card, .achievement-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover, .contact-card:hover, .achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  color: #000;
 }
 
 /* ================== TABS ================== */
@@ -37,14 +62,14 @@
   flex: 1;
   padding: 0.75rem 1rem;
   border: none;
-  background: var(--primary);
-  color: #fff;
-  cursor: pointer;
   border-radius: var(--radius);
   font-weight: 500;
   text-align: center;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
   transition: 0.2s;
 }
 
@@ -76,7 +101,6 @@
   gap: 2rem;
 }
 
-
 @media (min-width: 768px) {
   .profile-grid {
     flex-direction: row;
@@ -91,16 +115,15 @@
     justify-content: flex-start;
     height: 500px;
     overflow-y: auto;
+    background: white;
+    
   }
 }
 
-/* ================== PROFILE PICTURE CARD ================== */
+/* ================== PROFILE PICTURE ================== */
 .profile-picture-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2rem 1rem 1rem;
   text-align: center;
+  padding: 2rem 1rem 1rem;
 }
 
 .profile-picture-wrapper {
@@ -111,36 +134,37 @@
 }
 
 .profile-picture {
-  width: 120px;
-  height: 120px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  color: #fff;
-  border: 3px solid #fff;
-  background: var(--primary);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.camera-button {
+.profile-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-profile-pic-button {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  background: #fff;
-  color: var(--primary);
+  bottom: 5px;
+  right: 5px;
+  background-color: rgba(0,0,0,0.6);
+  color: white;
   border: none;
   border-radius: 50%;
-  padding: 0.4rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.camera-button:hover {
-  background: var(--primary);
-  color: #fff;
-  transform: scale(1.1);
+  font-size: 16px;
 }
 
 .profile-name {
@@ -158,33 +182,6 @@
   color: #000;
   display: inline-block;
   letter-spacing: 0.5px;
-}
-
-/* ================== CARDS ================== */
-.card, .contact-card, .achievement-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 1.5rem 2rem;
-  margin-bottom: 1.5rem;
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover, .contact-card:hover, .achievement-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.8rem;
-  color: #000;
 }
 
 /* ================== FORM FIELDS ================== */
@@ -225,20 +222,6 @@
   font-weight: 600;
 }
 
-.progress-bar {
-  background: var(--border);
-  height: 8px;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--primary), #8f92ff);
-}
-
-/* ================== STATUS BADGE ================== */
 .status-badge.success {
   background: #dcfce7;
   color: green;
@@ -268,15 +251,15 @@
 }
 
 .achievement-card i {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 40px;
   height: 40px;
   margin: 0 auto;
   background: var(--primary);
   color: #fff;
   border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 1.2rem;
 }
 
@@ -291,48 +274,6 @@
   color: var(--text-muted);
   line-height: 1.4;
   margin: 0;
-}
-
-/* ================== SETTINGS ================== */
-.setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
-  transition: background 0.2s;
-}
-
-.setting-item:hover {
-  background: #cfd1d8;
-}
-
-.setting-info h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #000;
-}
-
-.setting-info p {
-  margin: 0.2rem 0 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.setting-button {
-  background: #3730a3;
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.setting-button:hover {
-  background: var(--primary);
-  transform: scale(1.05);
 }
 
 /* ================== EDIT PROFILE BUTTON ================== */
@@ -350,236 +291,26 @@
   transition: 0.2s;
 }
 
-.edit-profile-button i {
-  stroke-width: 2;
-}
-
 .edit-profile-button:hover {
   background: #3730a3;
   transform: scale(1.05);
 }
 
-
+/* ================== SAVE/CANCEL BUTTONS ================== */
 .profile-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin: 1rem 0 2rem; /* Adjust top margin to move higher */
-}
-
-.save-button {
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    padding: 0.5rem 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.save-button:hover {
-    background: #3730a3;
-    transform: scale(1.05);
-}
-
-.cancel-button {
-    background: #e5e7eb;
-    color: var(--foreground);
-    border: none;
-    border-radius: var(--radius);
-    padding: 0.5rem 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.cancel-button:hover {
-    background: #d1d5db;
-}
-
-
-/* ================== RESPONSIVE ================== */
-@media (max-width: 768px) {
-  .profile-grid,
-  .academic-grid {
-    grid-template-columns: 1fr;
-    flex-direction: column;
-  }
-
-  .tab-list {
-    flex-wrap: wrap;
-  }
-
-  .tab-trigger {
-    flex: 1 1 45%;
-    margin-bottom: 0.5rem;
-    text-align: center;
-  }
-}
-
-/* ================== EDIT MODE ================== */
-.editable-field input,
-.editable-field textarea,
-.editable-field select {
-    display: none;
-}
-
-
-.read-only .field-value {
-  display: inline-block;
-}
-
-.edit-mode .field-value {
-  display: none;
-}
-
-.edit-mode .editable-field input,
-.edit-mode .editable-field textarea,
-.edit-mode .editable-field select {
-    display: block !important;
-    width: 100%;
-    margin-top: 5px;
-    padding: 0.4rem 0.6rem;
-    border: 1px solid var(--border);
-    border-radius: 0.4rem;
-    transition: all 0.2s ease;
-}
-
-.editable-field input,
-.editable-field textarea {
-  display: none;
-}
-/* ================== TOAST ================== */
-.toast {
-  min-width: 250px;
-  margin-bottom: 10px;
-  padding: 15px 20px;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  font-family: sans-serif;
-  animation: slideIn 0.5s, fadeOut 0.5s 3s forwards;
-  opacity: 0.95;
-}
-
-.toast-error {
-  background-color: #f44336;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 0.95; }
-}
-
-@keyframes fadeOut {
-  from { opacity: 0.95; }
-  to { opacity: 0; }
-}
-
-/* ================== EDIT PROFILE MODAL ================== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* semi-transparent black overlay */
-  display: none; /* hidden by default */
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(2px);
-}
-
-.modal-content {
-  background: var(--card-bg);
-  color: var(--foreground);
-  padding: 2rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  width: 90%;
-  max-width: 600px;
-  animation: fadeIn 0.25s ease;
-}
-
-.modal-content h2 {
-  margin-bottom: 1.5rem;
-  color: var(--primary);
-  text-align: center;
-  font-weight: 700;
-}
-
-/* ================== FORM INSIDE MODAL ================== */
-#editProfileForm {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-field label {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin-bottom: 0.3rem;
-}
-
-.form-field input,
-.form-field textarea {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 0.95rem;
-  color: var(--foreground);
-  background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-field input:focus,
-.form-field textarea:focus {
-  border-color: var(--primary);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(111, 115, 255, 0.2);
-}
-
-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* ================== MODAL ACTION BUTTONS ================== */
-.modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
+  margin: 1rem 0 2rem;
 }
 
-.modal-actions button {
-  padding: 0.6rem 1.2rem;
+.save-button, .cancel-button {
   border: none;
   border-radius: var(--radius);
-  cursor: pointer;
+  padding: 0.5rem 1.2rem;
   font-weight: 600;
+  cursor: pointer;
   transition: 0.2s;
-}
-
-#cancelEdit {
-  background: #e5e7eb;
-  color: var(--foreground);
-}
-
-#cancelEdit:hover {
-  background: #d1d5db;
 }
 
 .save-button {
@@ -592,42 +323,56 @@ textarea {
   transform: scale(1.05);
 }
 
-/* ================== ANIMATIONS ================== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.cancel-button {
+  background: #e5e7eb;
+  color: var(--foreground);
+}
+
+.cancel-button:hover {
+  background: #d1d5db;
+}
+
+/* ================== EDIT MODE ================== */
+.editable-field input,
+.editable-field textarea,
+.editable-field select {
+  display: none;
+}
+
+.read-only .field-value {
+  display: inline-block;
+}
+
+.edit-mode .field-value {
+  display: none;
+}
+
+.edit-mode .editable-field input,
+.edit-mode .editable-field textarea,
+.edit-mode .editable-field select {
+  display: block !important;
+  width: 100%;
+  margin-top: 5px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition: all 0.2s ease;
 }
 
 /* ================== RESPONSIVE ================== */
-@media (max-width: 600px) {
-  .form-grid {
+@media (max-width: 768px) {
+  .profile-grid, .academic-grid {
+    flex-direction: column;
     grid-template-columns: 1fr;
   }
 
-  .modal-content {
-    width: 95%;
-    padding: 1.5rem;
+  .tab-list {
+    flex-wrap: wrap;
   }
-}
 
-.styled-select {
-    width: 100%;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    background-color: #f9f9f9;
-    transition: 0.2s all ease-in-out;
-}
-
-.styled-select:focus {
-    border-color: #4A90E2;
-    outline: none;
-    background-color: #fff;
+  .tab-trigger {
+    flex: 1 1 45%;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
 }

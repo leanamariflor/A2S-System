@@ -41,14 +41,25 @@
     <!-- Sidebar -->
     <aside class="dashboard-sidebar">
       <!-- Teacher Info -->
-     <div class="sidebar-teacher-info">
-  <div class="teacher-avatar">
-    {% if request.user.first_name and request.user.last_name %}
-      <span>{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}</span>
+  <div class="sidebar-teacher-info">
+    <div class="teacher-avatar">
+  {% if request.user.teacherprofile.profile_picture %}
+    <img 
+      src="{{ request.user.teacherprofile.profile_picture }}" 
+      alt="Profile Picture" 
+      class="avatar-circle"
+    >
+  {% else %}
+    {% if teacher_user.first_name and teacher_user.last_name %}
+      <span>{{ teacher_user.first_name|slice:":1" }}{{ teacher_user.last_name|slice:":1" }}</span>
     {% else %}
-      <span>TC</span>
+      <span>ST</span>
     {% endif %}
-  </div>
+  {% endif %}
+</div>
+
+  
+
   <div class="teacher-details">
     <h3 id="teacher-name">
       Prof. {{ request.user.first_name }} {{ request.user.last_name }}
@@ -61,6 +72,7 @@
         Department: Not Assigned
       {% endif %}
     </p>
+    <br>
   </div>
 </div>
 
@@ -107,22 +119,8 @@
     </main>
   </div>
 
-  <script>
-    lucide.createIcons();
+      <script src="{% static 'js/teacher/teacher_base.js' %}"></script>
 
-    const tabTriggers = document.querySelectorAll('.tab-trigger');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabTriggers.forEach(trigger => {
-      trigger.addEventListener('click', () => {
-        const targetTab = trigger.getAttribute('data-tab');
-        tabTriggers.forEach(t => t.classList.remove('active'));
-        tabContents.forEach(c => c.classList.remove('active'));
-        trigger.classList.add('active');
-        document.getElementById(targetTab).classList.add('active');
-      });
-    });
-  </script>
 
 </body>
 </html>

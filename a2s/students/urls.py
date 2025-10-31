@@ -1,6 +1,8 @@
 
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
    # Student Routes
@@ -11,15 +13,17 @@ urlpatterns = [
     path('StudentCourses/', views.student_courses, name='StudentCourses'),
     path('StudentGrades/', views.student_grades, name='StudentGrades'),
     path('StudentCurriculum/', views.student_curriculum, name='StudentCurriculum'),
-   path('StudentDegreeAudit/', views.student_degree_audit, name='StudentDegreeAudit'),
+    path('StudentDegreeAudit/', views.student_degree_audit, name='StudentDegreeAudit'),
 
-
-   
+    path('upload-profile-picture/', views.upload_profile_picture, name='UploadProfilePicture'),
+    path("reset-profile-picture/", views.reset_profile_picture, name="reset_profile_picture"),
 
     # Base Templates
-    path('student_base/', views.student_base, name='student_base'),
+   path('student_base/', views.student_base, name='student_base'),
    path('api/curriculum/<str:program>/', views.get_curriculum_json, name='get_curriculum_json'),
 
 ]
 
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -16,6 +16,8 @@ class StudentProfile(models.Model):
     credits_required = models.IntegerField(blank=True, null=True)
     academic_standing = models.CharField(max_length=50, default="Good Standing")
     expected_graduation = models.DateField(blank=True, null=True)
+    profile_picture = models.URLField(blank=True, null=True)
+
 
     def __str__(self):
         return f"{self.user.get_full_name()}"

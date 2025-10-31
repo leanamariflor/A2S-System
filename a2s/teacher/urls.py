@@ -12,7 +12,8 @@ urlpatterns = [
 
 
     path('teacher_base/', views.teacher_base, name='teacher_base'),
-
+    path('upload-profile-picture/', views.upload_profile_picture, name='UploadProfilePicture'),
+    path("reset-profile-picture/", views.reset_profile_picture, name="reset_profile_picture"),
      
     # API Endpoints
     path('api/curriculum/<str:program>/', views.get_curriculum_json, name='get_curriculum_json'),

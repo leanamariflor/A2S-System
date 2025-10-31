@@ -327,20 +327,41 @@ body {
     text-align: center;
 }
 
+/* Avatar Container */
 .teacher-avatar {
     width: 4rem;
     height: 4rem;
-    background: var(--gradient-red);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 0.75rem;
+    background-color: #6f73ff;  /* fallback bg for initials */
     color: white;
     font-size: 1.125rem;
     font-weight: 600;
+    overflow: hidden; /* ensures image stays inside circle */
 }
 
+/* Avatar Image */
+.teacher-avatar img.avatar-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50% !important; /* force circle */
+    object-fit: cover;              /* cover container nicely */
+    display: block;
+}
+
+.teacher-avatar span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: white;
+}
 .teacher-details h3 {
     font-size: 1rem;
     font-weight: 600;

@@ -5,19 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from supabase import create_client
-from datetime import datetime, timedelta
-from datetime import date
 from django.views.decorators.http import require_GET
-
-
 from django.http import HttpResponse
-import json, os, csv
 
+import json, os, csv
+from datetime import datetime, timedelta, date
+
+from supabase import create_client
 
 from teacher.models import TeacherProfile, Schedule
 from students.models import Curriculum, Course, Enrollment, StudentProfile
 from students.models import CourseAssignment, Grade
+
 
 # -----------------------------
 # Supabase Setup
@@ -25,23 +24,48 @@ from students.models import CourseAssignment, Grade
 SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
 SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODg5OTIyNiwiZXhwIjoyMDc0NDc1MjI2fQ.b8Q1La_ZM8YSm6yt8Hw2qvNRS9GDkaLcbHWpb3ZK9eM"
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+DEFAULT_PROFILE_URL = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/avatar.png"
+
 
 # -----------------------------
-# Teacher Views
+# Constant Choices
 # -----------------------------
+COLLEGE_CHOICES = [
+    ("CEA", "Engineering and Architecture"),
+    ("CCS", "Computer Studies"),
+    ("CASE", "Arts, Sciences and Education"),
+    ("CMBA", "Management, Business and Accountancy"),
+    ("CNAHS", "Nursing and Allied Health Sciences"),
+    ("CCJ", "Criminal Justice"),
+]
+
+POSITION_CHOICES = [
+    "Full-Time Faculty",
+    "Part-Time Faculty",
+    "Visiting Lecturer",
+    "Adjunct Faculty",
+]
 
 
+# -----------------------------
+# Base View
+# -----------------------------
+def teacher_base(request):
+    return render(request, "teacher/teacher_base.html")
+
+
+# -----------------------------
+# Teacher Dashboard & Profile Views
+# -----------------------------
 @login_required(login_url="Login")
 def teacher_dashboard(request):
     teacher_user = request.user
 
-    # --- Teacher Profile ---
     try:
         profile = TeacherProfile.objects.get(user=teacher_user)
     except TeacherProfile.DoesNotExist:
         profile = None
 
-    # --- Get all schedules of this teacher ---
     schedules = Schedule.objects.filter(teacher=profile).order_by("subject_code", "section")
 
     course_data = []
@@ -54,7 +78,6 @@ def teacher_dashboard(request):
         if "/" in section:
             continue
 
-        # Count unique students per course-section under this teacher
         student_ids = CourseAssignment.objects.filter(
             teacher=profile,
             course_code=course_code,
@@ -70,7 +93,6 @@ def teacher_dashboard(request):
             "student_count": student_count,
         })
 
-    # Remove duplicates and sort
     seen = set()
     unique_courses = []
     for c in course_data:
@@ -82,7 +104,6 @@ def teacher_dashboard(request):
     total_courses = len(unique_courses)
     total_students = len(total_students_all)
 
-    # --- Academic Calendar ---
     calendar_data = []
     calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
     try:
@@ -118,21 +139,6 @@ def teacher_dashboard(request):
 
     return render(request, "teacher/TeacherDashboard.html", context)
 
-COLLEGE_CHOICES = [
-    ("CEA", "Engineering and Architecture"),
-    ("CCS", "Computer Studies"),
-    ("CASE", "Arts, Sciences and Education"),
-    ("CMBA", "Management, Business and Accountancy"),
-    ("CNAHS", "Nursing and Allied Health Sciences"),
-    ("CCJ", "Criminal Justice"),
-]
-
-POSITION_CHOICES = [
-    "Full-Time Faculty",
-    "Part-Time Faculty",
-    "Visiting Lecturer",
-    "Adjunct Faculty",
-]
 
 @login_required(login_url="Login")
 def teacher_profile(request):
@@ -141,6 +147,10 @@ def teacher_profile(request):
 
     def format_date(dt):
         return dt.strftime("%B %d, %Y") if dt else ""
+    if profile.profile_picture:
+        profile_picture_url = profile.profile_picture
+    else:
+        profile_picture_url = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png"
 
     total_courses = Course.objects.filter(grade__faculty=user.get_full_name()).distinct().count()
     total_students = Enrollment.objects.filter(course__grade__faculty=user.get_full_name()).count()
@@ -164,96 +174,93 @@ def teacher_profile(request):
         "position": profile.position or "Full-Time Faculty",
         "college_choices": COLLEGE_CHOICES,
         "position_choices": POSITION_CHOICES,
+        "profile_picture_url": profile_picture_url,
+
     }
     return render(request, "teacher/TeacherProfile.html", context)
 
+@csrf_exempt
 @login_required(login_url="Login")
-def teacher_courses(request):
-    teacher_profile = TeacherProfile.objects.get(user=request.user)
-
-    # Get all schedules for this teacher
-    schedules = Schedule.objects.filter(teacher=teacher_profile).order_by("subject_code", "section")
-
-    courses_list = []
-    seen = set()
-    for sched in schedules:
-        # Skip online combined sections (sections with '/')
-        if '/' in sched.section:
-            continue
-
-        key = f"{sched.subject_code}-{sched.section}"
-        if key not in seen:
-            courses_list.append({
-                "course_code": sched.subject_code,
-                "section": sched.section,
-                "action": "view"
-            })
-            seen.add(key)
-
-    # Sort by course code and section
-    courses_list.sort(key=lambda x: (x["course_code"], x["section"]))
-
-    context = {
-        "teacher_name": request.user.get_full_name(),
-        "school_year": "2025-2026",
-        "active_courses": len(courses_list),
-        "courses": courses_list,
-    }
-
-    return render(request, "teacher/TeacherCourses.html", context)
-
-
-@login_required(login_url="Login")
-def api_teacher_courses(request):
-    """Return teacher courses as JSON for dynamic loading."""
-    file_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "teacher_courses.json")
+def update_teacher_profile(request):
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        data = json.loads(request.body.decode("utf-8"))
+        user = request.user
+        profile = user.teacherprofile
+
+        user.first_name = data.get("first_name", user.first_name)
+        user.last_name = data.get("last_name", user.last_name)
+        user.email = data.get("email", user.email)
+        user.save()
+
+        profile.phone = data.get("phone", profile.phone)
+        profile.address = data.get("address", profile.address)
+        profile.bio = data.get("bio", profile.bio)
+        profile.department = data.get("department", profile.department)
+        profile.specialization = data.get("specialization", profile.specialization)
+        profile.position = data.get("position", profile.position)
+        profile.save()
+
+        return JsonResponse({"status": "success"})
     except Exception as e:
-        data = {"error": str(e)}
-
-    return JsonResponse(data)
-
-def teacher_base(request):
-    return render(request, "teacher/teacher_base.html")
+        print("❌ ERROR updating teacher profile:", e)
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 
 @csrf_exempt
 @login_required
-def update_teacher_profile(request):
-    import json
+def upload_profile_picture(request):
+    if request.method != 'POST' or 'file' not in request.FILES:
+        return JsonResponse({'status': 'error', 'message': 'No file uploaded'}, status=400)
+
+    file = request.FILES['file']
     user = request.user
-    profile = user.teacherprofile
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user.first_name = data.get("first_name", user.first_name)
-        user.last_name = data.get("last_name", user.last_name)
-        user.save()
-        profile.phone = data.get("phone", profile.phone)
-        profile.address = data.get("address", profile.address)
-        profile.dob = data.get("dob", profile.dob)
-        profile.bio = data.get("bio", profile.bio)
-        profile.department = data.get("department", profile.department)
-        profile.specialization = data.get("specialization", profile.specialization)
-        profile.save()
-        return JsonResponse({"status": "success"})
-    return JsonResponse({"status": "error", "message": "Invalid request"})
 
-def get_curriculum_json(request, program):
     try:
-        curriculum = Curriculum.objects.get(program=program)
-        return JsonResponse({"curriculum": curriculum.data["curriculum"]}, safe=False)
-    except Curriculum.DoesNotExist:
-        return JsonResponse({"error": "Curriculum not found"}, status=404)
+        profile, _ = TeacherProfile.objects.get_or_create(user=user)
+        file_path = f"{user.id}/{file.name}"
+        file_bytes = file.read()
 
+        upload_result = supabase.storage.from_('ProfilePicture').upload(file_path, file_bytes)
+
+        if hasattr(upload_result, 'error') and upload_result.error is not None:
+            raise Exception(f"Supabase upload error: {upload_result.error}")
+
+        url_result = supabase.storage.from_('ProfilePicture').get_public_url(file_path)
+        public_url = getattr(url_result, 'public_url', None) or getattr(url_result, 'url', None)
+
+        if not public_url:
+            public_url = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/{file_path}"
+
+        profile.profile_picture = public_url
+        profile.save(update_fields=['profile_picture'])
+
+        return JsonResponse({'status': 'success', 'url': public_url})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@login_required
+def reset_profile_picture(request):
+    profile, _ = TeacherProfile.objects.get_or_create(user=request.user)
+    default_url = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png"
+    profile.profile_picture = default_url
+    profile.save(update_fields=['profile_picture'])
+    return JsonResponse({'status': 'success', 'url': default_url})
+
+
+
+# -----------------------------
+# Schedule & Course Views (List)
+# -----------------------------
 @login_required(login_url="Login")
 def teacher_schedule(request):
     days = ['M', 'T', 'W', 'TH', 'F', 'SAT']
 
-    # Generate 30-min time slots from 07:00 AM to 09:00 PM
     start_time = datetime.strptime("07:00 AM", "%I:%M %p")
     end_time = datetime.strptime("09:00 PM", "%I:%M %p")
     hours = []
@@ -262,11 +269,9 @@ def teacher_schedule(request):
         hours.append(current.strftime("%I:%M %p"))
         current += timedelta(minutes=30)
 
-    # Get logged-in teacher profile
     teacher_profile = TeacherProfile.objects.get(user=request.user)
     raw_scheds = Schedule.objects.filter(teacher=teacher_profile)
 
-    # Build schedule grid
     schedule_grid = {day: {} for day in days}
 
     for s in raw_scheds:
@@ -296,133 +301,52 @@ def teacher_schedule(request):
     }
     return render(request, 'teacher/TeacherSchedule.html', context)
 
-def add_grade(request, student_id, course_code):
-    student = get_object_or_404(StudentProfile, id=student_id)
-    
-    # Check if teacher is assigned for this course
-    assignment_exists = CourseAssignment.objects.filter(
-        student=student,
-        teacher=request.user.teacherprofile,
-        course_code=course_code
-    ).exists()
 
-    if not assignment_exists:
-        return HttpResponse("You are not assigned to this student for this course.", status=403)
+@login_required(login_url="Login")
+def teacher_courses(request):
+    teacher_profile = TeacherProfile.objects.get(user=request.user)
 
-    if request.method == 'POST':
-        form = GradeForm(request.POST)
-        if form.is_valid():
-            grade = form.save(commit=False)
-            grade.student = student
-            grade.course_code = course_code
-            grade.faculty = request.user.get_full_name()
-            grade.save()
-            return redirect('my_advisees')
-    else:
-        form = GradeForm()
-    
-    return render(request, 'faculty/add_grade.html', {'form': form, 'student': student, 'course_code': course_code})
+    schedules = Schedule.objects.filter(teacher=teacher_profile).order_by("subject_code", "section")
 
+    courses_list = []
+    seen = set()
+    for sched in schedules:
+        if '/' in sched.section:
+            continue
+
+        key = f"{sched.subject_code}-{sched.section}"
+        if key not in seen:
+            courses_list.append({
+                "course_code": sched.subject_code,
+                "section": sched.section,
+                "action": "view"
+            })
+            seen.add(key)
+
+    courses_list.sort(key=lambda x: (x["course_code"], x["section"]))
+
+    context = {
+        "teacher_name": request.user.get_full_name(),
+        "school_year": "2025-2026",
+        "active_courses": len(courses_list),
+        "courses": courses_list,
+    }
+
+    return render(request, "teacher/TeacherCourses.html", context)
+
+@login_required(login_url="Login")
 def my_course_advisees(request):
     teacher = request.user.teacherprofile
-    assignments = teacher.student_assignments.all()  # thanks to related_name
+    assignments = teacher.student_assignments.all()
     return render(request, 'faculty/course_advisees.html', {'assignments': assignments})
 
-@login_required(login_url="Login")
-def api_teacher_courses(request):
-    """
-    Return all courses assigned to the logged-in teacher from Supabase, with debug logging.
-    """
-    teacher_id = request.user.id
 
-    try:
-        response = supabase.table("students_courseassignment") \
-            .select("course_code, section") \
-            .eq("teacher_id", teacher_id) \
-            .execute()
-        
-        
-        courses = []
-        if response.data:
-            seen = set()
-            for item in response.data:
-                key = f"{item['course_code']}-{item.get('section','')}"
-                if key not in seen:
-                    courses.append({
-                        "course_code": item["course_code"],
-                        "section": item.get("section", ""),
-                    })
-                    seen.add(key)
-
-        return JsonResponse({"courses": courses}, status=200)
-
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
-
-@login_required(login_url="Login")
-@require_GET
-def get_course_students(request, course_code, section):
-    """
-    Returns all students enrolled in a course & section with full info, including full_name and year_level.
-    """
-    try:
-        # Fetch course assignments and embed student info
-        response = supabase.table("students_courseassignment") \
-            .select("id, course_code, section, student_id") \
-            .eq("course_code", course_code) \
-            .eq("section", section) \
-            .execute()
-        
-        students_list = []
-
-        if response.data:
-            for sca in response.data:
-                student_id = sca.get("student_id")
-                
-                # Fetch student profile from students_studentprofile table
-                student_profile = supabase.table("students_studentprofile") \
-                    .select("user_id, program, year_level") \
-                    .eq("id", student_id) \
-                    .single().execute()
-                
-                if student_profile.data:
-                    user_id = student_profile.data.get("user_id")
-
-                    # Fetch user's first_name and last_name from auth.users
-                    user_data = supabase.table("authentication_user") \
-                        .select("first_name, last_name") \
-                        .eq("id", user_id) \
-                        .single().execute()
-                    
-                    full_name = ""
-                    if user_data.data:
-                        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
-                    
-                    students_list.append({
-                        "id": sca["id"],
-                        "full_name": full_name,
-                        "course_code": sca["course_code"],
-                        "section": sca["section"],
-                        "year_level": student_profile.data.get("year_level", ""),
-                        "program": student_profile.data.get("program")
-                    })
-
-        return JsonResponse({"students": students_list})
-
-    except Exception as e:
-        print("Error fetching students:", e)
-        return JsonResponse({"students": [], "error": str(e)}, status=500)
-
-
+# -----------------------------
+# Course Class List & Students
+# -----------------------------
 @login_required(login_url="Login")
 def teacher_classlist(request, course_code, section):
-    """
-    Renders a full page showing all students in the specified course & section.
-    Pulls data from Supabase.
-    """
     try:
-        # Get all student assignments for the given course and section
         response = supabase.table("students_courseassignment") \
             .select("id, course_code, section, student_id") \
             .eq("course_code", course_code) \
@@ -435,7 +359,6 @@ def teacher_classlist(request, course_code, section):
             for sca in response.data:
                 student_id = sca.get("student_id")
 
-                # Fetch student profile
                 student_profile = supabase.table("students_studentprofile") \
                     .select("user_id, program, year_level") \
                     .eq("id", student_id) \
@@ -444,7 +367,6 @@ def teacher_classlist(request, course_code, section):
                 if student_profile.data:
                     user_id = student_profile.data.get("user_id")
 
-                    # Fetch name from auth table
                     user_data = supabase.table("authentication_user") \
                         .select("first_name, last_name") \
                         .eq("id", user_id) \
@@ -478,12 +400,12 @@ def teacher_classlist(request, course_code, section):
             "error": str(e)
         })
 
+
 @login_required(login_url="Login")
 def student_status(request, student_id):
     student = get_object_or_404(StudentProfile, id=student_id)
     teacher = request.user.teacherprofile
 
-    # Optional: Fetch user info from Supabase
     user_data = supabase.table("authentication_user") \
         .select("first_name, last_name, username, id_number") \
         .eq("id", student.user_id) \
@@ -497,16 +419,13 @@ def student_status(request, student_id):
         username = user_data.data.get('username', '')
         student_number = user_data.data.get('id_number', '')
 
-    # Fetch teacher’s courses for this student
     teacher_assignments = CourseAssignment.objects.filter(student=student, teacher=teacher)
     teacher_courses = teacher_assignments.values_list("course_code", flat=True)
 
-    # Fetch grades
     grades = Grade.objects.filter(student=student, course_code__in=teacher_courses).values(
         "course_code", "course_name", "midterm", "final_grade", "remarks", "semester", "school_year"
     )
 
-    # Back button
     course_code, section = "", ""
     first_assignment = teacher_assignments.first()
     if first_assignment:
@@ -521,54 +440,41 @@ def student_status(request, student_id):
         "grades": grades,
         "course_code": course_code,
         "section": section,
-        "student_id": student.id,  # ✅ pass student_id for export
+        "student_id": student.id,
     }
 
     return render(request, "teacher/StudentStatus.html", context)
 
 
-def export_student_report(request, student_id):
-    # Replace this with actual student/grades fetching
-    student = get_object_or_404(Student, id=student_id)
-    grades = student.grades.all()
-
-    # Create CSV response
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{student.full_name}_report.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
-    for g in grades:
-        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
-
-    return response
-
-
+# -----------------------------
+# Grade Management Views
+# -----------------------------
 @login_required(login_url="Login")
-def export_student_report(request, student_id):
-    teacher = request.user.teacherprofile
+def add_grade(request, student_id, course_code):
     student = get_object_or_404(StudentProfile, id=student_id)
 
-    # Get courses this teacher teaches for this student
-    teacher_courses = CourseAssignment.objects.filter(
+    assignment_exists = CourseAssignment.objects.filter(
         student=student,
-        teacher=teacher
-    ).values_list("course_code", flat=True)
+        teacher=request.user.teacherprofile,
+        course_code=course_code
+    ).exists()
 
-    # Fetch only those grades
-    grades = Grade.objects.filter(student=student, course_code__in=teacher_courses)
+    if not assignment_exists:
+        return HttpResponse("You are not assigned to this student for this course.", status=403)
 
-    # Create CSV response
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{student.user.get_full_name()}_report.csv"'
+    if request.method == 'POST':
+        form = GradeForm(request.POST)
+        if form.is_valid():
+            grade = form.save(commit=False)
+            grade.student = student
+            grade.course_code = course_code
+            grade.faculty = request.user.get_full_name()
+            grade.save()
+            return redirect('my_advisees')
+    else:
+        form = GradeForm()
 
-    writer = csv.writer(response)
-    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
-
-    for g in grades:
-        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
-
-    return response
+    return render(request, 'faculty/add_grade.html', {'form': form, 'student': student, 'course_code': course_code})
 
 
 @login_required(login_url="Login")
@@ -586,5 +492,153 @@ def update_grade_notes(request):
             return JsonResponse({"status": "success", "notes": grade.notes})
         except Grade.DoesNotExist:
             return JsonResponse({"status": "error", "message": "Grade not found or permission denied."})
-    
+
     return JsonResponse({"status": "error", "message": "Invalid request method."})
+
+
+# -----------------------------
+# Curriculum API View
+# -----------------------------
+@login_required(login_url="Login")
+def get_curriculum_json(request, program):
+    try:
+        curriculum = Curriculum.objects.get(program=program)
+        return JsonResponse({"curriculum": curriculum.data["curriculum"]}, safe=False)
+    except Curriculum.DoesNotExist:
+        return JsonResponse({"error": "Curriculum not found"}, status=404)
+
+
+# -----------------------------
+# Data Export Views
+# -----------------------------
+@login_required(login_url="Login")
+def export_student_report(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    grades = student.grades.all()
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{student.full_name}_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
+    for g in grades:
+        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
+
+    return response
+
+
+@login_required(login_url="Login")
+def export_student_report(request, student_id):
+    teacher = request.user.teacherprofile
+    student = get_object_or_404(StudentProfile, id=student_id)
+
+    teacher_courses = CourseAssignment.objects.filter(
+        student=student,
+        teacher=teacher
+    ).values_list("course_code", flat=True)
+
+    grades = Grade.objects.filter(student=student, course_code__in=teacher_courses)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{student.user.get_full_name()}_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
+
+    for g in grades:
+        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
+
+    return response
+
+
+# -----------------------------
+# JSON API Views
+# -----------------------------
+@login_required(login_url="Login")
+def api_teacher_courses(request):
+    file_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "teacher_courses.json")
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        data = {"error": str(e)}
+
+    return JsonResponse(data)
+
+
+@login_required(login_url="Login")
+def api_teacher_courses(request):
+    teacher_id = request.user.id
+
+    try:
+        response = supabase.table("students_courseassignment") \
+            .select("course_code, section") \
+            .eq("teacher_id", teacher_id) \
+            .execute()
+
+        courses = []
+        if response.data:
+            seen = set()
+            for item in response.data:
+                key = f"{item['course_code']}-{item.get('section','')}"
+                if key not in seen:
+                    courses.append({
+                        "course_code": item["course_code"],
+                        "section": item.get("section", ""),
+                    })
+                    seen.add(key)
+
+        return JsonResponse({"courses": courses}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required(login_url="Login")
+@require_GET
+def get_course_students(request, course_code, section):
+    try:
+        response = supabase.table("students_courseassignment") \
+            .select("id, course_code, section, student_id") \
+            .eq("course_code", course_code) \
+            .eq("section", section) \
+            .execute()
+
+        students_list = []
+
+        if response.data:
+            for sca in response.data:
+                student_id = sca.get("student_id")
+
+                student_profile = supabase.table("students_studentprofile") \
+                    .select("user_id, program, year_level") \
+                    .eq("id", student_id) \
+                    .single().execute()
+
+                if student_profile.data:
+                    user_id = student_profile.data.get("user_id")
+
+                    user_data = supabase.table("authentication_user") \
+                        .select("first_name, last_name") \
+                        .eq("id", user_id) \
+                        .single().execute()
+
+                    full_name = ""
+                    if user_data.data:
+                        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
+
+                    students_list.append({
+                        "id": sca["id"],
+                        "full_name": full_name,
+                        "course_code": sca["course_code"],
+                        "section": sca["section"],
+                        "year_level": student_profile.data.get("year_level", ""),
+                        "program": student_profile.data.get("program")
+                    })
+
+        return JsonResponse({"students": students_list})
+
+    except Exception as e:
+        print("Error fetching students:", e)
+        return JsonResponse({"students": [], "error": str(e)}, status=500)

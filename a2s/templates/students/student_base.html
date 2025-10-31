@@ -43,12 +43,21 @@
       
   <div class="sidebar-student-info">
     <div class="student-avatar">
-      {% if student_user.first_name and student_user.last_name %}
-        <span>{{ student_user.first_name|slice:":1" }}{{ student_user.last_name|slice:":1" }}</span>
-      {% else %}
-        <span>ST</span>
-      {% endif %}
-    </div>
+  {% if request.user.studentprofile.profile_picture %}
+    <img 
+      src="{{ request.user.studentprofile.profile_picture }}" 
+      alt="Profile Picture" 
+      class="avatar-circle"
+    >
+  {% else %}
+    {% if student_user.first_name and student_user.last_name %}
+      <span>{{ student_user.first_name|slice:":1" }}{{ student_user.last_name|slice:":1" }}</span>
+    {% else %}
+      <span>ST</span>
+    {% endif %}
+  {% endif %}
+</div>
+
   <div class="student-details">
     <h3 id="student-name">{{ request.user.first_name }} {{ request.user.last_name }}</h3>
     <p class="student-id">Student ID: {{ request.user.id_number }}</p>
@@ -96,45 +105,14 @@
         </nav>
       </aside>
 
-      <!-- Main Content (child templates fill this block) -->
       <main class="dashboard-main">
         {% block content %}
         {% endblock %}
       </main>
     </div>
 
-    <script>
-      lucide.createIcons();
+    <script src="{% static 'js/students/student_base.js' %}"></script>
 
-      
-          const yearElem = document.getElementById('student-year');
-        if (yearElem) {
-            const year = parseInt(yearElem.textContent) || 0;
-            yearElem.textContent = getYearSuffix(year);
-        }
-
-        function getYearSuffix(year) {
-            if (year === 1) return "1st Year";
-            if (year === 2) return "2nd Year";
-            if (year === 3) return "3rd Year";
-            return year + "th Year";
-        }
-
-      const tabTriggers = document.querySelectorAll('.tab-trigger');
-      const tabContents = document.querySelectorAll('.tab-content');
-
-      tabTriggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-          const targetTab = trigger.getAttribute('data-tab');
-          tabTriggers.forEach(t => t.classList.remove('active'));
-          tabContents.forEach(c => c.classList.remove('active'));
-          trigger.classList.add('active');
-          document.getElementById(targetTab).classList.add('active');
-        });
-      });
-
-      
-    </script>
-
+    
   </body>
   </html>

@@ -1,125 +1,162 @@
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
+    // ---------------- Elements ----------------
+    const profileContainer = document.getElementById('profile-container');
+    const editButton = document.getElementById('edit-profile-button');
+    const saveButton = document.getElementById('save-profile-button');
+    const cancelButton = document.getElementById('cancel-profile-button');
+    const profileInput = document.getElementById('profile-picture-input');
+    const profilePicture = document.getElementById('profile-picture');
+    const editProfilePicButton = document.getElementById('edit-profile-pic-button');
 
-lucide.createIcons();
+    const uploadUrl = profileContainer.dataset.uploadUrl;
+    const updateProfileUrl = profileContainer.dataset.updateProfileUrl;
+    const csrfToken = profileContainer.dataset.csrfToken;
 
-// Tabs
-document.querySelectorAll('.tab-trigger').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-        const targetTab = trigger.getAttribute('data-tab');
-        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        trigger.classList.add('active');
-        document.getElementById(targetTab).classList.add('active');
-    });
-});
-const cancelButton = document.getElementById('cancel-profile-button');
-cancelButton.addEventListener('click', () => {
-    profileContainer.classList.remove('edit-mode');
-    profileContainer.classList.add('read-only');
+    const defaultProfileUrl = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png";
 
-    // hide buttons
-    document.getElementById('profile-actions').style.display = 'none';
-
-    // Reset form fields to original values
-    document.querySelectorAll('.editable-field input, .editable-field textarea').forEach(input => {
-        const fieldName = input.name;
-        const displayEl = document.querySelector(`.field-value[data-field="${fieldName}"]`);
-        if(displayEl) input.value = displayEl.textContent;
-    });
-});
-
-
-// Edit Mode Toggle
-const editButton = document.getElementById('edit-profile-button');
-const profileContainer = document.getElementById('profile-container');
-const saveButton = document.getElementById('save-profile-button');
-
-editButton.addEventListener('click', () => {
-    profileContainer.classList.toggle('edit-mode');
-    profileContainer.classList.toggle('read-only');
-
-    const inEditMode = profileContainer.classList.contains('edit-mode');
-    const actions = document.getElementById('profile-actions');
-    if(actions) actions.style.display = inEditMode ? 'flex' : 'none';
-});
-
-saveButton.addEventListener('click', () => {
-    const formData = {};
-    
-    document.querySelectorAll('#profile-container .editable-field input, #profile-container .editable-field textarea')
-        .forEach(input => {
-            let value = input.value;
-            if (['credits_completed','credits_required','academic_year'].includes(input.name)) value = parseInt(value) || 0;
-            if (input.name === 'gpa') value = parseFloat(value) || 0;
-            formData[input.name] = value;
+    // ---------------- Tabs ----------------
+    const tabTriggers = document.querySelectorAll(".tab-trigger");
+    const tabContents = document.querySelectorAll(".tab-content");
+    tabTriggers.forEach(trigger => {
+        trigger.addEventListener("click", () => {
+            const target = trigger.dataset.tab;
+            tabTriggers.forEach(t => t.classList.remove("active"));
+            tabContents.forEach(c => c.classList.remove("active"));
+            trigger.classList.add("active");
+            const targetEl = document.getElementById(target);
+            if (targetEl) targetEl.classList.add("active");
         });
+    });
 
-    fetch("{% url 'UpdateStudentProfile' %}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.status === 'success') {
-            // Update profile card fields
-            for(const key in formData){
-                const display = document.querySelector(`.field-value[data-field="${key}"]`);
-                if(display) display.textContent = formData[key];
-                
+    // ---------------- Edit Mode ----------------
+    function toggleEditMode(enable) {
+        profileContainer.classList.toggle('edit-mode', enable);
+        profileContainer.classList.toggle('read-only', !enable);
+        const actions = document.getElementById('profile-actions');
+        if (actions) actions.style.display = enable ? 'flex' : 'none';
+        if (editProfilePicButton) editProfilePicButton.style.display = enable ? 'block' : 'none';
+    }
+
+    editButton?.addEventListener('click', () => toggleEditMode(true));
+    cancelButton?.addEventListener('click', () => {
+        // Reset inputs to original values
+        document.querySelectorAll('.editable-field input, .editable-field textarea').forEach(input => {
+            const displayEl = document.querySelector(`.field-value[data-field="${input.name}"]`);
+            if (displayEl) input.value = displayEl.textContent;
+        });
+        toggleEditMode(false);
+    });
+
+    // ---------------- Update display instantly ----------------
+    function updateDisplayField(fieldName, value) {
+        const displayEl = document.querySelector(`.field-value[data-field="${fieldName}"]`);
+        if (displayEl) displayEl.textContent = value;
+    }
+    document.querySelectorAll('.editable-field input, .editable-field textarea').forEach(input => {
+        input.addEventListener('input', () => updateDisplayField(input.name, input.value));
+    });
+
+    // ---------------- Save profile ----------------
+    saveButton?.addEventListener('click', async () => {
+        const formDataObj = {};
+        document.querySelectorAll('#profile-container .editable-field input, #profile-container .editable-field textarea')
+            .forEach(input => {
+                let value = input.value;
+                if (['credits_completed', 'credits_required', 'academic_year'].includes(input.name)) value = parseInt(value) || 0;
+                if (input.name === 'gpa') value = parseFloat(value) || 0;
+                formDataObj[input.name] = value;
+            });
+
+        try {
+            const res = await fetch(updateProfileUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify(formDataObj)
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                for (const key in formDataObj) updateDisplayField(key, formDataObj[key]);
+                toggleEditMode(false);
+                alert("Profile updated successfully!");
+            } else {
+                alert("Error updating profile: " + (data.message || "Unknown error"));
             }
-            // Update top profile card
-            const fullNameEl = document.querySelector('[data-field="full_name"]');
-            if(fullNameEl) fullNameEl.textContent = `${formData.first_name} ${formData.last_name}`;
-
-            const badgeEl = document.querySelector('[data-field="year_major"]');
-            if(badgeEl) badgeEl.textContent = `${formatYear(parseInt(formData.academic_year)||1)} • ${formData.major}`;
-
-
-
-            // Update sidebar dynamically
-            const sidebarName = document.getElementById('student-name');
-            if(sidebarName) sidebarName.textContent = `${formData.first_name} ${formData.last_name}`;
-
-            const sidebarProgram = document.getElementById('student-program');
-            if(sidebarProgram) sidebarProgram.textContent = formData.major || formData.program;
-
-            const sidebarYear = document.getElementById('student-year');
-            if(sidebarYear) sidebarYear.textContent = getYearSuffix(parseInt(formData.academic_year) || 1);
-
-            // Back to read-only mode
-            profileContainer.classList.remove('edit-mode');
-            profileContainer.classList.add('read-only');
-            saveButton.style.display = 'none';
-
-            alert("Profile updated successfully!");
-        } else {
-            alert("Error updating profile: " + (data.message || "Unknown error"));
+        } catch (err) {
+            console.error(err);
+            alert("An error occurred while updating the profile.");
         }
-    })
-    .catch(err => {
-        console.error(err);
-        alert("An error occurred while updating the profile.");
     });
-});
 
-// Academic Year formatter
-function formatYear(year){
-    if(year<=1) return "1st Year";
-    if(year===2) return "2nd Year";
-    if(year===3) return "3rd Year";
-    if(year===4) return "4th Year";
-    if(year>=5) return "5th Year";
-    return year+"th Year";
+    // ---------------- Profile Picture ----------------
+    function updateProfileImage(url) {
+        if (profilePicture) {
+            profilePicture.innerHTML = `<img src="${url}" alt="Profile Picture" class="rounded-full w-32 h-32 object-cover">`;
+        }
+        updateSidebarProfilePicture(url);
+                localStorage.setItem("teacherProfileUrl", url);
+
+    }
+
+    function updateSidebarProfilePicture(url) {
+        const avatarImg = document.querySelector('.student-avatar img.avatar-circle');
+        const avatarDiv = document.querySelector('.student-avatar');
+        if (avatarImg) avatarImg.src = url;
+        else if (avatarDiv) avatarDiv.innerHTML = `<img src="${url}" alt="Profile Picture" class="avatar-circle">`;
+    }
+
+    editProfilePicButton?.addEventListener('click', () => profileInput.click());
+
+    profileInput?.addEventListener('change', async () => {
+        const file = profileInput.files[0];
+        if (!file) return;
+
+        // Preview locally
+        const reader = new FileReader();
+        reader.onload = e => updateProfileImage(e.target.result);
+        reader.readAsDataURL(file);
+
+        // Upload to server
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+
+        try {
+            const res = await fetch(uploadUrl, { method: 'POST', headers: { 'X-CSRFToken': csrfToken }, body: uploadData });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                updateProfileImage(data.url);
+                alert('Profile picture updated successfully!');
+            } else throw new Error(data.message || 'Upload failed');
+        } catch (err) {
+            console.error('Upload error:', err);
+            alert('Failed to upload profile picture: ' + err.message);
+        }
+    });
+
+    // ---------------- Ensure default avatar ----------------
+   function ensureProfilePictureExists() {
+    const profilePicDiv = document.getElementById('profile-picture');
+    const currentImg = profilePicDiv.querySelector('img');
+
+    if (!currentImg) {
+        updateProfileImage(defaultProfileUrl);
+        return;
+    }
+
+    const currentUrl = currentImg.src;
+    if (!currentUrl || currentUrl.trim() === "") {
+        updateProfileImage(defaultProfileUrl);
+        return;
+    }
+
+    fetch(currentUrl, { method: 'HEAD' })
+        .then(res => {
+            if (!res.ok) updateProfileImage(defaultProfileUrl);
+        })
+        .catch(() => updateProfileImage(defaultProfileUrl));
 }
-
-// Instant update while typing
-document.querySelectorAll('.editable-field input, .editable-field textarea').forEach(input=>{
-    input.addEventListener('input', ()=>{
-        const el = document.querySelector(`.field-value[data-field="${input.name}"]`);
-        if(el) el.textContent = input.value;
-    });
+    ensureProfilePictureExists();
 });

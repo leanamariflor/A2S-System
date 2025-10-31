@@ -12,6 +12,7 @@ class TeacherProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     specialization = models.CharField(max_length=100, blank=True, null=True)
     achievements = models.ManyToManyField(Achievement, blank=True, related_name='teacher_profiles')
+    profile_picture = models.URLField(blank=True, null=True)
 
     POSITION_CHOICES = [
         ("Full-Time Faculty", "Full-Time Faculty"),
