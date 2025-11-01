@@ -15,6 +15,10 @@ urlpatterns = [
     path('StudentCurriculum/', views.student_curriculum, name='StudentCurriculum'),
     path('StudentDegreeAudit/', views.student_degree_audit, name='StudentDegreeAudit'),
 
+    # Export Routes
+    path('export-degree-audit-pdf/', views.export_degree_audit_pdf, name='ExportDegreeAuditPDF'),
+    path('export-degree-audit-excel/', views.export_degree_audit_excel, name='ExportDegreeAuditExcel'),
+
     path('upload-profile-picture/', views.upload_profile_picture, name='UploadProfilePicture'),
     path("reset-profile-picture/", views.reset_profile_picture, name="reset_profile_picture"),
 

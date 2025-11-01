@@ -2,10 +2,17 @@
 // Degree Audit JavaScript
 // ========================================
 
+console.log('🎓 Degree Audit JavaScript loaded! Version 8');
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔥 DOMContentLoaded event fired!');
+    
     // Initialize Lucide icons
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
+        console.log('✓ Lucide icons initialized');
+    } else {
+        console.warn('⚠ Lucide library not found');
     }
 
     // Initialize tab functionality
@@ -16,6 +23,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Animate progress circle
     animateProgressCircle();
+    
+    // Initialize Add to Plan functionality
+    console.log('🔵 About to initialize Add to Plan...');
+    initializeAddToPlan();
+    console.log('✓ Add to Plan initialized');
+    
+    // Initialize modal event listeners
+    console.log('🔵 About to initialize Modal Listeners...');
+    initializeModalListeners();
+    console.log('✓ Modal Listeners initialized');
+    
+    // Update plan count on page load
+    console.log('🔵 About to update plan count...');
+    updatePlanCount();
+    console.log('✓ Plan count updated');
+    
+    console.log('✓ All initializations complete!');
 });
 
 // ========================================
@@ -78,6 +102,408 @@ function animateProgressCircle() {
 }
 
 // ========================================
+// Add to Plan Functionality
+// ========================================
+
+function initializeAddToPlan() {
+    const addToPlanButtons = document.querySelectorAll('.btn-add-to-plan');
+    
+    console.log('Initializing Add to Plan. Found buttons:', addToPlanButtons.length);
+    
+    // Load saved plans from localStorage
+    const savedPlans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
+    
+    // Mark already added courses
+    savedPlans.forEach(courseCode => {
+        const button = document.querySelector(`.btn-add-to-plan[data-course-code="${courseCode}"]`);
+        if (button) {
+            markAsAdded(button);
+        }
+    });
+    
+    // Add click event listeners
+    addToPlanButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            console.log('Button clicked!', this);
+            
+            const courseCode = this.getAttribute('data-course-code');
+            const courseTitle = this.getAttribute('data-course-title');
+            const courseUnits = this.getAttribute('data-course-units');
+            
+            console.log('Course data:', { courseCode, courseTitle, courseUnits });
+            
+            // Check if already added
+            if (this.classList.contains('added')) {
+                // Remove from plan
+                removeFromPlan(courseCode, this);
+                showNotification(`${courseCode} removed from your plan`, 'info');
+            } else {
+                // Add to plan
+                addToPlan(courseCode, courseTitle, courseUnits, this);
+                showNotification(`${courseCode} added to your plan!`, 'success');
+            }
+        });
+    });
+}
+
+// ========================================
+// Modal Event Listeners
+// ========================================
+
+function initializeModalListeners() {
+    console.log('Initializing modal event listeners...');
+    
+    // View My Plan button
+    const viewPlanBtn = document.getElementById('viewPlanBtn');
+    if (viewPlanBtn) {
+        viewPlanBtn.addEventListener('click', function() {
+            console.log('View Plan button clicked');
+            toggleCoursePlan();
+        });
+        console.log('✓ View Plan button listener added');
+    } else {
+        console.warn('⚠ View Plan button not found');
+    }
+    
+    // Modal close button (header)
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', function() {
+            console.log('Close button clicked');
+            toggleCoursePlan();
+        });
+        console.log('✓ Modal close button listener added');
+    }
+    
+    // Modal close button (footer)
+    const modalCloseBtn2 = document.getElementById('modalCloseBtn2');
+    if (modalCloseBtn2) {
+        modalCloseBtn2.addEventListener('click', function() {
+            console.log('Close button 2 clicked');
+            toggleCoursePlan();
+        });
+        console.log('✓ Modal close button 2 listener added');
+    }
+    
+    // Modal overlay (click outside to close)
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function() {
+            console.log('Overlay clicked');
+            toggleCoursePlan();
+        });
+        console.log('✓ Modal overlay listener added');
+    }
+    
+    // Clear all button
+    const clearPlanBtn = document.getElementById('clearPlanBtn');
+    if (clearPlanBtn) {
+        clearPlanBtn.addEventListener('click', function() {
+            console.log('Clear Plan button clicked');
+            clearAllPlan();
+        });
+        console.log('✓ Clear Plan button listener added');
+    }
+}
+
+function addToPlan(courseCode, courseTitle, courseUnits, button) {
+    // Get existing plans
+    let plans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
+    let planDetails = JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
+    
+    // Add course code to simple list
+    if (!plans.includes(courseCode)) {
+        plans.push(courseCode);
+    }
+    
+    // Add full course details
+    const courseExists = planDetails.some(course => course.code === courseCode);
+    if (!courseExists) {
+        planDetails.push({
+            code: courseCode,
+            title: courseTitle,
+            units: parseInt(courseUnits),
+            addedDate: new Date().toISOString()
+        });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('studentCoursePlan', JSON.stringify(plans));
+    localStorage.setItem('studentCoursePlanDetails', JSON.stringify(planDetails));
+    
+    // Update button appearance
+    markAsAdded(button);
+    
+    // Add animation to parent card
+    const card = button.closest('.recommendation-card');
+    if (card) {
+        card.classList.add('added-to-plan');
+    }
+    
+    // Update plan count
+    updatePlanCount();
+}
+
+function removeFromPlan(courseCode, button) {
+    // Get existing plans
+    let plans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
+    let planDetails = JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
+    
+    // Remove course
+    plans = plans.filter(code => code !== courseCode);
+    planDetails = planDetails.filter(course => course.code !== courseCode);
+    
+    // Save to localStorage
+    localStorage.setItem('studentCoursePlan', JSON.stringify(plans));
+    localStorage.setItem('studentCoursePlanDetails', JSON.stringify(planDetails));
+    
+    // Update button appearance
+    markAsRemoved(button);
+    
+    // Remove added class from parent card
+    const card = button.closest('.recommendation-card');
+    if (card) {
+        card.classList.remove('added-to-plan');
+    }
+    
+    // Update plan count
+    updatePlanCount();
+}
+
+function markAsAdded(button) {
+    button.classList.add('added');
+    button.style.background = '#22c55e';
+    button.style.borderColor = '#22c55e';
+    
+    const icon = button.querySelector('i');
+    const textSpan = button.querySelector('.btn-text');
+    
+    if (icon) {
+        icon.setAttribute('data-lucide', 'check');
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+    
+    if (textSpan) {
+        textSpan.textContent = 'Added to Plan';
+    }
+    
+    // Add to parent card
+    const card = button.closest('.recommendation-card');
+    if (card) {
+        card.classList.add('added-to-plan');
+    }
+}
+
+function markAsRemoved(button) {
+    button.classList.remove('added');
+    button.style.background = '';
+    button.style.borderColor = '';
+    
+    const icon = button.querySelector('i');
+    const textSpan = button.querySelector('.btn-text');
+    
+    if (icon) {
+        icon.setAttribute('data-lucide', 'plus');
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+    
+    if (textSpan) {
+        textSpan.textContent = 'Add to Plan';
+    }
+}
+
+function showNotification(message, type = 'success') {
+    // Remove any existing notifications
+    const existingNotification = document.querySelector('.course-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `course-notification ${type}`;
+    notification.innerHTML = `
+        <i data-lucide="${type === 'success' ? 'check-circle' : 'info'}"></i>
+        <span>${message}</span>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Initialize icon
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Show notification
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Function to get all planned courses (can be used elsewhere)
+function getPlannedCourses() {
+    return JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
+}
+
+// ========================================
+// Course Plan Modal Functions
+// ========================================
+
+function toggleCoursePlan() {
+    const modal = document.getElementById('coursePlanModal');
+    if (!modal) {
+        console.error('❌ Course plan modal not found!');
+        return;
+    }
+    
+    console.log('Toggle modal called. Current display:', modal.style.display);
+    
+    if (modal.style.display === 'none' || modal.style.display === '') {
+        // Show modal
+        modal.style.display = 'flex';
+        renderCoursePlan();
+        document.body.style.overflow = 'hidden';
+        console.log('✓ Modal opened');
+        
+        // Reinitialize icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    } else {
+        // Hide modal
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        console.log('✓ Modal closed');
+    }
+}
+
+function renderCoursePlan() {
+    const planList = document.getElementById('coursePlanList');
+    const plans = getPlannedCourses();
+    
+    console.log('Rendering course plan. Courses:', plans.length);
+    
+    if (!planList) {
+        console.error('❌ Course plan list element not found!');
+        return;
+    }
+    
+    if (plans.length === 0) {
+        planList.innerHTML = '<p class="empty-plan">No courses added to your plan yet. Start by clicking "Add to Plan" on recommended courses!</p>';
+        document.getElementById('totalPlanUnits').textContent = '0';
+        document.getElementById('totalPlanCourses').textContent = '0';
+        return;
+    }
+    
+    let totalUnits = 0;
+    let html = '';
+    
+    plans.forEach((course, index) => {
+        totalUnits += course.units;
+        const addedDate = new Date(course.addedDate).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+        
+        html += `
+            <div class="plan-item" data-course-code="${course.code}">
+                <div class="plan-item-header">
+                    <span class="plan-number">${index + 1}</span>
+                    <div class="plan-item-info">
+                        <h4>${course.code}</h4>
+                        <p>${course.title}</p>
+                        <span class="plan-date">Added: ${addedDate}</span>
+                    </div>
+                    <span class="plan-units">${course.units} units</span>
+                </div>
+                <button class="btn-remove-from-plan" onclick="removeFromPlanModal('${course.code}')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        `;
+    });
+    
+    planList.innerHTML = html;
+    document.getElementById('totalPlanUnits').textContent = totalUnits;
+    document.getElementById('totalPlanCourses').textContent = plans.length;
+    
+    console.log('✓ Course plan rendered');
+    
+    // Reinitialize icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+window.removeFromPlanModal = function(courseCode) {
+    // Find the button in the recommendations section
+    const button = document.querySelector(`.btn-add-to-plan[data-course-code="${courseCode}"]`);
+    
+    if (button) {
+        removeFromPlan(courseCode, button);
+    } else {
+        // If button not found, still remove from storage
+        let plans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
+        let planDetails = JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
+        
+        plans = plans.filter(code => code !== courseCode);
+        planDetails = planDetails.filter(course => course.code !== courseCode);
+        
+        localStorage.setItem('studentCoursePlan', JSON.stringify(plans));
+        localStorage.setItem('studentCoursePlanDetails', JSON.stringify(planDetails));
+    }
+    
+    // Re-render the plan
+    renderCoursePlan();
+    updatePlanCount();
+    showNotification(`${courseCode} removed from your plan`, 'info');
+}
+
+function clearAllPlan() {
+    console.log('Clear all plan called');
+    if (confirm('Are you sure you want to clear all courses from your plan?')) {
+        // Clear localStorage
+        localStorage.setItem('studentCoursePlan', '[]');
+        localStorage.setItem('studentCoursePlanDetails', '[]');
+        
+        // Reset all buttons
+        const buttons = document.querySelectorAll('.btn-add-to-plan.added');
+        buttons.forEach(button => {
+            markAsRemoved(button);
+        });
+        
+        // Re-render
+        renderCoursePlan();
+        updatePlanCount();
+        showNotification('All courses cleared from your plan', 'info');
+    }
+}
+
+function updatePlanCount() {
+    const planCountElement = document.getElementById('planCount');
+    if (planCountElement) {
+        const plans = getPlannedCourses();
+        planCountElement.textContent = plans.length;
+    }
+}
+
+// ========================================
 // What-If Grade Calculator
 // ========================================
 
@@ -125,9 +551,15 @@ function initializeCalculator() {
 /**
  * Calculate predicted GPA using weighted average
  * 
+ * Philippine Grading Scale:
+ * - 5.00 = Excellent (Highest)
+ * - 3.00 = Passing
+ * - 2.9 and below = Failing
+ * - 1.00 = Lowest (Failing)
+ * 
  * @param {number} currentGPA - Current GPA
  * @param {number} currentUnits - Total units completed
- * @param {number} expectedGrade - Expected grade for the new course (1.00 - 5.00)
+ * @param {number} expectedGrade - Expected grade for the new course (1.00 - 5.00 scale)
  * @param {number} courseUnits - Units for the new course
  * @returns {object} - Object containing predictedGPA and change
  */
@@ -267,7 +699,10 @@ window.degreeAuditUtils = {
     calculatePredictedGPA,
     formatGPA,
     getStatusColor,
-    countCoursesByStatus
+    countCoursesByStatus,
+    getPlannedCourses,
+    addToPlan,
+    removeFromPlan
 };
 
 // ========================================
@@ -276,3 +711,16 @@ window.degreeAuditUtils = {
 
 console.log('%c🎓 A2S Degree Audit System', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
 console.log('%cDegree audit page loaded successfully', 'color: #10b981; font-size: 12px;');
+
+// ========================================
+// Diagnostic Check (Run after page loads)
+// ========================================
+
+setTimeout(() => {
+    console.log('=== ADD TO PLAN DIAGNOSTIC ===');
+    console.log('Add to Plan buttons found:', document.querySelectorAll('.btn-add-to-plan').length);
+    console.log('View Plan button found:', document.getElementById('viewPlanBtn') ? 'YES' : 'NO');
+    console.log('Modal found:', document.getElementById('coursePlanModal') ? 'YES' : 'NO');
+    console.log('Current plan:', JSON.parse(localStorage.getItem('studentCoursePlan') || '[]'));
+    console.log('===========================');
+}, 1000);
