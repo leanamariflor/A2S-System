@@ -2,13 +2,27 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from supabase import create_client
 from datetime import datetime, date, timedelta
 import json
 import os
+from io import BytesIO
+
+# PDF Generation
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image, PageBreak
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+
+# Excel Generation
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
 
 from .models import StudentProfile, Enrollment, Grade,Schedule
 from students.models import Curriculum
@@ -612,3 +626,463 @@ def get_current_phase(academic_calendar):
                         "phase": e['name'].split()[0] 
                     }
     return {"semester": None, "phase": "Completed"}
+
+
+# ----------------------------------------------------------------------
+# Export Degree Audit to PDF
+# ----------------------------------------------------------------------
+@login_required(login_url='Login')
+def export_degree_audit_pdf(request):
+    """Generate a PDF report of the student's degree audit"""
+    student_user = request.user
+    profile, _ = StudentProfile.objects.get_or_create(user=student_user)
+    student_program = profile.program if profile.program and profile.program != "Undeclared" else "No Program"
+    
+    # Fetch curriculum data
+    curriculum_data = []
+    all_courses = []
+    completed_courses = []
+    in_progress_courses = []
+    not_started_courses = []
+    
+    total_units = 0
+    completed_units = 0
+    
+    if profile.program and profile.program != "Undeclared":
+        try:
+            curriculum_obj = Curriculum.objects.get(program=profile.program)
+            curriculum_data = curriculum_obj.data.get("curriculum", [])
+            
+            for year in curriculum_data:
+                for term in year.get("terms", []):
+                    for subject in term.get("subjects", []):
+                        course_info = {
+                            'code': subject.get('subject_code', 'N/A'),
+                            'title': subject.get('description', 'N/A'),
+                            'units': subject.get('units', 3),
+                            'status': subject.get('final_grade', 'RECOMMENDED'),
+                        }
+                        
+                        all_courses.append(course_info)
+                        total_units += course_info['units']
+                        
+                        if course_info['status'] == 'PASSED':
+                            completed_courses.append(course_info)
+                            completed_units += course_info['units']
+                        elif course_info['status'] == 'CURRENT':
+                            in_progress_courses.append(course_info)
+                        else:
+                            not_started_courses.append(course_info)
+        except Curriculum.DoesNotExist:
+            pass
+    
+    completion_percentage = (completed_units / total_units * 100) if total_units > 0 else 0
+    credits_remaining = total_units - completed_units
+    current_gpa = float(profile.gpa) if profile.gpa else 0.0
+    
+    # Create PDF
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72,
+                           topMargin=72, bottomMargin=18)
+    
+    # Container for PDF elements
+    elements = []
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor('#4f46e5'),
+        spaceAfter=12,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=16,
+        textColor=colors.HexColor('#1f2937'),
+        spaceAfter=12,
+        spaceBefore=12,
+        fontName='Helvetica-Bold'
+    )
+    
+    normal_style = styles['Normal']
+    
+    # Header
+    elements.append(Paragraph("A2S Academic Advising System", title_style))
+    elements.append(Paragraph("Degree Audit Report", heading_style))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Student Information
+    student_info_data = [
+        ['Student Name:', f"{student_user.first_name} {student_user.last_name}"],
+        ['Student ID:', student_user.id_number or 'N/A'],
+        ['Program:', student_program],
+        ['Year Level:', f"Year {profile.year_level}" if profile.year_level else 'N/A'],
+        ['Generated On:', datetime.now().strftime('%B %d, %Y at %I:%M %p')],
+    ]
+    
+    student_info_table = Table(student_info_data, colWidths=[2*inch, 4*inch])
+    student_info_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f3f4f6')),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1f2937')),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#d1d5db')),
+    ]))
+    
+    elements.append(student_info_table)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Progress Summary
+    elements.append(Paragraph("Progress Summary", heading_style))
+    
+    progress_data = [
+        ['Metric', 'Value'],
+        ['Completion Percentage', f"{completion_percentage:.1f}%"],
+        ['Credits Completed', f"{completed_units} / {total_units}"],
+        ['Credits Remaining', str(credits_remaining)],
+        ['Current GPA', f"{current_gpa:.2f}"],
+        ['Expected Graduation', profile.expected_graduation.strftime('%B %Y') if profile.expected_graduation else 'TBD'],
+    ]
+    
+    progress_table = Table(progress_data, colWidths=[3*inch, 3*inch])
+    progress_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4f46e5')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#d1d5db')),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
+        ('TOPPADDING', (0, 1), (-1, -1), 8),
+    ]))
+    
+    elements.append(progress_table)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Completed Courses
+    if completed_courses:
+        elements.append(Paragraph("Completed Courses", heading_style))
+        
+        completed_data = [['Course Code', 'Course Title', 'Units']]
+        for course in completed_courses:
+            completed_data.append([
+                course['code'],
+                course['title'][:50] + '...' if len(course['title']) > 50 else course['title'],
+                str(course['units'])
+            ])
+        
+        completed_table = Table(completed_data, colWidths=[1.5*inch, 3.5*inch, 1*inch])
+        completed_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#22c55e')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f0fdf4')),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#d1d5db')),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ]))
+        
+        elements.append(completed_table)
+        elements.append(Spacer(1, 0.2*inch))
+    
+    # In Progress Courses
+    if in_progress_courses:
+        elements.append(Paragraph("Courses In Progress", heading_style))
+        
+        progress_data = [['Course Code', 'Course Title', 'Units']]
+        for course in in_progress_courses:
+            progress_data.append([
+                course['code'],
+                course['title'][:50] + '...' if len(course['title']) > 50 else course['title'],
+                str(course['units'])
+            ])
+        
+        progress_table = Table(progress_data, colWidths=[1.5*inch, 3.5*inch, 1*inch])
+        progress_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#facc15')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1f2937')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#fefce8')),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#d1d5db')),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ]))
+        
+        elements.append(progress_table)
+        elements.append(Spacer(1, 0.2*inch))
+    
+    # Remaining Courses
+    if not_started_courses:
+        elements.append(PageBreak())
+        elements.append(Paragraph("Remaining Courses", heading_style))
+        
+        remaining_data = [['Course Code', 'Course Title', 'Units']]
+        for course in not_started_courses:
+            remaining_data.append([
+                course['code'],
+                course['title'][:50] + '...' if len(course['title']) > 50 else course['title'],
+                str(course['units'])
+            ])
+        
+        remaining_table = Table(remaining_data, colWidths=[1.5*inch, 3.5*inch, 1*inch])
+        remaining_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6b7280')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f9fafb')),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#d1d5db')),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ]))
+        
+        elements.append(remaining_table)
+    
+    # Footer
+    elements.append(Spacer(1, 0.5*inch))
+    footer_text = "This is an official document generated by the A2S Academic Advising System."
+    elements.append(Paragraph(footer_text, ParagraphStyle(
+        'Footer',
+        parent=styles['Normal'],
+        fontSize=8,
+        textColor=colors.HexColor('#6b7280'),
+        alignment=TA_CENTER
+    )))
+    
+    # Build PDF
+    doc.build(elements)
+    
+    # Get PDF from buffer
+    pdf = buffer.getvalue()
+    buffer.close()
+    
+    # Create response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="degree_audit_{student_user.id_number}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+    response.write(pdf)
+    
+    return response
+
+
+# ----------------------------------------------------------------------
+# Export Degree Audit to Excel
+# ----------------------------------------------------------------------
+@login_required(login_url='Login')
+def export_degree_audit_excel(request):
+    """Generate an Excel report of the student's degree audit"""
+    student_user = request.user
+    profile, _ = StudentProfile.objects.get_or_create(user=student_user)
+    student_program = profile.program if profile.program and profile.program != "Undeclared" else "No Program"
+    
+    # Fetch curriculum data
+    curriculum_data = []
+    all_courses = []
+    completed_courses = []
+    in_progress_courses = []
+    not_started_courses = []
+    
+    total_units = 0
+    completed_units = 0
+    
+    if profile.program and profile.program != "Undeclared":
+        try:
+            curriculum_obj = Curriculum.objects.get(program=profile.program)
+            curriculum_data = curriculum_obj.data.get("curriculum", [])
+            
+            for year in curriculum_data:
+                for term in year.get("terms", []):
+                    for subject in term.get("subjects", []):
+                        course_info = {
+                            'code': subject.get('subject_code', 'N/A'),
+                            'title': subject.get('description', 'N/A'),
+                            'units': subject.get('units', 3),
+                            'status': subject.get('final_grade', 'RECOMMENDED'),
+                        }
+                        
+                        all_courses.append(course_info)
+                        total_units += course_info['units']
+                        
+                        if course_info['status'] == 'PASSED':
+                            completed_courses.append(course_info)
+                            completed_units += course_info['units']
+                        elif course_info['status'] == 'CURRENT':
+                            in_progress_courses.append(course_info)
+                        else:
+                            not_started_courses.append(course_info)
+        except Curriculum.DoesNotExist:
+            pass
+    
+    completion_percentage = (completed_units / total_units * 100) if total_units > 0 else 0
+    credits_remaining = total_units - completed_units
+    current_gpa = float(profile.gpa) if profile.gpa else 0.0
+    
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Degree Audit"
+    
+    # Define styles
+    header_fill = PatternFill(start_color='4F46E5', end_color='4F46E5', fill_type='solid')
+    header_font = Font(bold=True, color='FFFFFF', size=12)
+    
+    success_fill = PatternFill(start_color='DCFCE7', end_color='DCFCE7', fill_type='solid')
+    warning_fill = PatternFill(start_color='FEF9C3', end_color='FEF9C3', fill_type='solid')
+    neutral_fill = PatternFill(start_color='F3F4F6', end_color='F3F4F6', fill_type='solid')
+    
+    bold_font = Font(bold=True)
+    center_align = Alignment(horizontal='center', vertical='center')
+    left_align = Alignment(horizontal='left', vertical='center')
+    
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    
+    # Title
+    ws.merge_cells('A1:E1')
+    ws['A1'] = 'A2S Academic Advising System - Degree Audit Report'
+    ws['A1'].font = Font(bold=True, size=16, color='4F46E5')
+    ws['A1'].alignment = center_align
+    
+    # Student Information
+    row = 3
+    ws[f'A{row}'] = 'Student Information'
+    ws[f'A{row}'].font = bold_font
+    ws.merge_cells(f'A{row}:E{row}')
+    
+    row += 1
+    student_info = [
+        ('Student Name:', f"{student_user.first_name} {student_user.last_name}"),
+        ('Student ID:', student_user.id_number or 'N/A'),
+        ('Program:', student_program),
+        ('Year Level:', f"Year {profile.year_level}" if profile.year_level else 'N/A'),
+        ('Generated On:', datetime.now().strftime('%B %d, %Y at %I:%M %p')),
+    ]
+    
+    for label, value in student_info:
+        ws[f'A{row}'] = label
+        ws[f'A{row}'].font = bold_font
+        ws[f'B{row}'] = value
+        row += 1
+    
+    # Progress Summary
+    row += 2
+    ws[f'A{row}'] = 'Progress Summary'
+    ws[f'A{row}'].font = bold_font
+    ws.merge_cells(f'A{row}:E{row}')
+    
+    row += 1
+    ws[f'A{row}'] = 'Metric'
+    ws[f'B{row}'] = 'Value'
+    ws[f'A{row}'].fill = header_fill
+    ws[f'B{row}'].fill = header_fill
+    ws[f'A{row}'].font = header_font
+    ws[f'B{row}'].font = header_font
+    ws[f'A{row}'].alignment = center_align
+    ws[f'B{row}'].alignment = center_align
+    
+    row += 1
+    summary_data = [
+        ('Completion Percentage', f"{completion_percentage:.1f}%"),
+        ('Credits Completed', f"{completed_units} / {total_units}"),
+        ('Credits Remaining', str(credits_remaining)),
+        ('Current GPA', f"{current_gpa:.2f}"),
+        ('Expected Graduation', profile.expected_graduation.strftime('%B %Y') if profile.expected_graduation else 'TBD'),
+    ]
+    
+    for label, value in summary_data:
+        ws[f'A{row}'] = label
+        ws[f'B{row}'] = value
+        ws[f'A{row}'].border = thin_border
+        ws[f'B{row}'].border = thin_border
+        row += 1
+    
+    # Helper function to add course table
+    def add_course_table(start_row, title, courses, fill_color):
+        current_row = start_row
+        ws[f'A{current_row}'] = title
+        ws[f'A{current_row}'].font = bold_font
+        ws.merge_cells(f'A{current_row}:E{current_row}')
+        
+        current_row += 1
+        headers = ['Course Code', 'Course Title', 'Units', 'Status']
+        for col, header in enumerate(headers, start=1):
+            cell = ws.cell(row=current_row, column=col, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = center_align
+            cell.border = thin_border
+        
+        current_row += 1
+        for course in courses:
+            ws.cell(row=current_row, column=1, value=course['code']).border = thin_border
+            ws.cell(row=current_row, column=2, value=course['title']).border = thin_border
+            ws.cell(row=current_row, column=3, value=course['units']).border = thin_border
+            ws.cell(row=current_row, column=3).alignment = center_align
+            ws.cell(row=current_row, column=4, value=course['status']).border = thin_border
+            
+            for col in range(1, 5):
+                ws.cell(row=current_row, column=col).fill = fill_color
+            
+            current_row += 1
+        
+        return current_row + 1
+    
+    # Add course tables
+    row += 2
+    if completed_courses:
+        row = add_course_table(row, 'Completed Courses', completed_courses, success_fill)
+    
+    if in_progress_courses:
+        row = add_course_table(row, 'Courses In Progress', in_progress_courses, warning_fill)
+    
+    if not_started_courses:
+        row = add_course_table(row, 'Remaining Courses', not_started_courses, neutral_fill)
+    
+    # Adjust column widths
+    ws.column_dimensions['A'].width = 20
+    ws.column_dimensions['B'].width = 50
+    ws.column_dimensions['C'].width = 10
+    ws.column_dimensions['D'].width = 15
+    ws.column_dimensions['E'].width = 15
+    
+    # Save to buffer
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    # Create response
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="degree_audit_{student_user.id_number}_{datetime.now().strftime("%Y%m%d")}.xlsx"'
+    
+    return response
