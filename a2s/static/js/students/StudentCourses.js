@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
           (term.subjects || []).forEach(sub => {
             let percent = 0;
 
-            // Calculate progress %
+           
             if (sub.final_grade === "PASSED" || (typeof sub.final_grade === "number" && sub.final_grade <= 3.0)) {
               percent = 100;
             } else if (sub.final_grade === "CURRENT") {

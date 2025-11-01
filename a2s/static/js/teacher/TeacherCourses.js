@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+   lucide.createIcons();
   const sectionSelect = document.getElementById('sectionSelect');
   const viewSectionBtn = document.getElementById('viewSectionBtn');
   const showAllBtn = document.getElementById('showAllBtn');

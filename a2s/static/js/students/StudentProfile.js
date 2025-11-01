@@ -113,12 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = profileInput.files[0];
         if (!file) return;
 
-        // Preview locally
+      
         const reader = new FileReader();
         reader.onload = e => updateProfileImage(e.target.result);
         reader.readAsDataURL(file);
 
-        // Upload to server
+        
         const uploadData = new FormData();
         uploadData.append('file', file);
 

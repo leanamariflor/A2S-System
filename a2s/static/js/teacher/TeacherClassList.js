@@ -5,7 +5,7 @@
       const response = await fetch(`/teacher/api/teacher/classlist/${COURSE_CODE}/${SECTION}/`);
       const data = await response.json();
 
-      tbody.innerHTML = ""; // clear loading row
+      tbody.innerHTML = ""; 
 
       if (data.students && data.students.length > 0) {
         data.students.forEach(s => {

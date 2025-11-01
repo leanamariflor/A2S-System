@@ -1,79 +1,83 @@
-
 {% extends "students/student_base.html" %}
 {% load static %}
 
-
-{% block title %}A2S Student Grades{% endblock %}
+{% block title %}My Grades - A2S{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/students/student_grades.css' %}" />
+<link rel="stylesheet" href="{% static 'css/students/student_grades.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="sg-container">
-  <!-- Controls -->
-  <form method="get" class="sg-controls">
-    <div>
-      <label for="schoolYear">School Year:</label>
-      <select name="school_year" id="schoolYear" class="sg-dropdown">
-        <option value="">Select School Year</option>
-        {% for year in years %}
-        <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
-        {% endfor %}
-      </select>
+<div class="grades-container">
 
-      <label for="semester">Semester:</label>
-      <select name="semester" id="semester" class="sg-dropdown">
-        <option value="">Select Semester</option>
-        {% for sem in semesters %}
-        <option value="{{ sem }}" {% if selected_semester == sem %}selected{% endif %}>{{ sem }}</option>
-        {% endfor %}
-      </select>
+  <!-- Header -->
+  <div class="grades-header">
+    <h2>My Grades</h2>
+  </div>
+
+  <!-- Filters / Controls -->
+  <div class="grades-filter-card">
+    <form method="get" class="grades-filter-form">
+      <div class="filter-group">
+        <label for="schoolYear">School Year:</label>
+        <select name="school_year" id="schoolYear" class="grades-select">
+          <option value="">Select School Year</option>
+          {% for year in years %}
+          <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="semester">Semester:</label>
+        <select name="semester" id="semester" class="grades-select">
+          <option value="">Select Semester</option>
+          {% for sem in semesters %}
+          <option value="{{ sem }}" {% if selected_semester == sem %}selected{% endif %}>{{ sem }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="grades-btn">Set Config</button>
+    </form>
+  </div>
+
+  <!-- Table Card -->
+  <div class="grades-card">
+    <div class="grades-table-wrapper">
+      <table class="grades-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Subject Code</th>
+            <th>Description</th>
+            <th>Faculty</th>
+            <th>Units</th>
+            <th>Midterm</th>
+            <th>Final</th>
+            <th>Final Grade</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in grades %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ grade.course_code }}</td>
+            <td>{{ grade.course_name }}</td>
+            <td>{{ grade.faculty }}</td>
+            <td>{{ grade.units }}</td>
+            <td>{{ grade.midterm }}</td>
+            <td>{{ grade.final }}</td>
+            <td>{{ grade.final_grade }}</td>
+            <td>{{ grade.status }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" class="no-data">No grades found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <button type="submit" class="sg-button">Set Config</button>
-  </form>
-
-  <!-- Grades Table -->
-  <div class="grades-purple-box">
-
-  <div class="sg-table-container">
-    <table class="sg-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Subject Code</th>
-          <th>Description</th>
-          <th>Faculty Name</th>
-          <th>Units</th>
-          <th>Midterm</th>
-          <th>Final</th>
-          <th>Final Grade</th>
-          <th>Grade Status</th>
-        </tr>
-      </thead>
-      <tbody>
-  {% for grade in grades %}
-  <tr>
-    <td>{{ forloop.counter }}</td>
-    <td>{{ grade.course_code }}</td>
-    <td>{{ grade.course_name }}</td>
-    <td>{{ grade.faculty }}</td>
-    <td>{{ grade.units }}</td>
-    <td>{{ grade.midterm }}</td>
-    <td>{{ grade.final }}</td>
-    <td>{{ grade.final_grade }}</td>
-    <td>{{ grade.status }}</td>
-  </tr>
-  {% empty %}
-  <tr>
-    <td colspan="9" style="text-align:center;">No grades found.</td>
-  </tr>
-  {% endfor %}
-</tbody>
-
-    </table>
   </div>
-  </div>
+
 </div>
 {% endblock %}

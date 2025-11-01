@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
    // ================= SUPABASE FETCH + GPA =================
-  // Make sure supabase client is initialized in another script before this
   async function fetchGradesAndRenderGPA() {
     try {
       const { data: grades, error } = await supabase
@@ -79,8 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const gpaPerYear = {};
       grades.forEach(grade => {
-        // Only calculate 1st and 2nd year for now
-        const yearNum = grade.school_year; // adjust if your data format is different
+        const yearNum = grade.school_year;
         if (!gpaPerYear[yearNum]) gpaPerYear[yearNum] = { totalPoints: 0, totalUnits: 0 };
 
         if (grade.final_grade !== null && grade.final_grade !== "") {
@@ -89,13 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      // Convert to GPA
       for (const year in gpaPerYear) {
         const data = gpaPerYear[year];
         gpaPerYear[year] = data.totalUnits > 0 ? (data.totalPoints / data.totalUnits).toFixed(2) : "N/A";
       }
 
-      // Render GPA in container
       const gpaContainer = document.getElementById("gpaPerYearContainer");
       gpaContainer.innerHTML = "";
       for (const [year, gpa] of Object.entries(gpaPerYear)) {
@@ -104,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
         gpaContainer.appendChild(p);
       }
 
-      // Render Chart.js bar chart
       const ctx = document.getElementById("progressChart").getContext("2d");
       new Chart(ctx, {
         type: 'bar',
@@ -171,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Populate dropdowns
   const years = [...new Set(allEvents.map(e => e.date.getFullYear()))];
   const semesters = [...new Set(allEvents.map(e => e.semester))];
   calendarYearSelect.innerHTML = `<option value="All">All</option>` + years.map(y => `<option>${y}</option>`).join("");
@@ -261,7 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
   calendarSemesterSelect.addEventListener("change", renderCalendar);
   renderCalendar();
 
-  // Modal close
   const modal = document.getElementById("eventModal");
   const closeModal = modal.querySelector(".close");
   closeModal.onclick = () => (modal.style.display = "none");

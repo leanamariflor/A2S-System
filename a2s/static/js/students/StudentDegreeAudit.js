@@ -7,7 +7,7 @@ console.log('🎓 Degree Audit JavaScript loaded! Version 8');
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔥 DOMContentLoaded event fired!');
     
-    // Initialize Lucide icons
+    
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
         console.log('✓ Lucide icons initialized');
@@ -15,26 +15,26 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('⚠ Lucide library not found');
     }
 
-    // Initialize tab functionality
+   
     initializeTabs();
 
-    // Initialize What-If Calculator
+   
     initializeCalculator();
 
-    // Animate progress circle
+    
     animateProgressCircle();
     
-    // Initialize Add to Plan functionality
+    
     console.log('🔵 About to initialize Add to Plan...');
     initializeAddToPlan();
     console.log('✓ Add to Plan initialized');
     
-    // Initialize modal event listeners
+    
     console.log('🔵 About to initialize Modal Listeners...');
     initializeModalListeners();
     console.log('✓ Modal Listeners initialized');
     
-    // Update plan count on page load
+    
     console.log('🔵 About to update plan count...');
     updatePlanCount();
     console.log('✓ Plan count updated');
@@ -54,18 +54,18 @@ function initializeTabs() {
         button.addEventListener('click', () => {
             const targetCategory = button.getAttribute('data-category');
 
-            // Remove active class from all buttons and contents
+            
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
 
-            // Add active class to clicked button and corresponding content
+            
             button.classList.add('active');
             const targetContent = document.querySelector(`.category-content[data-category="${targetCategory}"]`);
             if (targetContent) {
                 targetContent.classList.add('active');
             }
 
-            // Reinitialize icons after tab switch
+          
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -81,16 +81,16 @@ function animateProgressCircle() {
     const progressBar = document.querySelector('.progress-bar');
     if (!progressBar) return;
 
-    // Get the completion percentage from the stroke-dasharray attribute
+    
     const strokeDasharray = progressBar.getAttribute('style');
     const match = strokeDasharray.match(/stroke-dasharray:\s*([\d.]+)/);
     
     if (match) {
         const percentage = parseFloat(match[1]);
-        const circumference = 2 * Math.PI * 75; // radius = 75
+        const circumference = 2 * Math.PI * 75; 
         const offset = circumference - (percentage / 100) * circumference;
 
-        // Animate the progress circle
+        
         progressBar.style.strokeDasharray = circumference;
         progressBar.style.strokeDashoffset = circumference;
 
@@ -110,18 +110,17 @@ function initializeAddToPlan() {
     
     console.log('Initializing Add to Plan. Found buttons:', addToPlanButtons.length);
     
-    // Load saved plans from localStorage
+   
     const savedPlans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
     
-    // Mark already added courses
+    
     savedPlans.forEach(courseCode => {
         const button = document.querySelector(`.btn-add-to-plan[data-course-code="${courseCode}"]`);
         if (button) {
             markAsAdded(button);
         }
     });
-    
-    // Add click event listeners
+   
     addToPlanButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
@@ -134,13 +133,13 @@ function initializeAddToPlan() {
             
             console.log('Course data:', { courseCode, courseTitle, courseUnits });
             
-            // Check if already added
+          
             if (this.classList.contains('added')) {
-                // Remove from plan
+                
                 removeFromPlan(courseCode, this);
                 showNotification(`${courseCode} removed from your plan`, 'info');
             } else {
-                // Add to plan
+               
                 addToPlan(courseCode, courseTitle, courseUnits, this);
                 showNotification(`${courseCode} added to your plan!`, 'success');
             }
@@ -155,7 +154,7 @@ function initializeAddToPlan() {
 function initializeModalListeners() {
     console.log('Initializing modal event listeners...');
     
-    // View My Plan button
+   
     const viewPlanBtn = document.getElementById('viewPlanBtn');
     if (viewPlanBtn) {
         viewPlanBtn.addEventListener('click', function() {
@@ -167,7 +166,7 @@ function initializeModalListeners() {
         console.warn('⚠ View Plan button not found');
     }
     
-    // Modal close button (header)
+    
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     if (modalCloseBtn) {
         modalCloseBtn.addEventListener('click', function() {
@@ -177,7 +176,7 @@ function initializeModalListeners() {
         console.log('✓ Modal close button listener added');
     }
     
-    // Modal close button (footer)
+    
     const modalCloseBtn2 = document.getElementById('modalCloseBtn2');
     if (modalCloseBtn2) {
         modalCloseBtn2.addEventListener('click', function() {
@@ -187,7 +186,7 @@ function initializeModalListeners() {
         console.log('✓ Modal close button 2 listener added');
     }
     
-    // Modal overlay (click outside to close)
+    
     const modalOverlay = document.getElementById('modalOverlay');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', function() {
@@ -197,7 +196,7 @@ function initializeModalListeners() {
         console.log('✓ Modal overlay listener added');
     }
     
-    // Clear all button
+   
     const clearPlanBtn = document.getElementById('clearPlanBtn');
     if (clearPlanBtn) {
         clearPlanBtn.addEventListener('click', function() {
@@ -209,16 +208,16 @@ function initializeModalListeners() {
 }
 
 function addToPlan(courseCode, courseTitle, courseUnits, button) {
-    // Get existing plans
+    
     let plans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
     let planDetails = JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
     
-    // Add course code to simple list
+   
     if (!plans.includes(courseCode)) {
         plans.push(courseCode);
     }
     
-    // Add full course details
+   
     const courseExists = planDetails.some(course => course.code === courseCode);
     if (!courseExists) {
         planDetails.push({

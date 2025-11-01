@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+
   const defaultProfileUrl =
     "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png";
 
   const avatarImg = document.querySelector(".teacher-avatar img.avatar-circle");
   const avatarDiv = document.querySelector(".teacher-avatar");
 
-  // ✅ If no <img> exists (means initials are shown), try loading from stored profile
   if (!avatarImg && avatarDiv) {
     const storedUrl = localStorage.getItem("teacherProfileUrl");
     if (storedUrl) {
@@ -13,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ✅ If <img> exists but broken or empty, fallback to default
   if (avatarImg) {
     avatarImg.onerror = () => {
       avatarImg.src = defaultProfileUrl;
@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ✅ When profile is updated (from upload JS)
   window.updateSidebarProfilePicture = function (newUrl) {
     const avatarImg = document.querySelector(".teacher-avatar img.avatar-circle");
     const avatarSpan = document.querySelector(".teacher-avatar span");
@@ -35,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
       avatarDiv.innerHTML = `<img src="${newUrl}" alt="Profile Picture" class="avatar-circle">`;
     }
 
-    // Save to localStorage so it persists across pages
     localStorage.setItem("teacherProfileUrl", newUrl);
   };
 });

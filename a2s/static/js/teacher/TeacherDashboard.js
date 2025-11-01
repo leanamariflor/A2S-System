@@ -55,7 +55,6 @@ calendarJSON.forEach(sem => {
   });
 });
 
-  // Populate dropdowns
   const years = [...new Set(allEvents.map(e => e.date.getFullYear()))];
   const semesters = [...new Set(allEvents.map(e => e.semester))];
   calendarYearSelect.innerHTML = `<option value="All">All</option>` + years.map(y => `<option>${y}</option>`).join("");

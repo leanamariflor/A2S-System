@@ -8,28 +8,29 @@
 {% endblock %}
 
 {% block content %}
-<div class="courses-dashboard">
+<div class="courses-container">
 
-  <!-- Header -->
-  <div class="header-card">
-    <h2>My Courses</h2>
-    <p>{{ current_year }} • {{ active_courses }} active courses</p>
+  <!-- Header Section -->
+  <div class="courses-header">
+    <div class="header-text">
+      <h2>My Courses</h2>
+      <p>{{ current_year }} • {{ active_courses }} active courses</p>
+    </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="filter-buttons">
-    <button class="tab-btn active" data-target="current">Current</button>
-    <button class="tab-btn" data-target="completed">Completed</button>
-    <button class="tab-btn" data-target="recommended">Recommended</button>
-  </div>
+  <!-- Purple Card Section -->
+  <div class="courses-card">
+    <!-- Tabs -->
+    <div class="filter-buttons">
+      <button class="tab-btn active" data-target="current">Current</button>
+      <button class="tab-btn" data-target="completed">Completed</button>
+      <button class="tab-btn" data-target="recommended">Recommended</button>
+    </div>
 
-  <!-- Semester -->
-  <h3>{{ current_semester }}</h3>
-
-  <!-- Course Container -->
-  <div class="courses-purple-box">
+    <!-- Course List -->
     <div id="coursesList" class="course-list"></div>
   </div>
+
 </div>
 
 <!-- Pass context data to JS -->

@@ -1,87 +1,124 @@
-.courses-dashboard {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+:root {
+  --sched-primary: #6f73ff; /* purple */
+  --sched-light: #f8f6ff;
+  --text-dark: #333;
 }
 
-/* Header card full width */
-.header-card {
-  width: 100%;
-  background: linear-gradient(135deg, #595cff, #4e50f0);
-  color: white;
-  padding: 25px 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-  text-align: left;
+/* === Page Background === */
+.courses-container {
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 2rem 4rem;
 }
 
-/* Tabs/buttons full width */
+.dashboard-main {
+  background-color: #ffffff !important;
+}
+
+/* === Header (Same as Schedule Header) === */
+.courses-header {
+  background-color: var(--sched-primary);
+  color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+}
+
+.courses-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.courses-header p {
+  margin: 0.3rem 0 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* === Card Wrapper (Like Table Card) === */
+.courses-card {
+  background-color: #fff;
+  border: 2px solid var(--sched-primary);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
+}
+
+/* === Tabs === */
 .filter-buttons {
   display: flex;
-  gap: 12px;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
   padding: 8px 18px;
   border-radius: 25px;
-  border: none;
-  background: #e0e0e0;
-  cursor: pointer;
+  border: 2px solid var(--sched-primary);
+  background: #fff;
+  color: var(--sched-primary);
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: var(--sched-primary);
+  color: #fff;
 }
 
 .tab-btn.active {
-  background: #595cff;
-  color: white;
+  background: var(--sched-primary);
+  color: #fff;
 }
 
-/* Semester title above courses box */
-.semester-title {
-  margin: 0;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #333;
+/* === Course List === */
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* Purple background container */
-.courses-purple-box {
-  width: 100%;
-  background: #6f73ff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-/* Each course item */
 .course-item {
+  background-color: var(--sched-light);
+  border-left: 6px solid var(--sched-primary);
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  background: white;
-  border-radius: 10px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  color: var(--text-dark);
+  box-shadow: 0 2px 6px rgba(111, 66, 193, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.course-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
+}
+
+/* Course Info */
 .course-info h4 {
   margin: 0;
-  font-size: 0.95rem;
-  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
 .course-info p {
   margin: 3px 0 0;
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.85rem;
+  color: #555;
 }
 
-/* Progress bar */
+/* === Progress === */
 .course-progress {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 180px;
 }
 
@@ -95,39 +132,23 @@
 
 .progress-fill {
   height: 100%;
-  background: #595cff;
+  background: var(--sched-primary);
   border-radius: 5px;
-  transition: width 0.5s ease, background 0.5s ease;
+  transition: width 0.5s ease;
 }
 
-/* Green color for completed courses */
 .progress-fill.completed {
   background: #28a745;
 }
 
 .course-progress span {
   font-size: 0.8rem;
-  color: #333;
+  color: var(--text-dark);
 }
 
+/* === Empty Message === */
 .empty-msg {
   text-align: center;
   color: #888;
-  padding: 30px 0;
-}
-
-
-.progress-bar {
-  width: 100%;
-  height: 10px;
-  background-color: #ddd;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.progress-fill {
-  height: 10px;
-  border-radius: 10px;
-  background-color: #4CAF50;
-  transition: width 0.5s ease;
+  padding: 2rem 0;
 }

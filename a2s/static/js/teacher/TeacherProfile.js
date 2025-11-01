@@ -88,13 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------------- Profile Picture ----------------
     function updateProfileImage(url) {
-        // Update profile page
+
         if (profilePicture) {
             profilePicture.innerHTML = `<img src="${url}" alt="Profile Picture" class="rounded-full w-32 h-32 object-cover">`;
         }
-        // Update sidebar
+
         updateSidebarProfilePicture(url);
-        // Save to localStorage so it persists across pages
+
         localStorage.setItem("teacherProfileUrl", url);
     }
 

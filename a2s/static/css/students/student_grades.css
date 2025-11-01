@@ -1,108 +1,160 @@
-/* ==================== UNIQUE STUDENT GRADES STYLES ==================== */
 :root {
-  --sg-bg: #f4f5f7;
-  --sg-text: #121212;
-  --sg-primary: #6f73ff;
-  --sg-card-bg: #ffffff;
-  --sg-border: #e0e0e0;
-  --sg-text-muted: #6b7280;
+  --purple: #6f73ff;
+  --purple-dark: #656afb;
+  --bg-light: #ffffff;
+  --text-dark: #222;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --table-alt: #f8f6ff;
 }
 
-/* Purple background container */
-.grades-purple-box {
-  width: 100%;
-  background: #6f73ff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+/* ===== Container ===== */
+.grades-container {
+  background-color: var(--bg-light);
+  min-height: 100vh;
+  padding: 2rem 4rem;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--text-dark);
 }
 
-
-.sg-container {
-  background-color: var(--sg-bg);
-  padding: 2rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--sg-text);
-}
-
-.sg-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.sg-dropdown {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--sg-border);
-  background-color: var(--sg-card-bg);
-  font-size: 0.95rem;
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
-.sg-button {
-  background-color: var(--sg-primary);
+/* ===== Header ===== */
+.grades-header {
+  background-color: var(--purple);
   color: #fff;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
 }
 
-.sg-button:hover {
-  opacity: 0.85;
-}
-
-.sg-table-container {
-  background-color: var(--sg-card-bg);
-  border-radius: 16px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  overflow-x: auto;
-}
-
-.sg-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.sg-table th {
-  background-color: var(--sg-primary);
-  color: #fff;
-  text-align: left;
-  padding: 10px 12px;
+.grades-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
   font-weight: 600;
 }
 
-.sg-table td {
-  padding: 10px 12px;
-  color: var(--sg-text);
-  border-bottom: 1px solid var(--sg-border);
+/* ===== Filter Card ===== */
+.grades-filter-card {
+  background-color: #fff;
+  border: 2px solid var(--purple);
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
 }
 
-.sg-table tbody tr:hover {
-  background-color: #f8fafc;
+.grades-filter-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-/* Responsive */
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.grades-filter-card label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.grades-select {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-light);
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.grades-select:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+.grades-btn {
+  background-color: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.grades-btn:hover {
+  background-color: var(--purple-dark);
+}
+
+/* ===== Table Card ===== */
+.grades-card {
+  background-color: #fff;
+  border: 2px solid var(--purple);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.15);
+}
+
+.grades-table-wrapper {
+  overflow-x: auto;
+}
+
+/* ===== Table ===== */
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.grades-table thead {
+  background-color: var(--purple);
+  color: #fff;
+}
+
+.grades-table th,
+.grades-table td {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+
+.grades-table tbody tr:nth-child(even) {
+  background-color: var(--table-alt);
+}
+
+.grades-table tbody tr:hover {
+  background-color: #f0e9ff;
+  transition: background-color 0.2s ease;
+}
+
+.no-data {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .sg-controls {
+  .grades-container {
+    padding: 1rem;
+  }
+
+  .grades-filter-form {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .sg-dropdown {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .sg-button {
+  .grades-btn, .grades-select {
     width: 100%;
   }
+}
+.dashboard-main {
+  background-color: #ffffff !important;
 }

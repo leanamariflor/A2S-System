@@ -10,6 +10,19 @@
   --shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
+
+.manage-card {
+  background-color: var(--primary);
+  color: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 1rem 2rem;
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+
+}
+
+
+
 /* ================== GENERAL ================== */
 body, .main-content {
   background-color: var(--background);
@@ -281,8 +294,8 @@ body, .main-content {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--primary);
-  color: #fff;
+  background: #fff;
+  color: #000000;
   border: none;
   border-radius: var(--radius);
   padding: 0.5rem 1rem;
