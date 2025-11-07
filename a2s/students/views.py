@@ -57,10 +57,33 @@ def student_dashboard(request):
 
     curriculum_data, calendar_data, current_courses = [], [], []
 
+    # Progress calculation variables
+    total_units = 0
+    completed_units = 0
+    completion_percentage = 0.0
+    credits_remaining = 0
+    current_gpa = float(profile.gpa) if profile.gpa else 0.0
+
     try:
         if student_program != "Undeclared":
             curriculum_obj = Curriculum.objects.get(program=student_program)
             curriculum_data = curriculum_obj.data.get("curriculum", [])
+
+            # Calculate progress metrics
+            for year in curriculum_data:
+                for term in year.get("terms", []):
+                    for subject in term.get("subjects", []):
+                        units = subject.get('units', 3)
+                        total_units += units
+                        status = subject.get('final_grade', 'RECOMMENDED')
+                        if status.upper() == 'PASSED':
+                            completed_units += units
+
+            if total_units > 0:
+                completion_percentage = round((completed_units / total_units * 100), 1)
+            credits_remaining = total_units - completed_units
+
+            # Get current courses
             for year in curriculum_data:
                 for term in year.get("terms", []):
                     for subj in term.get("subjects", []):
@@ -104,7 +127,14 @@ def student_dashboard(request):
         "credits_required": profile.credits_required or 0,
         "year_level": profile.year_level,
         "academic_standing": profile.academic_standing,
-        "current_semester": current_semester,  
+        "current_semester": current_semester,
+        # Progress overview data
+        "total_units": total_units,
+        "completed_units": completed_units,
+        "completion_percentage": completion_percentage,
+        "credits_remaining": credits_remaining,
+        "current_gpa": current_gpa,
+        "profile": profile,
     }
 
     return render(request, "students/StudentDashboard.html", context)
