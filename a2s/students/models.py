@@ -115,3 +115,15 @@ class CourseAssignment(models.Model):
 
     def __str__(self):
         return f"{self.student.user.get_full_name()} - {self.course_code} {self.section} ({self.teacher.user.get_full_name()})"
+
+
+class Notification(models.Model):
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=200)
+    message = models.TextField(blank=True, null=True)
+    type = models.CharField(max_length=50, blank=True, null=True) 
+    date_created = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)  
+
+    def __str__(self):
+        return f"{self.student.user.get_full_name()} - {self.title}"

@@ -22,6 +22,9 @@ urlpatterns = [
     path('upload-profile-picture/', views.upload_profile_picture, name='UploadProfilePicture'),
     path("reset-profile-picture/", views.reset_profile_picture, name="reset_profile_picture"),
 
+    path('notifications/', views.get_notifications, name='get_notifications'),
+    path('notifications/read/', views.mark_notification_read, name='mark_notification_read'),
+
     # Base Templates
    path('student_base/', views.student_base, name='student_base'),
    path('api/curriculum/<str:program>/', views.get_curriculum_json, name='get_curriculum_json'),

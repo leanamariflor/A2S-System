@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons();
+  if (typeof lucide !== "undefined") lucide.createIcons();
 
-  // ================= TABS =================
+  // =================== TAB NAVIGATION ===================
   const tabTriggers = document.querySelectorAll(".tab-trigger");
   const tabContents = document.querySelectorAll(".tab-content");
   tabTriggers.forEach(trigger => {
@@ -14,8 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-
-  // ================= CALENDAR =================
+  // =================== CALENDAR ===================
   const calendarGrid = document.getElementById("calendar-grid");
   const monthTitle = document.getElementById("month-title");
   const prevBtn = document.getElementById("prev-month");
@@ -41,20 +40,21 @@ document.addEventListener("DOMContentLoaded", () => {
     "Special Non-Working Day": "#f0b3ff"
   };
 
-const allEvents = [];
-const calendarJSON = window.calendarJSON || [];
+  const allEvents = [];
+  const calendarJSON = window.calendarJSON || [];
 
-calendarJSON.forEach(sem => {
-  sem.events.forEach(ev => {
-    allEvents.push({
-      date: new Date(ev.date),
-      name: ev.name,
-      type: ev.type,
-      semester: sem.semester
+  calendarJSON.forEach(sem => {
+    sem.events.forEach(ev => {
+      allEvents.push({
+        date: new Date(ev.date),
+        name: ev.name,
+        type: ev.type,
+        semester: sem.semester
+      });
     });
   });
-});
 
+  // Populate year and semester dropdowns
   const years = [...new Set(allEvents.map(e => e.date.getFullYear()))];
   const semesters = [...new Set(allEvents.map(e => e.semester))];
   calendarYearSelect.innerHTML = `<option value="All">All</option>` + years.map(y => `<option>${y}</option>`).join("");
@@ -69,6 +69,7 @@ calendarJSON.forEach(sem => {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
+    // Header
     const header = document.createElement("div");
     header.className = "calendar-row header";
     ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(day => {
@@ -82,12 +83,14 @@ calendarJSON.forEach(sem => {
     let row = document.createElement("div");
     row.className = "calendar-row";
 
+    // Empty cells before 1st
     for (let i = 0; i < firstDay; i++) {
       const empty = document.createElement("div");
       empty.className = "calendar-cell empty";
       row.appendChild(empty);
     }
 
+    // Calendar days
     for (let d = 1; d <= lastDate; d++) {
       const cell = document.createElement("div");
       cell.className = "calendar-cell";
@@ -129,14 +132,14 @@ calendarJSON.forEach(sem => {
   }
 
   prevBtn.addEventListener("click", () => {
-    currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+    if (currentMonth === 0) { currentMonth = 11; currentYear--; } 
+    else currentMonth--;
     renderCalendar();
   });
 
   nextBtn.addEventListener("click", () => {
-    currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-    currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+    if (currentMonth === 11) { currentMonth = 0; currentYear++; } 
+    else currentMonth++;
     renderCalendar();
   });
 
@@ -144,11 +147,43 @@ calendarJSON.forEach(sem => {
   calendarSemesterSelect.addEventListener("change", renderCalendar);
   renderCalendar();
 
-  // Modal close
+  // =================== MODAL ===================
   const modal = document.getElementById("eventModal");
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="eventName"></h3>
+      <p><strong>Type:</strong> <span id="eventType"></span></p>
+      <p><strong>Date:</strong> <span id="eventDate"></span></p>
+    </div>`;
   const closeModal = modal.querySelector(".close");
   closeModal.onclick = () => (modal.style.display = "none");
-  window.onclick = e => {
-    if (e.target === modal) modal.style.display = "none";
-  };
+  window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+  // =================== NOTIFICATIONS ===================
+  const notificationsContainer = document.getElementById("recentNotificationsContainer");
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay());
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  const weekEvents = allEvents.filter(ev => ev.date >= startOfWeek && ev.date <= endOfWeek);
+
+  if (weekEvents.length > 0) {
+    notificationsContainer.innerHTML = weekEvents.map(ev => `
+      <div class="task-item">
+        <div class="task-details">
+          <div class="task-title">
+            ${ev.name}
+            ${Math.abs((ev.date - today) / (1000*60*60*24)) <= 2 ? '<span class="urgent"></span>' : ''}
+          </div>
+          <div class="task-due">Date: ${ev.date.toLocaleDateString()}</div>
+        </div>
+        <div class="task-type">${ev.type}</div>
+      </div>
+    `).join("");
+  } else {
+    notificationsContainer.innerHTML = `<p>No events this week.</p>`;
+  }
 });

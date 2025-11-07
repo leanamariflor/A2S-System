@@ -10,6 +10,8 @@
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<div class="main-dashboard-container">
+
 <!-- Welcome Section -->
 <div class="welcome-card">
   <div class="welcome-content">
@@ -34,60 +36,48 @@
     <button class="tab-trigger" data-tab="progress">Progress</button>
   </div>
 
-  <!-- Overview -->
-  <div class="tab-content active" id="dashboard">
-    <div class="cards-row">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Current Courses</div>
-          <div class="card-description">{{ current_semester|default:"Ongoing" }} • {{ active_courses_count }} enrolled courses</div>
-        </div>
-        <div class="card-content">
-          {% if current_courses %}
-            <div class="course-list">
-              {% for course in current_courses %}
-                <div class="course-item">
-                  <div class="course-details">
-                    <div class="course-code">{{ course.subject_code }}</div>
-                    <div class="course-name">{{ course.description }}</div>
-                  </div>
-                  <div class="course-units">{{ course.units }} units</div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p>No current courses available.</p>
-          {% endif %}
-        </div>
-      </div>
 
-      <!-- Notifications -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recent Notifications</div>
-          <div class="card-description">Important updates for you</div>
-        </div>
-        <div class="card-content">
-          <div class="task-list">
-            <div class="task-item">
-              <div class="task-details">
-                <div class="task-title">Assignment 3 Deadline</div>
-                <div class="task-due">Due: Oct 5, 2025</div>
+ <!-- Overview -->
+<div class="tab-content active" id="dashboard">
+  <div class="overview-grid">
+    <!-- Notifications -->
+    <div class="card notifications-card">
+      <div class="card-header">
+        <div class="card-title">Recent Notifications</div>
+        <div class="card-description">Important updates for you</div>
+      </div>
+      <div class="card-content" id="recentNotificationsContainer">
+        <p>Loading this week’s notifications...</p>
+      </div>
+    </div>
+
+    <!-- Current Courses -->
+    <div class="card courses-card">
+      <div class="card-header">
+        <div class="card-title">Current Courses</div>
+        <div class="card-description">{{ current_semester|default:"Ongoing" }} • {{ active_courses_count }} enrolled courses</div>
+      </div>
+      <div class="card-content">
+        {% if current_courses %}
+          <div class="course-list">
+            {% for course in current_courses %}
+              <div class="course-item">
+                <div class="course-details">
+                  <div class="course-code">{{ course.subject_code }}</div>
+                  <div class="course-name">{{ course.description }}</div>
+                </div>
+                <div class="course-units">{{ course.units }} units</div>
               </div>
-              <div class="task-type">Urgent</div>
-            </div>
-            <div class="task-item">
-              <div class="task-details">
-                <div class="task-title">Midterm Exam Schedule</div>
-                <div class="task-due">Starts: Nov 10, 2025</div>
-              </div>
-              <div class="task-type">Exam</div>
-            </div>
+            {% endfor %}
           </div>
-        </div>
+        {% else %}
+          <p>No current courses available.</p>
+        {% endif %}
       </div>
     </div>
   </div>
+</div>
+
 
   <!-- Curriculum -->
   <div class="tab-content" id="curriculum">
@@ -124,6 +114,7 @@
 
   <!-- Calendar -->
   <div class="tab-content" id="calendar">
+    <div class="card calendard-card">
     <div class="calendar-controls">
       <label for="calendarSemesterSelect">Semester:</label>
       <select id="calendarSemesterSelect"></select>
@@ -140,6 +131,8 @@
       </div>
       <div id="calendar-grid"></div>
     </div>
+        </div>
+
   </div>
 
   <!-- Grades / Progress -->
@@ -159,6 +152,7 @@
   </div>
 
 </div>
+
 
 <!-- Event Modal -->
 <div id="eventModal" class="modal">

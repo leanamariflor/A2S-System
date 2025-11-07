@@ -26,10 +26,21 @@
           </div>
         </div>
         <div class="header-actions">
-          <button class="notification-button">
-            <i data-lucide="bell"></i>
-            <span class="notification-badge"></span>
-          </button>
+        <button id="notif-btn" class="notif-btn">
+          <i data-lucide="bell"></i>
+          <span id="notif-badge" class="notif-badge hidden">0</span>
+        </button>
+
+        <div id="notif-dropdown" class="notification-dropdown">
+          <div class="notification-header">
+            <h4>Notifications</h4>
+            <span class="clear-notif" id="clear-notif">Mark all as read</span>
+          </div>
+          <div id="notif-list"></div>
+        </div>
+
+
+
           <a href="{% url 'Logout' %}" class="logout-button">
             <i data-lucide="log-out"></i>
           </a>

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons();
+  if (typeof lucide !== "undefined") lucide.createIcons();
 
-  // ================= TABS =================
+  // =================== TAB NAVIGATION ===================
   const tabTriggers = document.querySelectorAll(".tab-trigger");
   const tabContents = document.querySelectorAll(".tab-content");
   tabTriggers.forEach(trigger => {
@@ -14,48 +14,79 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ================= CURRICULUM =================
+  // =================== CURRICULUM ===================
   const container = document.getElementById("curriculum-container");
+  const yearSelect = document.getElementById("yearSelect");
+  const filterButtons = document.querySelectorAll(".filter-btn");
+
   let allData = Array.isArray(curriculumJSON) ? curriculumJSON : [];
+  let activeFilter = "All";
+  let activeYear = "All";
 
-  function renderCurriculum(curriculum) {
-    container.innerHTML = "";
-    if (!curriculum.length) {
-      container.innerHTML = "<p>No curriculum data available for this program.</p>";
-      return;
-    }
+  function renderCurriculum(data) {
+  container.innerHTML = "";
 
-    curriculum.forEach(year => {
-      const yearBlock = document.createElement("div");
-      yearBlock.classList.add("year-block");
-      yearBlock.innerHTML = `<h3>${year.year}</h3>`;
-
-      year.terms.forEach(term => {
-        const table = document.createElement("table");
-        const header = `
-          <thead>
-            <tr>
-              <th>Term</th><th>Subject Code</th><th>Description</th>
-              <th>Units</th><th>School Year</th><th>Semester</th><th>Status</th>
-            </tr>
-          </thead>`;
-        const rows = term.subjects.map(subj => `
-          <tr>
-            <td>${term.term}</td>
-            <td>${subj.subject_code}</td>
-            <td>${subj.description}</td>
-            <td>${subj.units}</td>
-            <td>${subj.school_year}</td>
-            <td>${subj.semester}</td>
-            <td>${subj.final_grade}</td>
-          </tr>`).join("");
-        table.innerHTML = header + `<tbody>${rows}</tbody>`;
-        yearBlock.appendChild(table);
-      });
-
-      container.appendChild(yearBlock);
-    });
+  if (!data.length) {
+    container.innerHTML = "<p>No curriculum data available for this program.</p>";
+    return;
   }
+
+  let hasAnyMatch = false;
+
+  data.forEach(year => {
+    const yearBlock = document.createElement("div");
+    yearBlock.classList.add("year-block");
+
+    if (activeYear !== "All" && year.year !== activeYear) return;
+
+    const filteredTerms = year.terms.map(term => {
+      const matchedSubjects = term.subjects.filter(subj => {
+        if (activeFilter === "All") return true;
+        if (activeFilter === "PASSED") return subj.final_grade === "PASSED";
+        if (activeFilter === "CURRENT") return subj.final_grade === "CURRENT";
+        if (activeFilter === "RECOMMENDED") return subj.final_grade === "RECOMMENDED";
+        return false;
+      });
+      return { ...term, subjects: matchedSubjects };
+    }).filter(term => term.subjects.length > 0);
+
+    if (!filteredTerms.length) return;
+
+    hasAnyMatch = true;
+    yearBlock.innerHTML = `<h3>${year.year}</h3>`;
+
+    filteredTerms.forEach(term => {
+      const table = document.createElement("table");
+      const header = `
+        <thead>
+          <tr>
+            <th>Term</th><th>Subject Code</th><th>Description</th>
+            <th>Units</th><th>School Year</th><th>Semester</th><th>Status</th>
+          </tr>
+        </thead>`;
+      const rows = term.subjects.map(subj => `
+        <tr>
+          <td>${term.term}</td>
+          <td>${subj.subject_code}</td>
+          <td>${subj.description}</td>
+          <td>${subj.units}</td>
+          <td>${subj.school_year}</td>
+          <td>${subj.semester}</td>
+          <td>${subj.final_grade}</td>
+        </tr>`).join("");
+
+      table.innerHTML = header + `<tbody>${rows}</tbody>`;
+      yearBlock.appendChild(table);
+    });
+
+    container.appendChild(yearBlock);
+  });
+
+  if (!hasAnyMatch) {
+    container.innerHTML = `<p>No ${activeFilter.toLowerCase()} subjects found for the selected year.</p>`;
+  }
+}
+
 
   if (studentProgram && studentProgram !== "Undeclared") {
     renderCurriculum(allData);
@@ -63,72 +94,21 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = `<p style="color:red;">Program not set for this student.</p>`;
   }
 
-   // ================= SUPABASE FETCH + GPA =================
-  async function fetchGradesAndRenderGPA() {
-    try {
-      const { data: grades, error } = await supabase
-        .from('grades')
-        .select('*')
-        .eq('student_id', '{{ student.id }}');
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeFilter = btn.dataset.filter;
+      renderCurriculum(allData);
+    });
+  });
 
-      if (error) {
-        console.error("Supabase error fetching grades:", error);
-        return;
-      }
+  yearSelect.addEventListener("change", e => {
+    activeYear = e.target.value;
+    renderCurriculum(allData);
+  });
 
-      const gpaPerYear = {};
-      grades.forEach(grade => {
-        const yearNum = grade.school_year;
-        if (!gpaPerYear[yearNum]) gpaPerYear[yearNum] = { totalPoints: 0, totalUnits: 0 };
-
-        if (grade.final_grade !== null && grade.final_grade !== "") {
-          gpaPerYear[yearNum].totalPoints += grade.final_grade * grade.units;
-          gpaPerYear[yearNum].totalUnits += grade.units;
-        }
-      });
-
-      for (const year in gpaPerYear) {
-        const data = gpaPerYear[year];
-        gpaPerYear[year] = data.totalUnits > 0 ? (data.totalPoints / data.totalUnits).toFixed(2) : "N/A";
-      }
-
-      const gpaContainer = document.getElementById("gpaPerYearContainer");
-      gpaContainer.innerHTML = "";
-      for (const [year, gpa] of Object.entries(gpaPerYear)) {
-        const p = document.createElement("p");
-        p.textContent = `Year ${year}: GPA = ${gpa}`;
-        gpaContainer.appendChild(p);
-      }
-
-      const ctx = document.getElementById("progressChart").getContext("2d");
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(gpaPerYear),
-          datasets: [{
-            label: 'GPA per Year',
-            data: Object.values(gpaPerYear),
-            backgroundColor: '#6a5acd'
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 5
-            }
-          }
-        }
-      });
-
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  fetchGradesAndRenderGPA();
-
-  // ================= CALENDAR =================
+  // =================== CALENDAR ===================
   const calendarGrid = document.getElementById("calendar-grid");
   const monthTitle = document.getElementById("month-title");
   const prevBtn = document.getElementById("prev-month");
@@ -240,25 +220,67 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   prevBtn.addEventListener("click", () => {
-    currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+    if (currentMonth === 0) { currentMonth = 11; currentYear--; } 
+    else currentMonth--;
     renderCalendar();
   });
 
   nextBtn.addEventListener("click", () => {
-    currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-    currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+    if (currentMonth === 11) { currentMonth = 0; currentYear++; } 
+    else currentMonth++;
     renderCalendar();
   });
 
-  calendarYearSelect.addEventListener("change", renderCalendar);
+  calendarYearSelect.addEventListener("change", (e) => {
+  const selectedYear = e.target.value;
+
+  if (selectedYear !== "All") {
+    const yearEvents = allEvents.filter(ev => ev.date.getFullYear() == selectedYear);
+    if (yearEvents.length > 0) {
+      currentYear = parseInt(selectedYear);
+      currentMonth = yearEvents[0].date.getMonth(); 
+    } else {
+      currentYear = parseInt(selectedYear);
+      currentMonth = 0;
+    }
+  }
+
+  renderCalendar();
+});
+
   calendarSemesterSelect.addEventListener("change", renderCalendar);
   renderCalendar();
 
+  // =================== MODAL ===================
   const modal = document.getElementById("eventModal");
   const closeModal = modal.querySelector(".close");
   closeModal.onclick = () => (modal.style.display = "none");
-  window.onclick = e => {
-    if (e.target === modal) modal.style.display = "none";
-  };
+  window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+  // =================== NOTIFICATIONS ===================
+  const notificationsContainer = document.getElementById("recentNotificationsContainer");
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay());
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  const weekEvents = allEvents.filter(ev => ev.date >= startOfWeek && ev.date <= endOfWeek);
+
+  if (weekEvents.length > 0) {
+    notificationsContainer.innerHTML = weekEvents.map(ev => `
+      <div class="task-item">
+        <div class="task-details">
+          <div class="task-title">
+            ${ev.name}
+            ${Math.abs((ev.date - today) / (1000 * 60 * 60 * 24)) <= 2 ? '<span class="urgent"></span>' : ''}
+          </div>
+          <div class="task-due">Date: ${ev.date.toLocaleDateString()}</div>
+        </div>
+        <div class="task-type">${ev.type}</div>
+      </div>
+    `).join("");
+  } else {
+    notificationsContainer.innerHTML = `<p>No events this week.</p>`;
+  }
 });

@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -24,7 +25,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 
-from .models import StudentProfile, Enrollment, Grade,Schedule
+from .models import StudentProfile, Enrollment, Grade,Schedule,Notification
 from students.models import Curriculum
 from authentication.models import User
 
@@ -627,6 +628,37 @@ def get_current_phase(academic_calendar):
                     }
     return {"semester": None, "phase": "Completed"}
 
+@login_required
+def get_notifications(request):
+    student = request.user.studentprofile
+    notifications = student.notifications.order_by('-date_created')
+    data = [
+        {
+            "id": n.id,
+            "title": n.title,
+            "message": n.message,
+            "type": n.type,
+            "read": n.read,
+            "date": n.date_created.strftime("%Y-%m-%d %H:%M"),
+        }
+        for n in notifications
+    ]
+    unread_count = student.notifications.filter(read=False).count()
+    return JsonResponse({"notifications": data, "unread_count": unread_count})
+
+
+@login_required
+@require_POST
+def mark_notification_read(request):
+    student = request.user.studentprofile
+    notif_id = request.POST.get("id")
+    try:
+        notif = Notification.objects.get(id=notif_id, student=student)
+        notif.read = True
+        notif.save()
+        return JsonResponse({"success": True})
+    except Notification.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Notification not found"})
 
 # ----------------------------------------------------------------------
 # Export Degree Audit to PDF
