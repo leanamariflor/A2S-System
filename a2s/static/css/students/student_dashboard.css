@@ -704,24 +704,179 @@ select:focus {
 
 .notifications-card, .courses-card {
   height: 100%;
-  max-height: 420px; /* limit height so it doesn’t go too long */
-  overflow-y: auto;  /* make inner scroll if content too long */
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
 }
 
-/* Make scrollbar subtle */
-.notifications-card::-webkit-scrollbar,
-.courses-card::-webkit-scrollbar {
-  width: 6px;
-}
-.notifications-card::-webkit-scrollbar-thumb,
-.courses-card::-webkit-scrollbar-thumb {
-  background-color: rgba(111, 115, 255, 0.3);
-  border-radius: 10px;
+/* Modal box */
+.modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: relative;
 }
 
-/* Responsive layout for smaller screens */
+/* Close button */
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Dropdown styling */
+select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background-color: #f9f9f9;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+/* Progress Overview Styles */
+.progress-overview {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.progress-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.progress-center {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), #8b8cff);
+  border-radius: 50%;
+  color: white;
+}
+
+.progress-percentage {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.progress-label {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.progress-details h3 {
+  font-size: 1.25rem;
+  color: var(--foreground);
+  margin: 0 0 0.5rem 0;
+}
+
+.progress-details p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary), #8b8cff);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Responsive Design */
 @media (max-width: 1024px) {
-  .overview-grid {
+  .progress-overview {
     grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-center {
+    width: 150px;
+    height: 150px;
+  }
+
+  .progress-percentage {
+    font-size: 2rem;
   }
 }

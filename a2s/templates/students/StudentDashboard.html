@@ -137,16 +137,59 @@
 
   <!-- Grades / Progress -->
   <div class="tab-content" id="progress">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Progress</div>
-        <div class="card-description">View your semester GPA and course completion</div>
+    <!-- Progress Overview -->
+    <div class="progress-overview">
+      <div class="progress-card">
+        <div class="progress-center">
+          <span class="progress-percentage">{{ completion_percentage }}%</span>
+          <span class="progress-label">Complete</span>
+        </div>
+        <div class="progress-details">
+          <h3>Overall Progress</h3>
+          <p>Keep up the great work on your academic journey!</p>
+        </div>
       </div>
-      <div id="gpaPerYearContainer" style="margin-top: 20px;"></div>
 
-      <div class="card-content">
-        <canvas id="progressChart" width="400" height="200"></canvas>
-        <div id="completionContainer" style="margin-top:20px;"></div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i data-lucide="book-open"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ completed_units }}/{{ total_units }}</span>
+            <span class="stat-label">Credits Earned</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i data-lucide="target"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ credits_remaining }}</span>
+            <span class="stat-label">Credits Remaining</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i data-lucide="award"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ current_gpa|floatformat:2 }}</span>
+            <span class="stat-label">Current GPA</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i data-lucide="calendar"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ profile.expected_graduation|default:"TBD" }}</span>
+            <span class="stat-label">Expected Graduation</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
