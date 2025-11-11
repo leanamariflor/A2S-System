@@ -1,3 +1,7 @@
+
+
+/* 1. ROOT VARIABLES, BASE STYLES & LAYOUT */
+
 :root {
   --background: #f4f5f7;
   --foreground: #121212;
@@ -8,9 +12,11 @@
   --glow: 0 0 8px rgba(111, 115, 255, 0.4);
 }
 
-.tabs,
-.calendar-container {
-  margin: 0 2rem;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .main-dashboard-container {
@@ -19,15 +25,17 @@
   padding: 0 1rem;
 }
 
-/* ===== Global Styles ===== */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+.tabs,
+.calendar-container,
+.card.notifications-card,
+.card.courses-card,
+.progress-card {
+  margin: 0 2rem;
 }
 
-/* ===== Welcome Card ===== */
+
+
+/* 2. WELCOME SECTION */
 .welcome-card {
   background-color: var(--primary);
   color: #fff;
@@ -54,17 +62,73 @@ body {
   color: #d1d5db;
 }
 
-/* ===== Cards ===== */
+.welcome-gpa {
+  text-align: center;
+}
+
+.gpa-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.gpa-label {
+  font-size: 0.9rem;
+  color: #d1d5db;
+}
+
+/* 3. TABS & TAB TRIGGERS */
+.tab-trigger {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.tab-trigger.active {
+  background: #fff;
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: var(--glow);
+}
+
+/* 4. GENERAL CARD STYLES & OVERVIEW TAB */
 .card {
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
   box-shadow: var(--glow);
-  border-color: var(--primary);
   transition: all 0.25s ease;
+  height: auto;
+  margin-bottom: 1.5rem; 
+  border-color: var(--primary); 
 }
 
+/* Specific Overview Cards */
+.card.notifications-card,
+.card.courses-card {
+ background-color: var(--card-bg);
+  border: 1px solid var(--primary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--glow);
+  transition: all 0.25s ease;
+  height: 100%;
+  max-height: 420px; 
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: -20px;
+}
+
+/* Card Structure */
 .card-header {
   margin-bottom: 0.25rem !important;
   padding-bottom: 0.25rem !important;
@@ -77,48 +141,62 @@ body {
   color: var(--primary);
 }
 
-.card-description {
-  font-size: 0.9rem;
-  color: var(--text-muted);
+.card-content {
+  margin-top: 0 !important;
+  padding-top: 0.25rem !important;
 }
 
-.cards-row {
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 1.5rem;
+  max-width: 1280px;
+  margin: 1.5rem auto; 
+  padding: 0 1rem;
+  box-sizing: border-box;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+
+
+/* Scrollbar Styles */
+.notifications-card::-webkit-scrollbar,
+.courses-card::-webkit-scrollbar {
+  width: 6px;
+}
+.notifications-card::-webkit-scrollbar-thumb,
+.courses-card::-webkit-scrollbar-thumb {
+  background-color: rgba(111, 115, 255, 0.3);
+  border-radius: 10px;
+}
+
+/* Course List Items */
+.course-list {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.course-item,
+.task-item {
+  background-color: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
   display: flex;
-  gap: 1.5rem;           
-  overflow-x: auto;       
-  padding-bottom: 0.5rem;  
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  margin: 0.25rem 0;
 }
 
-.cards-row .card {
-  flex: 0 0 400px;  
-  min-width: 300px; 
+.course-item:hover,
+.task-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(111, 115, 255, 0.25);
 }
 
-
-.cards-row::-webkit-scrollbar {
-  height: 6px;
-}
-
-.cards-row::-webkit-scrollbar-thumb {
-  background-color: rgba(111,115,255,0.4);
-  border-radius: 3px;
-}
-
-
-.overview-section-cards {
-  display: flex;
-  gap: 1.5rem;          
-  width: 100%;
-  margin-bottom: 1.5rem;
-}
-
-.overview-section-cards .card {
-  flex: 1;               
-  min-width: 300px;      
-}
-
-
-/* ===== Quick Actions ===== */
+/* Quick Actions */
 .quick-actions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -158,87 +236,301 @@ body {
   color: var(--text-muted);
 }
 
-/* ===== Course & Task Items ===== */
-.course-list, .task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* 5. CURRICULUM TAB */
+/* Controls (Selects) */
+select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background-color: #f9f9f9;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
-.course-item, .task-item {
+select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.curriculum-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.curriculum-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  background-color: #f9fafb;
-  border: 1px solid var(--border);
-  transition: box-shadow 0.2s, border-color 0.2s;
+  margin-bottom: 0.8rem;
 }
 
-.course-item:hover, .task-item:hover {
-  border-color: var(--primary);
-  box-shadow: 0 0 8px rgba(111, 115, 255, 0.25);
-}
-
-.course-details, .task-details {
+.curriculum-controls {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
-.course-code, .task-title {
-  font-weight: 600;
+.curriculum-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.year-dropdown {
+  margin-right: 10px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 0.9rem;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.year-dropdown:hover {
+  border-color: var(--primary);
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.15);
+}
+
+.filter-btn {
+  background-color: #f4f5f7;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.curriculum-content {
+  flex: 1;
+  padding-right: 8px;
+  margin-top: -50px;
+}
+
+/* Curriculum Table Structure */
+.curriculum-table {
+  background: var(--card-bg);
+  border-radius: 16px; 
+  padding: 20px; 
+  box-shadow: 0 4px 12px rgba(111, 115, 255, 0.1);
+  border: 1px solid var(--border);
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+.curriculum-table h2 {
+  font-size: 1.4rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.curriculum-table h3 {
+  font-size: 1.1rem;
+  color: var(--foreground);
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  border-left: 4px solid var(--primary);
+  padding-left: 10px;
+}
+
+.curriculum-table table {
+  border-collapse: collapse;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.curriculum-table table:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.curriculum-table thead {
+  background-color: var(--primary);
+  color: #fff;
+  text-align: left;
+}
+
+.curriculum-table th,
+.curriculum-table td {
+  padding: 10px 14px;
   font-size: 0.95rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.course-name, .task-due {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+.curriculum-table tbody tr:hover {
+  background-color: #f2f3ff;
 }
 
-.course-instructor, .task-type {
-  font-size: 0.8rem;
-  color: #9ca3af;
+.curriculum-table th {
+  font-weight: 600;
 }
 
-/* ===== Tabs ===== */
+.curriculum-table td {
+  color: #333;
+}
 
-/* Tabs */
-.tab-trigger {
+
+/* 6. ACADEMIC CALENDAR TAB & MODAL */
+/* Calendar Controls */
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.calendar-controls label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-right: 4px;
+  color:var(--primary);
+}
+
+/* Calendar Container */
+.calendar-container {
+  box-shadow: 0 0 12px rgba(111, 115, 255, 0.2); 
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 10px auto;
+  padding: 20px;
+  background-color: #fff;
+}
+
+#month-title {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+  color: var(--primary);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.calendar-nav button {
+  padding: 6px 12px;
   background: var(--primary);
   color: #fff;
-  border-radius: 8px;
-  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Calendar Cells & Grid */
+.calendar-container table {
+  border-collapse: collapse;
+}
+
+.calendar-container th {
+  background-color: #f8f6ff;
+  color: var(--text-dark);
+  padding: 8px;
+  border: none;
   text-align: center;
-  transition: all 0.25s ease;
-  border: 1px solid transparent;
+  font-weight: bold;
 }
 
-.tab-trigger.active {
+.calendar-row {
+  display: flex;
+  gap: 5px;
+  background: transparent;
+}
+
+.calendar-cell {
+  flex: 1;
+  padding: 12px;
   background: #fff;
-  color: var(--primary);
-  border-color: var(--primary);
-  box-shadow: var(--glow);
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-weight: 500;
+  border: var(--primary);
 }
 
-.tab-content {
-  display: none;
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: var(--glow);
+.calendar-cell.header {
+  background-color: var(--primary);
+  color: #fff;
+  flex: 1;
+  text-align: center;
+  border-radius: 6px 6px 0 0;
+  padding: 10px 0;
+  font-weight: bold;
 }
 
-.tab-content.active {
+.calendar-cell.today {
+  background-color: #e0e1ff; 
+  border: 2px solid var(--primary); 
+  box-shadow: var(--glow); 
+  color: #000;
+}
+
+.empty {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Event Badges */
+.event-badge {
   display: block;
+  margin-top: 5px; 
+  font-size: 0.75rem;
+  border-left: 4px solid;
+  padding-left: 4px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
+.event-badge:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
 
-/* ===== Event Modal ===== */
+.event-holiday { border-color: #ff4d4d; color: #c00; }
+.event-exam { border-color: #3399ff; color: #036; }
+.event-ceremony { border-color: #ff9900; color: #b85c00; }
+.event-deadline { border-color: #66cc33; color: #3a7d00; }
+
+/* Event Modal */
 .modal {
   display: none;
   position: fixed;
-  z-index: 999;
+  z-index: 999; 
   left: 0;
   top: 0;
   width: 100%;
@@ -251,24 +543,23 @@ body {
 }
 
 .modal-content {
-  background: var(--card);
-  color: var(--foreground);
+  background: var(--card-bg);
+  color: var(--foreground); 
   padding: 2rem;
-  border-radius: 1rem;
-  width: 420px;
-  box-shadow: 0 6px 18px rgba(111, 115, 255, 0.25);
-  border: 1px solid rgba(111, 115, 255, 0.2);
+  border-radius: 1rem; 
+  width: 420px; 
+  box-shadow: 0 6px 18px rgba(111, 115, 255, 0.25); 
+  border: 1px solid rgba(111, 115, 255, 0.2); 
   position: relative;
   animation: slideUpModal 0.3s ease;
 }
 
-/* Close Button */
 .modal-content .close {
   position: absolute;
-  top: 1rem;
+  top: 1rem; 
   right: 1.2rem;
   font-size: 1.5rem;
-  color: var(--muted-foreground);
+  color: var(--muted-foreground); 
   cursor: pointer;
   transition: color 0.2s ease, transform 0.2s ease;
 }
@@ -278,7 +569,6 @@ body {
   transform: scale(1.1);
 }
 
-/* Title */
 .modal-content h3 {
   margin-top: 0.5rem;
   font-size: 1.25rem;
@@ -316,203 +606,47 @@ body {
 }
 
 
-/* Calendar */
-.calendar-container {
-  box-shadow: 0 0 12px rgba(111, 115, 255, 0.2);
-  border-radius: 16px;
+/* 8. RESPONSIVE DESIGN (MEDIA QUERIES) */
+@media (max-width: 1024px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.calendar-cell.today {
-  background-color: #e0e1ff;
-  border: 2px solid var(--primary);
-  box-shadow: var(--glow);
-  font-weight: bold;
-}
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 
-.calendar-container table {
-  border-collapse: collapse; 
-}
+  .progress-center {
+    width: 150px;
+    height: 150px;
+  }
 
-.calendar-container th {
-  background-color: #f8f6ff; 
-  color: var(--text-dark);   
-  padding: 8px;
-  border: none;              
-  text-align: center;
-  font-weight: bold;
-}
+  .progress-percentage {
+    font-size: 2rem;
+  }
 
-.calendar-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 15px;
-  flex-wrap: wrap; 
-}
+  .curriculum-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
 
-.calendar-controls label {
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-right: 4px;
-  color:var(--primary);
-}
+  .year-dropdown {
+    width: 100%;
+    margin-left: 0;
+  }
 
-.calendar-container {
-  width: 100%;
-  max-width: 900px;
-  margin: 10px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-#month-title {
-  text-align: center;
-  margin-bottom: 15px;
-  font-size: 1.6rem;
-  color: var(--primary);
-}
-
-.calendar-nav {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-
-.calendar-nav button {
-  padding: 6px 12px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#calendar-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-
-
-.calendar-row {
-  display: flex;
-  gap: 5px;
-  background: transparent; /* remove any inherited bg */
-}
-.calendar-cell {
-  flex: 1;
-  padding: 12px;
-  background: #fff;
-  border-radius: 6px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  font-weight: 500;
-  border: var(--primary);
-}
-
-
-
-
-.calendar-cell.header {
-  background-color: var(--primary); /* or your preferred color */
-  color: #fff; /* text white */
-  flex: 1;
-  text-align: center;
-  border-radius: 6px 6px 0 0; /* optional rounded top corners */
-  padding: 10px 0;
-  font-weight: bold;
-}
-
-.event-badge {
-  display: block;
-  margin-top: 5px;
-  font-size: 0.75rem;
-  border-left: 4px solid;
-  padding-left: 4px;
-}
-
-.event-holiday { border-color: #ff4d4d; color: #c00; }
-.event-exam { border-color: #3399ff; color: #036; }
-.event-ceremony { border-color: #ff9900; color: #b85c00; }
-.event-deadline { border-color: #66cc33; color: #3a7d00; }
-
-.empty {
-  background: transparent;
-  box-shadow: none;
-}
-
-.calendar-cell.today {
-  background-color:  #c6c7ed;     
-  border: 2px solid  #6f73ff;     
-  box-shadow: 0 0 6px rgba(191, 127, 240, 0.5);
-  color: #000;
-  font-weight: bold;
-}
-
-.event-badge {
-  display: block;
-  margin-top: 2px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.event-badge:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  position: relative;
-}
-
-.modal-content .close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-  background-color: #f9f9f9;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-select:focus {
-  outline: none;
-  border-color: #007BFF;
-  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  .curriculum-buttons {
+    justify-content: flex-start;
+  }
 }

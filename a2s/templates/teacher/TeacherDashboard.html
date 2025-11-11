@@ -4,10 +4,11 @@
 {% block title %}A2S Teacher Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/teacher/teacher_dashboard.css' %}" />
+<link rel="stylesheet" href="{% static 'css/teacher/teacher_dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="main-dashboard-container">
 
@@ -15,8 +16,9 @@
   <div class="welcome-card">
     <div class="welcome-content">
       <div class="welcome-text">
-        <h2>Welcome back, Professor {{ teacher.last_name }}</h2>
+        <h2>Welcome back, Professor {{ teacher.first_name }}</h2>
         <p>{{ department }} • {{ current_semester }}</p>
+        <p class="date">{{ today }}</p>
       </div>
       <div class="welcome-gpa">
         <div class="gpa-value">{{ total_students }}</div>
@@ -28,69 +30,97 @@
   <!-- Dashboard Tabs -->
   <div class="tabs">
     <div class="tab-list">
-      <button class="tab-trigger active" data-tab="overview">Overview</button>
+      <button class="tab-trigger active" data-tab="dashboard">Overview</button>
       <button class="tab-trigger" data-tab="calendar">Academic Calendar</button>
     </div>
 
     <!-- Overview Tab -->
-    <div class="tab-content active" id="overview">
-      <div class="overview-section-cards">
-  <!-- Notifications Card -->
-  <div class="card overview-card">
-    <div class="card-header">
-      <div class="card-title">Recent Notifications</div>
-      <div class="card-description">Important updates for you</div>
-    </div>
-    <div class="card-content" id="recentNotificationsContainer">
-      <p>Loading this week’s notifications...</p>
-    </div>
-  </div>
-
-  <!-- Current Courses Card -->
-  <div class="card overview-card">
-    <div class="card-header">
-      <div class="card-title">Current Courses</div>
-      <div class="card-description">
-        {{ current_semester }} • {{ courses|length }} enrolled courses
-      </div>
-    </div>
-
-    <div class="card-content">
-      <ul class="course-list">
-        {% for course in courses %}
-          <li class="course-item">
-            <div class="course-details">
-              <strong>{{ course.course_code }}</strong> - {{ course.section }}
-            </div>
-            <span class="student-count">{{ course.student_count }} students</span>
-          </li>
-        {% empty %}
-          <p>No current courses found.</p>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-</div>
-
-    </div>
-
-    <!-- Calendar Tab -->
-    <div class="tab-content" id="calendar">
-      <div class="calendar-controls">
-        <label for="calendarSemesterSelect">Semester:</label>
-        <select id="calendarSemesterSelect"></select>
-
-        <label for="calendarYearSelect">Year:</label>
-        <select id="calendarYearSelect"></select>
-      </div>
-
-      <div class="calendar-container">
-        <h2 id="month-title"></h2>
-        <div class="calendar-nav">
-          <button id="prev-month">&lt; Prev</button>
-          <button id="next-month">Next &gt;</button>
+    <div class="tab-content active" id="dashboard">
+      <div class="overview-grid">
+        <!-- Notifications -->
+        <div class="card notifications-card">
+          <div class="card-header">
+            <div class="card-title">Recent Notifications</div>
+            <div class="card-description">Important updates for you</div>
+          </div>
+          <div class="card-content" id="recentNotificationsContainer">
+            <p>Loading this week’s notifications...</p>
+          </div>
         </div>
-        <div id="calendar-grid"></div>
+
+        <!-- Current Courses -->
+        <div class="card courses-card">
+          <div class="card-header">
+            <div class="card-title">Current Courses</div>
+            <div class="card-description">
+              {{ current_semester }} • {{ courses|length }} active classes
+            </div>
+          </div>
+
+          <div class="card-content">
+            {% if courses %}
+              <div class="course-list">
+                {% for course in courses %}
+                  <div class="course-item">
+                    <div class="course-details">
+                      <div class="course-code">{{ course.course_code }}</div>
+                      <div class="course-name">{{ course.course_name }}</div>
+                    </div>
+                    <div class="course-units">{{ course.student_count }} students</div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <p>No active courses at the moment.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Academic Calendar -->
+    <div class="tab-content" id="calendar">
+      <div class="card calendar-card">
+        <div class="calendar-controls">
+          <label for="calendarSemesterSelect">Semester:</label>
+          <select id="calendarSemesterSelect"></select>
+
+          <label for="calendarYearSelect">Year:</label>
+          <select id="calendarYearSelect"></select>
+        </div>
+
+        <div class="calendar-container">
+          <h2 id="month-title"></h2>
+          <div class="calendar-nav">
+            <button id="prev-month">&lt; Prev</button>
+            <button id="next-month">Next &gt;</button>
+          </div>
+          <div id="calendar-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advisees Tab -->
+    <div class="tab-content" id="advisees">
+      <div class="card advisee-card">
+        <div class="card-header">
+          <div class="card-title">Advisees Overview</div>
+          <div class="card-description">List of students under your supervision</div>
+        </div>
+        <div class="card-content">
+          {% if advisees %}
+            <div class="advisee-list">
+              {% for student in advisees %}
+                <div class="advisee-item">
+                  <div class="advisee-name">{{ student.first_name }} {{ student.last_name }}</div>
+                  <div class="advisee-program">{{ student.program }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No advisees assigned yet.</p>
+          {% endif %}
+        </div>
       </div>
     </div>
 
@@ -98,7 +128,14 @@
 </div>
 
 <!-- Event Modal -->
-<div id="eventModal" class="modal"></div>
+<div id="eventModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="eventName"></h3>
+    <p><strong>Type:</strong> <span id="eventType"></span></p>
+    <p><strong>Date:</strong> <span id="eventDate"></span></p>
+  </div>
+</div>
 
 <script>
   window.calendarJSON = JSON.parse('{{ calendar_json|escapejs }}');

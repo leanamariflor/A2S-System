@@ -1,115 +1,75 @@
-/* ==================== TEACHER SCHEDULE STYLES ==================== */
 :root {
-  --sched-bg: #f4f5f7;
-  --sched-text: #121212;
-  --sched-primary: #6f73ff;
-  --sched-card-bg: #ffffff;
-  --sched-border: #d1d5db;
-  --sched-muted: #6b7280;
-  --sched-header-bg: #4e52d0; /* darker header */
-  --sched-time-bg: #eef2ff;   /* time column */
+  --sched-primary: #6f73ff; /* purple */
+  --sched-light: #f8f6ff;
+  --text-dark: #333;
 }
 
-.schedule-page {
-  background-color: var(--sched-bg);
-  padding: 2rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--sched-text);
+.schedule-container {
+  background-color: #fff;
   min-height: 100vh;
-  border-radius: 10px; /* curved top edges */
+  padding: 2rem 4rem;
 }
 
-.page-title {
+
+.dashboard-main {
+  background-color: #ffffff !important;
+}
+
+/* Header Card */
+.schedule-header {
+  background-color: var(--sched-primary);
+  color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+}
+
+.schedule-header h2 {
+  margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: black;
-  text-align: center;
+}
+
+/* Table Card */
+.schedule-card {
+  background-color: #fff;
+  border: 2px solid var(--sched-primary);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
 }
 
 .schedule-wrapper {
-  width: 100%;
   overflow-x: auto;
-  background: var(--sched-primary);
-  border-radius: 25px;
-  padding: 1rem;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .schedule-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  background-color: var(--sched-card-bg);
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Table headers */
-.schedule-table th {
-  background-color: var(--sched-header-bg);
+.schedule-table thead {
+  background-color: var(--sched-primary);
   color: #fff;
-  font-weight: 600;
-  text-transform: uppercase;
-  padding: 0.8rem;
-  font-size: 0.95rem;
 }
 
-/* Time column */
-.time-label {
-  background-color: var(--sched-time-bg);
-  font-weight: 600;
-  color: var(--sched-muted);
-  width: 10%;
-}
-
-/* Cells */
 .schedule-table th,
 .schedule-table td {
-  border: 1px solid var(--sched-border);
   text-align: center;
-  vertical-align: middle;
-  padding: 0.6rem;
-  height: 45px;
+  padding: 1rem;
+  border: 1px solid #ddd;
 }
 
-/* Subject cells */
-.schedule-cell {
-  position: relative;
-  width: 15%;
+.schedule-table tbody tr:nth-child(even) {
+  background-color: var(--sched-light);
 }
 
+/* Subject Box inside cells */
 .subject-box {
   background-color: var(--sched-primary);
   color: #fff;
+  border-radius: 0.5rem;
   padding: 0.5rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   font-size: 0.9rem;
 }
-
-.subject-box strong {
-  font-size: 1rem;
-}
-
-/* Columns evenly spread */
-.schedule-table th,
-.schedule-table td:not(.time-label) {
-  width: calc(90% / 6);
-}
-
-/* Empty cells white */
-.schedule-table td {
-  background-color: #ffffff !important;
-}
-
-/* Hover effect */
-.schedule-table tr:hover td {
-  background-color: #f8f9ff;
-}
-

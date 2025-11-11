@@ -25,7 +25,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 
-from .models import StudentProfile, Enrollment, Grade,Schedule,Notification
+from .models import StudentProfile, Enrollment, Grade,Schedule
 from students.models import Curriculum
 from authentication.models import User
 
@@ -33,10 +33,10 @@ from authentication.models import User
 # ----------------------------------------------------------------------
 # Supabase Configuration & Constants
 # ----------------------------------------------------------------------
-SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
-SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODg5OTIyNiwiZXhwIjoyMDc0NDc1MjI2fQ.b8Q1La_ZM8YSm6yt8Hw2qvNRS9GDkaLcbHWpb3ZK9eM"
+SUPABASE_URL = settings.SUPABASE_URL
+SUPABASE_SERVICE_KEY = settings.SUPABASE_SERVICE_KEY
+DEFAULT_PROFILE_URL = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/avatar.png"
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
-DEFAULT_PIC_URL = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/avatar.png"
 
 
 # ----------------------------------------------------------------------
@@ -214,7 +214,7 @@ def update_student_profile(request):
 
 @csrf_exempt
 @login_required
-def upload_profile_picture(request):
+def upload_student_profile_picture(request):
     if request.method != 'POST' or 'file' not in request.FILES:
         return JsonResponse({'status': 'error', 'message': 'No file uploaded'}, status=400)
 
@@ -247,7 +247,7 @@ def upload_profile_picture(request):
 
 
 @login_required
-def reset_profile_picture(request):
+def reset_student_profile_picture(request):
     profile, _ = StudentProfile.objects.get_or_create(user=request.user)
     default_url = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png"
     profile.profile_picture = default_url
@@ -258,16 +258,6 @@ def reset_profile_picture(request):
 # ----------------------------------------------------------------------
 # Schedule & Course Enrollment Views
 # ----------------------------------------------------------------------
-@login_required(login_url="Login")
-def student_schedule(request):
-    profile, _ = StudentProfile.objects.get_or_create(user=request.user)
-    enrollments = Enrollment.objects.filter(student=profile).order_by("schedule_day", "start_time")
-
-    schedule_by_day = {}
-    for e in enrollments:
-        schedule_by_day.setdefault(e.schedule_day, []).append(e)
-
-    return render(request, "students/StudentSchedule.html", {"schedule_by_day": schedule_by_day})
 
 
 @login_required(login_url="Login")

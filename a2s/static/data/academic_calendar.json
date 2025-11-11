@@ -121,6 +121,7 @@
       {"date": "2025-10-31", "name": "All Saints Day Eve", "type": "Special Non-Working Day"},
       {"date": "2025-11-01", "name": "All Saints Day", "type": "Special Non-Working Day"},
       {"date": "2025-11-02", "name": "All Souls Day", "type": "Holiday"},
+
       {"date": "2025-11-30", "name": "Bonifacio Day", "type": "Holiday"},
       {"date": "2025-12-06", "name": "End of Classes", "type": "Class End"},
       {"date": "2025-12-06", "name": "Founder's Day", "type": "Holiday"},

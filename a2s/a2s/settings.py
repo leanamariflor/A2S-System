@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-7a%^__f-19xbaq5d(qz96ax3(=x_^1c@v4cn-quuhjpe$trwo@")

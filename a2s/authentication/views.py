@@ -18,9 +18,10 @@ from .models import User
 # -----------------------------
 # Supabase Setup
 # -----------------------------
-SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4OTkyMjYsImV4cCI6MjA3NDQ3NTIyNn0.RYUzh-HS52HbiMGWhQiGkcf9OY0AeRsm0fuXruw0sEc"
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+SUPABASE_URL = settings.SUPABASE_URL
+SUPABASE_SERVICE_KEY = settings.SUPABASE_SERVICE_KEY
+DEFAULT_PROFILE_URL = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/avatar.png"
+supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 # -----------------------------

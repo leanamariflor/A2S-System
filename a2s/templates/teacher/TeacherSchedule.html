@@ -5,50 +5,58 @@
 {% block title %}My Teaching Schedule - A2S{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/teacher/teacher_schedule.css' %}">
+<link rel="stylesheet" href="{% static 'css/teacher/teacher_schedules.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="schedule-page sg-container">
-  <h2 class="page-title">My Teaching Schedule</h2>
+<div class="schedule-container">
 
-  <div class="schedule-wrapper">
-    <table class="schedule-table">
-      <thead>
-        <tr>
-          <th>Time</th>
-          {% for day in days %}
-            <th>{{ day }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for hour in hours %}
-        <tr>
-          <td class="time-label">{{ hour }}</td>
-          {% for day in days %}
-            {% with cell=schedule_grid|dict_get:day|dict_get:hour %}
-              {% if cell %}
-                {% if cell.code %}
-                  <td class="schedule-cell" rowspan="{{ cell.blocks }}">
-                    <div class="subject-box">
-                      <strong>{{ cell.code }}</strong><br>
-                      {{ cell.section }}<br>
-                      {{ cell.room }}
-                    </div>
-                  </td>
-                {% elif cell.occupied %}
-                  {# Skip cell because rowspan already covers it #}
-                {% endif %}
-              {% else %}
-                <td></td>
-              {% endif %}
-            {% endwith %}
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Header Card -->
+  <div class="schedule-header">
+    <h2>My Teaching Schedule</h2>
   </div>
+
+  <!-- Table Card -->
+  <div class="schedule-card">
+    <div class="schedule-wrapper">
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            {% for day in days %}
+              <th>{{ day }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for hour in hours %}
+          <tr>
+            <td class="time-label">{{ hour }}</td>
+            {% for day in days %}
+              {% with cell=schedule_grid|dict_get:day|dict_get:hour %}
+                {% if cell %}
+                  {% if cell.code %}
+                    <td class="schedule-cell" rowspan="{{ cell.blocks }}">
+                      <div class="subject-box">
+                        <strong>{{ cell.code }}</strong><br>
+                        {{ cell.section }}<br>
+                        {{ cell.room }}
+                      </div>
+                    </td>
+                  {% elif cell.occupied %}
+                    {# Skip cell because rowspan already covers it #}
+                  {% endif %}
+                {% else %}
+                  <td></td>
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

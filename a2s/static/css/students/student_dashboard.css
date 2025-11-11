@@ -1,3 +1,7 @@
+
+
+/* 1. ROOT VARIABLES, BASE STYLES & LAYOUT */
+
 :root {
   --background: #f4f5f7;
   --foreground: #121212;
@@ -8,18 +12,11 @@
   --glow: 0 0 8px rgba(111, 115, 255, 0.4);
 }
 
-
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--background);
   color: var(--foreground);
-}
-
-.tabs,
-.calendar-container,
-.progress-card {
-  margin: 0 2rem;
 }
 
 .main-dashboard-container {
@@ -28,8 +25,17 @@ body {
   padding: 0 1rem;
 }
 
+.tabs,
+.calendar-container,
+.card.notifications-card,
+.card.courses-card,
+.progress-card {
+  margin: 0 2rem;
+}
 
 
+
+/* 2. WELCOME SECTION */
 .welcome-card {
   background-color: var(--primary);
   color: #fff;
@@ -70,21 +76,62 @@ body {
   color: #d1d5db;
 }
 
+/* 3. TABS & TAB TRIGGERS */
+.tab-trigger {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
 
+.tab-trigger.active {
+  background: #fff;
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: var(--glow);
+}
+
+/* 4. GENERAL CARD STYLES & OVERVIEW TAB */
 .card {
   background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
   box-shadow: var(--glow);
-  border-color: var(--primary);
   transition: all 0.25s ease;
+  height: auto;
+  margin-bottom: 1.5rem; 
+  border-color: var(--primary); 
 }
 
+/* Specific Overview Cards */
+.card.notifications-card,
+.card.courses-card {
+ background-color: var(--card-bg);
+  border: 1px solid var(--primary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--glow);
+  transition: all 0.25s ease;
+  height: 100%;
+  max-height: 420px; 
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: -20px;
+}
 
+/* Card Structure */
 .card-header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
 }
 
 .card-title {
@@ -94,6 +141,62 @@ body {
   color: var(--primary);
 }
 
+.card-content {
+  margin-top: 0 !important;
+  padding-top: 0.25rem !important;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 1.5rem;
+  max-width: 1280px;
+  margin: 1.5rem auto; 
+  padding: 0 1rem;
+  box-sizing: border-box;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+
+
+/* Scrollbar Styles */
+.notifications-card::-webkit-scrollbar,
+.courses-card::-webkit-scrollbar {
+  width: 6px;
+}
+.notifications-card::-webkit-scrollbar-thumb,
+.courses-card::-webkit-scrollbar-thumb {
+  background-color: rgba(111, 115, 255, 0.3);
+  border-radius: 10px;
+}
+
+/* Course List Items */
+.course-list {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.course-item,
+.task-item {
+  background-color: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  margin: 0.25rem 0;
+}
+
+.course-item:hover,
+.task-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(111, 115, 255, 0.25);
+}
+
+/* Quick Actions */
 .quick-actions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -133,360 +236,8 @@ body {
   color: var(--text-muted);
 }
 
-.card-header {
-  margin-bottom: 0.25rem !important; 
-  padding-bottom: 0.25rem !important;
-}
-
-.card-content {
-  margin-top: 0 !important;
-  padding-top: 0.25rem !important;
-}
-
-.course-list {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-.course-item {
-  margin: 0.25rem 0;
-}
-
-.course-item, .task-item {
-  background-color: #f9fafb;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.course-item:hover, .task-item:hover {
-  border-color: var(--primary);
-  box-shadow: 0 0 8px rgba(111, 115, 255, 0.25);
-}
-
-/* Tabs */
-.tab-trigger {
-  background: var(--primary);
-  color: #fff;
-  border-radius: 8px;
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.25s ease;
-  border: 1px solid transparent;
-}
-
-.tab-trigger.active {
-  background: #fff;
-  color: var(--primary);
-  border-color: var(--primary);
-  box-shadow: var(--glow);
-}
-
-/* Curriculum Table */
-.curriculum-table {
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(111, 115, 255, 0.1);
-  border: 1px solid var(--border);
-}
-
-.curriculum-table table {
-  border-collapse: collapse;
-  width: 100%;
-  background: #fff;
-  border-radius: 10px;
-}
-
-.curriculum-table thead {
-  background-color: var(--primary);
-  color: #fff;
-}
-
-.curriculum-table tbody tr:hover {
-  background-color: #f2f3ff;
-}
-
-
-
-/* Progress Bars */
-.completion-progress {
-  background: linear-gradient(90deg, var(--primary), #8b8cff);
-  box-shadow: inset 0 0 6px rgba(111, 115, 255, 0.4);
-}
-
-
-/* ===== Event Modal ===== */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(20, 20, 40, 0.5);
-  backdrop-filter: blur(3px);
-  justify-content: center;
-  align-items: center;
-  animation: fadeInModal 0.25s ease;
-}
-
-.modal-content {
-  background: var(--card);
-  color: var(--foreground);
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 420px;
-  box-shadow: 0 6px 18px rgba(111, 115, 255, 0.25);
-  border: 1px solid rgba(111, 115, 255, 0.2);
-  position: relative;
-  animation: slideUpModal 0.3s ease;
-}
-
-/* Close Button */
-.modal-content .close {
-  position: absolute;
-  top: 1rem;
-  right: 1.2rem;
-  font-size: 1.5rem;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.modal-content .close:hover {
-  color: var(--primary);
-  transform: scale(1.1);
-}
-
-/* Title */
-.modal-content h3 {
-  margin-top: 0.5rem;
-  font-size: 1.25rem;
-  color: var(--primary);
-  border-bottom: 1px solid rgba(111, 115, 255, 0.25);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.modal-content p {
-  font-size: 0.95rem;
-  margin: 0.75rem 0;
-  display: flex;
-  justify-content: space-between;
-  background: var(--primary);
-  color: var(--background);
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 6px rgba(111, 115, 255, 0.15);
-}
-
-.modal-content p strong {
-  color: var(--primary-foreground);
-  font-weight: 600;
-}
-
-@keyframes fadeInModal {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUpModal {
-  from { transform: translateY(15px); opacity: 0.8; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-
-/* Calendar */
-.calendar-container {
-  box-shadow: 0 0 12px rgba(111, 115, 255, 0.2);
-  border-radius: 16px;
-}
-
-.calendar-cell.today {
-  background-color: #e0e1ff;
-  border: 2px solid var(--primary);
-  box-shadow: var(--glow);
-  font-weight: bold;
-}
-
-.calendar-container table {
-  border-collapse: collapse; 
-}
-
-.calendar-container th {
-  background-color: #f8f6ff; 
-  color: var(--text-dark);   
-  padding: 8px;
-  border: none;              
-  text-align: center;
-  font-weight: bold;
-}
-
-.calendar-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 15px;
-  flex-wrap: wrap; 
-}
-
-.calendar-controls label {
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-right: 4px;
-  color:var(--primary);
-}
-
-.calendar-container {
-  width: 100%;
-  max-width: 900px;
-  margin: 10px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-#month-title {
-  text-align: center;
-  margin-bottom: 15px;
-  font-size: 1.6rem;
-  color: var(--primary);
-}
-
-.calendar-nav {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-
-.calendar-nav button {
-  padding: 6px 12px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#calendar-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-
-
-.calendar-row {
-  display: flex;
-  gap: 5px;
-  background: transparent; /* remove any inherited bg */
-}
-.calendar-cell {
-  flex: 1;
-  padding: 12px;
-  background: #fff;
-  border-radius: 6px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  font-weight: 500;
-  border: var(--primary);
-}
-
-
-
-
-.calendar-cell.header {
-  background-color: var(--primary); /* or your preferred color */
-  color: #fff; /* text white */
-  flex: 1;
-  text-align: center;
-  border-radius: 6px 6px 0 0; /* optional rounded top corners */
-  padding: 10px 0;
-  font-weight: bold;
-}
-
-.event-badge {
-  display: block;
-  margin-top: 5px;
-  font-size: 0.75rem;
-  border-left: 4px solid;
-  padding-left: 4px;
-}
-
-.event-holiday { border-color: #ff4d4d; color: #c00; }
-.event-exam { border-color: #3399ff; color: #036; }
-.event-ceremony { border-color: #ff9900; color: #b85c00; }
-.event-deadline { border-color: #66cc33; color: #3a7d00; }
-
-.empty {
-  background: transparent;
-  box-shadow: none;
-}
-
-.calendar-cell.today {
-  background-color:  #c6c7ed;     
-  border: 2px solid  #6f73ff;     
-  box-shadow: 0 0 6px rgba(191, 127, 240, 0.5);
-  color: #000;
-  font-weight: bold;
-}
-
-.event-badge {
-  display: block;
-  margin-top: 2px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.event-badge:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  position: relative;
-}
-
-.modal-content .close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
+/* 5. CURRICULUM TAB */
+/* Controls (Selects) */
 select {
   padding: 6px 12px;
   border-radius: 6px;
@@ -503,79 +254,6 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
 }
 
-
-/* === Curriculum Table Styles === */
-.curriculum-table {
-  margin-top: 1.5rem;
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.curriculum-table h2 {
-  font-size: 1.4rem;
-  color: var(--primary);
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.curriculum-table h3 {
-  font-size: 1.1rem;
-  color: var(--foreground);
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
-  border-left: 4px solid var(--primary);
-  padding-left: 10px;
-}
-
-.curriculum-table table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.curriculum-table thead {
-  background-color: var(--primary);
-  color: #fff;
-  text-align: left;
-}
-
-.curriculum-table th,
-.curriculum-table td {
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.curriculum-table tbody tr:hover {
-  background-color: #f8fafc;
-}
-
-.curriculum-table th {
-  font-weight: 600;
-}
-
-.curriculum-table td {
-  color: #333;
-}
-
-.curriculum-table table:last-of-type {
-  margin-bottom: 2rem;
-}
-
-.curriculum-content{
-  flex: 1;
-  padding-right: 8px;
-    margin-top: -50px;
-
-}
-
-
-/* === Curriculum Section Layout === */
 .curriculum-card {
   display: flex;
   flex-direction: column;
@@ -620,36 +298,6 @@ select:focus {
   box-shadow: 0 3px 8px rgba(79, 70, 229, 0.15);
 }
 
-
-.curriculum-table {
-  margin-top: 0.5rem;
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  overflow-x: auto;
-}
-
-.curriculum-table table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-}
-
-.curriculum-table th,
-.curriculum-table td {
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.curriculum-table thead {
-  background-color: var(--primary);
-  color: #fff;
-}
-
-/* Buttons */
 .filter-btn {
   background-color: #f4f5f7;
   border: 1px solid #d1d5db;
@@ -670,88 +318,312 @@ select:focus {
   border-color: var(--primary);
 }
 
-/* Responsive Fix */
-@media (max-width: 768px) {
-  .curriculum-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
+.curriculum-content {
+  flex: 1;
+  padding-right: 8px;
+  margin-top: -50px;
+}
 
-  .year-dropdown {
-    width: 100%;
-    margin-left: 0;
-  }
+/* Curriculum Table Structure */
+.curriculum-table {
+  background: var(--card-bg);
+  border-radius: 16px; 
+  padding: 20px; 
+  box-shadow: 0 4px 12px rgba(111, 115, 255, 0.1);
+  border: 1px solid var(--border);
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
 
-  .curriculum-buttons {
-    justify-content: flex-start;
-  }
+.curriculum-table h2 {
+  font-size: 1.4rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.curriculum-table h3 {
+  font-size: 1.1rem;
+  color: var(--foreground);
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  border-left: 4px solid var(--primary);
+  padding-left: 10px;
+}
+
+.curriculum-table table {
+  border-collapse: collapse;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.curriculum-table table:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.curriculum-table thead {
+  background-color: var(--primary);
+  color: #fff;
+  text-align: left;
+}
+
+.curriculum-table th,
+.curriculum-table td {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.curriculum-table tbody tr:hover {
+  background-color: #f2f3ff;
+}
+
+.curriculum-table th {
+  font-weight: 600;
+}
+
+.curriculum-table td {
+  color: #333;
 }
 
 
-
-
-
-
-/* ===== Overview Grid ===== */
-.overview-grid {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr; /* notifications wider, courses narrower */
-  gap: 1.5rem;
-  margin: 1rem 2rem;
-  align-items: start;
+/* 6. ACADEMIC CALENDAR TAB & MODAL */
+/* Calendar Controls */
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
-.notifications-card, .courses-card {
+.calendar-controls label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-right: 4px;
+  color:var(--primary);
+}
+
+/* Calendar Container */
+.calendar-container {
+  box-shadow: 0 0 12px rgba(111, 115, 255, 0.2); 
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 10px auto;
+  padding: 20px;
+  background-color: #fff;
+}
+
+#month-title {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+  color: var(--primary);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.calendar-nav button {
+  padding: 6px 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Calendar Cells & Grid */
+.calendar-container table {
+  border-collapse: collapse;
+}
+
+.calendar-container th {
+  background-color: #f8f6ff;
+  color: var(--text-dark);
+  padding: 8px;
+  border: none;
+  text-align: center;
+  font-weight: bold;
+}
+
+.calendar-row {
+  display: flex;
+  gap: 5px;
+  background: transparent;
+}
+
+.calendar-cell {
+  flex: 1;
+  padding: 12px;
+  background: #fff;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-weight: 500;
+  border: var(--primary);
+}
+
+.calendar-cell.header {
+  background-color: var(--primary);
+  color: #fff;
+  flex: 1;
+  text-align: center;
+  border-radius: 6px 6px 0 0;
+  padding: 10px 0;
+  font-weight: bold;
+}
+
+.calendar-cell.today {
+  background-color: #e0e1ff; 
+  border: 2px solid var(--primary); 
+  box-shadow: var(--glow); 
+  color: #000;
+}
+
+.empty {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Event Badges */
+.event-badge {
+  display: block;
+  margin-top: 5px; 
+  font-size: 0.75rem;
+  border-left: 4px solid;
+  padding-left: 4px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.event-badge:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.event-holiday { border-color: #ff4d4d; color: #c00; }
+.event-exam { border-color: #3399ff; color: #036; }
+.event-ceremony { border-color: #ff9900; color: #b85c00; }
+.event-deadline { border-color: #66cc33; color: #3a7d00; }
+
+/* Event Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999; 
+  left: 0;
+  top: 0;
+  width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(20, 20, 40, 0.5);
+  backdrop-filter: blur(3px);
   justify-content: center;
   align-items: center;
+  animation: fadeInModal 0.25s ease;
 }
 
-/* Modal box */
 .modal-content {
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  background: var(--card-bg);
+  color: var(--foreground); 
+  padding: 2rem;
+  border-radius: 1rem; 
+  width: 420px; 
+  box-shadow: 0 6px 18px rgba(111, 115, 255, 0.25); 
+  border: 1px solid rgba(111, 115, 255, 0.2); 
   position: relative;
+  animation: slideUpModal 0.3s ease;
 }
 
-/* Close button */
 .modal-content .close {
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.2rem;
+  top: 1rem; 
+  right: 1.2rem;
+  font-size: 1.5rem;
+  color: var(--muted-foreground); 
   cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-/* Dropdown styling */
-select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-  background-color: #f9f9f9;
-  margin-right: 10px;
-  cursor: pointer;
+.modal-content .close:hover {
+  color: var(--primary);
+  transform: scale(1.1);
 }
 
-select:focus {
-  outline: none;
-  border-color: #007BFF;
-  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+.modal-content h3 {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  color: var(--primary);
+  border-bottom: 1px solid rgba(111, 115, 255, 0.25);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Progress Overview Styles */
+.modal-content p {
+  font-size: 0.95rem;
+  margin: 0.75rem 0;
+  display: flex;
+  justify-content: space-between;
+  background: var(--primary);
+  color: var(--background);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(111, 115, 255, 0.15);
+}
+
+.modal-content p strong {
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(15px); opacity: 0.8; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* 7. PROGRESS OVERVIEW */
+.completion-progress {
+  background: linear-gradient(90deg, var(--primary), #8b8cff);
+  box-shadow: inset 0 0 6px rgba(111, 115, 255, 0.4);
+}
+
 .progress-overview {
   display: grid;
   grid-template-columns: 400px 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--glow);
+  transition: all 0.25s ease;
+  height: auto;
+  border-color: var(--primary); 
 }
 
 .progress-card {
@@ -855,8 +727,12 @@ select:focus {
   margin-top: 0.25rem;
 }
 
-/* Responsive Design */
+/* 8. RESPONSIVE DESIGN (MEDIA QUERIES) */
 @media (max-width: 1024px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
   .progress-overview {
     grid-template-columns: 1fr;
   }
@@ -878,5 +754,20 @@ select:focus {
 
   .progress-percentage {
     font-size: 2rem;
+  }
+
+  .curriculum-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .year-dropdown {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .curriculum-buttons {
+    justify-content: flex-start;
   }
 }

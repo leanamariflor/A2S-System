@@ -1,33 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
-  if (typeof lucide !== "undefined") lucide.createIcons();
+   lucide.createIcons();
 
   const defaultProfileUrl = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png";
 
-  // ===== Profile Avatar (unchanged) =====
+  // ===== Profile Avatar =====
   const avatarImg = document.querySelector(".student-avatar img.avatar-circle");
   const avatarDiv = document.querySelector(".student-avatar");
 
   if (!avatarImg && avatarDiv) {
-    const storedUrl = localStorage.getItem("studentProfileUrl");
-    if (storedUrl) avatarDiv.innerHTML = `<img src="${storedUrl}" alt="Profile Picture" class="avatar-circle">`;
+    const storedUrl = localStorage.getItem("studentProfileUrl_");
+    if (storedUrl)
+       avatarDiv.innerHTML = `<img src="${storedUrl}" alt="Profile Picture" class="avatar-circle">`;
   }
 
   if (avatarImg) {
-    avatarImg.onerror = () => (avatarImg.src = defaultProfileUrl);
-    if (!avatarImg.src || avatarImg.src.trim() === "") avatarImg.src = defaultProfileUrl;
+    avatarImg.onerror = () => {
+      avatarImg.src = defaultProfileUrl
+    };
+    if (!avatarImg.src || avatarImg.src.trim() === "") 
+      avatarImg.src = defaultProfileUrl;
   }
 
   window.updateSidebarProfilePicture = function (newUrl) {
     const avatarImg = document.querySelector(".student-avatar img.avatar-circle");
     const avatarSpan = document.querySelector(".student-avatar span");
 
-    if (avatarImg) avatarImg.src = newUrl;
+    if (avatarImg)
+       avatarImg.src = newUrl;
     else if (avatarSpan) {
       const avatarDiv = document.querySelector(".student-avatar");
       avatarDiv.innerHTML = `<img src="${newUrl}" alt="Profile Picture" class="avatar-circle">`;
     }
-
-    localStorage.setItem("studentProfileUrl", newUrl);
+    localStorage.setItem("studentProfileUrl_" + USER_ID, newUrl);
   };
 
   // ===== Notifications =====
@@ -37,93 +41,86 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearNotifBtn = document.getElementById("clear-notif");
   const notifCount = document.getElementById("notif-badge");
 
-  const today = new Date();
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - today.getDay());
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  if (notifBtn && notifDropdown) {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-  // flatten all events from JSON
-  const allEvents = [];
-  if (typeof calendarJSON !== "undefined" && Array.isArray(calendarJSON)) {
-    calendarJSON.forEach(sem => {
-      sem.events.forEach(ev => {
-        allEvents.push({
-          date: new Date(ev.date),
-          name: ev.name,
-          type: ev.type,
-          semester: sem.semester
-        });
+    let readEvents = JSON.parse(localStorage.getItem("readNotifications_" + USER_ID) || "[]");
+
+    // Store calendar data if exists
+    if (typeof calendarJSON !== "undefined" && Array.isArray(calendarJSON)) {
+      localStorage.setItem("studentCalendarData_" + USER_ID, JSON.stringify(calendarJSON));
+    }
+
+    const storedCalendar = JSON.parse(localStorage.getItem("studentCalendarData_" + USER_ID) || "[]");
+    const allEvents = [];
+    if (Array.isArray(storedCalendar)) {
+      storedCalendar.forEach(sem => {
+        if (sem.events && Array.isArray(sem.events)) {
+          sem.events.forEach(ev => allEvents.push({
+            id: ev.name + ev.date,
+            date: new Date(ev.date),
+            name: ev.name,
+            type: ev.type,
+            semester: sem.semester
+          }));
+        }
       });
-    });
-  }
+    }
 
-  // get read notifications from localStorage
-  const readEvents = JSON.parse(localStorage.getItem("readNotifications") || "[]");
+    let weekEvents = allEvents.filter(ev =>
+      ev.date >= startOfWeek && ev.date <= endOfWeek && !readEvents.includes(ev.id)
+    );
 
-  // only include unread events
-  const weekEvents = allEvents.filter(ev => {
-    return ev.date >= startOfWeek && ev.date <= endOfWeek && !readEvents.includes(ev.name + ev.date.toISOString());
-  });
-
-  let unreadCount = weekEvents.length;
-
-  function renderNotifications() {
-    const notifHTML = weekEvents.length
-      ? weekEvents.map(ev => `
-          <div class="task-item" data-id="${ev.name + ev.date.toISOString()}">
-            <div class="task-details">
-              <div class="task-title">
-                ${ev.name}
-                ${Math.abs((ev.date - today) / (1000 * 60 * 60 * 24)) <= 2 ? '<span class="urgent"></span>' : ''}
-              </div>
-              <div class="task-due">Date: ${ev.date.toLocaleDateString()}</div>
-            </div>
-            <div class="task-type">${ev.type}</div>
-          </div>
-        `).join("")
-      : `<p>No events this week.</p>`;
-
-    if (notifList) notifList.innerHTML = notifHTML;
-
-    // mark as read
-    const taskItems = notifList.querySelectorAll(".task-item");
-    taskItems.forEach(item => {
-      item.addEventListener("click", () => {
-        const id = item.dataset.id;
-        readEvents.push(id);
-        localStorage.setItem("readNotifications", JSON.stringify(readEvents));
-        item.remove();
-        unreadCount = weekEvents.length - readEvents.length;
-        updateBadge();
-      });
-    });
-  }
-
-  renderNotifications();
-
-  function updateBadge() {
-    if (notifCount) {
-      if (unreadCount > 0) {
-        notifCount.textContent = unreadCount;
-        notifCount.classList.remove("hidden");
-      } else {
-        notifCount.classList.add("hidden");
+    function updateBadge() {
+      if (notifCount) {
+        if (weekEvents.length > 0) {
+          notifCount.textContent = weekEvents.length;
+          notifCount.classList.remove("hidden");
+        } else notifCount.classList.add("hidden");
       }
     }
-  }
 
-  updateBadge();
+    function renderNotifications() {
+      notifList.innerHTML =
+        weekEvents.length > 0
+          ? weekEvents.map(ev => `
+            <div class="task-item" data-id="${ev.id}">
+              <div class="task-details">
+                <div class="task-title">${ev.name}</div>
+                <div class="task-due">Date: ${ev.date.toLocaleDateString()}</div>
+              </div>
+              <div class="task-type">${ev.type}</div>
+            </div>
+          `).join("")
+          : `<p>No events this week.</p>`;
 
-  if (notifBtn && notifDropdown) {
+      notifList.querySelectorAll(".task-item").forEach(item => {
+        item.addEventListener("click", () => {
+          const id = item.dataset.id;
+          readEvents.push(id);
+          localStorage.setItem("readNotifications_" + USER_ID, JSON.stringify(readEvents));
+          item.remove();
+          weekEvents = weekEvents.filter(ev => ev.id !== id);
+          updateBadge();
+        });
+      });
+    }
+
+    clearNotifBtn.addEventListener("click", () => {
+      weekEvents.forEach(ev => readEvents.push(ev.id));
+      localStorage.setItem("readNotifications_" + USER_ID, JSON.stringify(readEvents));
+      weekEvents = [];
+      renderNotifications();
+      updateBadge();
+    });
+
     notifBtn.addEventListener("click", e => {
       e.stopPropagation();
-      const isVisible = notifDropdown.style.display === "block";
-      notifDropdown.style.display = isVisible ? "none" : "block";
-      if (!isVisible) {
-        unreadCount = weekEvents.length - readEvents.length;
-        updateBadge();
-      }
+      notifDropdown.style.display = notifDropdown.style.display === "block" ? "none" : "block";
     });
 
     document.addEventListener("click", e => {
@@ -131,15 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
         notifDropdown.style.display = "none";
       }
     });
-  }
 
-  if (clearNotifBtn) {
-    clearNotifBtn.addEventListener("click", () => {
-      weekEvents.forEach(ev => readEvents.push(ev.name + ev.date.toISOString()));
-      localStorage.setItem("readNotifications", JSON.stringify(readEvents));
-      unreadCount = 0;
-      renderNotifications();
-      updateBadge();
-    });
+    renderNotifications();
+    updateBadge();
   }
 });

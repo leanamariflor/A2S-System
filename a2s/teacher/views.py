@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.views.decorators.http import require_GET
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+
 
 import json, os, csv
 from datetime import datetime, timedelta, date
@@ -14,18 +16,17 @@ from datetime import datetime, timedelta, date
 from supabase import create_client
 
 from teacher.models import TeacherProfile, Schedule
-from students.models import Curriculum, Course, Enrollment, StudentProfile
-from students.models import CourseAssignment, Grade
+from students.models import Curriculum, Course, Enrollment, StudentProfile,CourseAssignment, Grade
+
 
 
 # -----------------------------
 # Supabase Setup
 # -----------------------------
-SUPABASE_URL = "https://qimrryerxdzfewbkoqyq.supabase.co"
-SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpbXJyeWVyeGR6ZmV3YmtvcXlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODg5OTIyNiwiZXhwIjoyMDc0NDc1MjI2fQ.b8Q1La_ZM8YSm6yt8Hw2qvNRS9GDkaLcbHWpb3ZK9eM"
-supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+SUPABASE_URL = settings.SUPABASE_URL
+SUPABASE_SERVICE_KEY = settings.SUPABASE_SERVICE_KEY
 DEFAULT_PROFILE_URL = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/avatar.png"
-
+supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 # -----------------------------
 # Constant Choices
@@ -139,7 +140,13 @@ def teacher_dashboard(request):
 
     return render(request, "teacher/TeacherDashboard.html", context)
 
-
+def academic_calendar(request):
+    try:
+        calendar = academic_calendar.objects.get(title="ACADEMIC_CALENDAR")
+        return JsonResponse({"schedule": calendar.data.get("schedule", [])})
+    except academic_calendar.DoesNotExist:
+        return JsonResponse({"schedule": []})
+    
 @login_required(login_url="Login")
 def teacher_profile(request):
     user = request.user
@@ -253,6 +260,53 @@ def reset_profile_picture(request):
     return JsonResponse({'status': 'success', 'url': default_url})
 
 
+@require_POST
+@csrf_exempt 
+@require_POST
+def update_student_notes(request, student_id):
+    data = json.loads(request.body)
+    notes = data.get("student_notes", "").strip()
+
+    try:
+        student_grades = Grade.objects.filter(student_id=student_id)
+        for g in student_grades:
+            g.notes = notes
+            g.save()
+
+        return JsonResponse({"status": "success", "notes": notes})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
+
+@login_required
+def teacher_get_notifications(request):
+    teacher = request.user.teacherprofile
+    notifications = teacher.notifications.order_by('-date_created')
+    data = [
+        {
+            "id": n.id,
+            "title": n.title,
+            "message": n.message,
+            "type": n.type,
+            "read": n.read,
+            "date": n.date_created.strftime("%Y-%m-%d %H:%M"),
+        }
+        for n in notifications
+    ]
+    unread_count = teacher.notifications.filter(read=False).count()
+    return JsonResponse({"notifications": data, "unread_count": unread_count})
+
+@login_required
+@require_POST
+def teacher_mark_notification_read(request):
+    teacher = request.user.teacherprofile
+    notif_id = request.POST.get("id")
+    try:
+        notif = Notification.objects.get(id=notif_id, teacher=teacher)
+        notif.read = True
+        notif.save()
+        return JsonResponse({"success": True})
+    except Notification.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Notification not found"})
 
 # -----------------------------
 # Schedule & Course Views (List)
@@ -334,6 +388,39 @@ def teacher_courses(request):
 
     return render(request, "teacher/TeacherCourses.html", context)
 
+
+@login_required(login_url="Login")
+def teacher_grades(request):
+    teacher_profile = TeacherProfile.objects.get(user=request.user)
+
+    schedules = Schedule.objects.filter(teacher=teacher_profile).order_by("subject_code", "section")
+
+    courses_list = []
+    seen = set()
+    for sched in schedules:
+        if '/' in sched.section:
+            continue
+
+        key = f"{sched.subject_code}-{sched.section}"
+        if key not in seen:
+            courses_list.append({
+                "course_code": sched.subject_code,
+                "section": sched.section,
+                "action": "view"
+            })
+            seen.add(key)
+
+    courses_list.sort(key=lambda x: (x["course_code"], x["section"]))
+
+    context = {
+        "teacher_name": request.user.get_full_name(),
+        "school_year": "2025-2026",
+        "active_courses": len(courses_list),
+        "courses": courses_list,
+    }
+
+    return render(request, "teacher/TeacherGrades.html", context)
+
 @login_required(login_url="Login")
 def my_course_advisees(request):
     teacher = request.user.teacherprofile
@@ -344,9 +431,11 @@ def my_course_advisees(request):
 # -----------------------------
 # Course Class List & Students
 # -----------------------------
+
 @login_required(login_url="Login")
 def teacher_classlist(request, course_code, section):
     try:
+        # 1️⃣ Get assignments for this course/section
         response = supabase.table("students_courseassignment") \
             .select("id, course_code, section, student_id") \
             .eq("course_code", course_code) \
@@ -357,31 +446,35 @@ def teacher_classlist(request, course_code, section):
 
         if response.data:
             for sca in response.data:
-                student_id = sca.get("student_id")
+                student_user_id = sca.get("student_id")  # authentication_user.id
 
-                student_profile = supabase.table("students_studentprofile") \
-                    .select("user_id, program, year_level") \
-                    .eq("id", student_id) \
+                # 2️⃣ Get student profile via user_id
+                student_profile_res = supabase.table("students_studentprofile") \
+                    .select("program, year_level") \
+                    .eq("user_id", student_user_id) \
                     .single().execute()
 
-                if student_profile.data:
-                    user_id = student_profile.data.get("user_id")
+                program = student_profile_res.data.get("program") if student_profile_res.data else "-"
+                year_level = student_profile_res.data.get("year_level") if student_profile_res.data else "-"
 
-                    user_data = supabase.table("authentication_user") \
-                        .select("first_name, last_name") \
-                        .eq("id", user_id) \
-                        .single().execute()
+                # 3️⃣ Get full name
+                user_res = supabase.table("authentication_user") \
+                    .select("first_name, last_name") \
+                    .eq("id", student_user_id) \
+                    .single().execute()
 
-                    full_name = ""
-                    if user_data.data:
-                        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
+                full_name = ""
+                if user_res.data:
+                    full_name = f"{user_res.data.get('first_name','')} {user_res.data.get('last_name','')}"
 
-                    students_list.append({
-                        "id": sca["id"],
-                        "full_name": full_name,
-                        "program": student_profile.data.get("program"),
-                        "year_level": student_profile.data.get("year_level"),
-                    })
+                students_list.append({
+                    "id": sca["id"],
+                    "full_name": full_name,
+                    "program": program,
+                    "year_level": year_level,
+                    "course_code": sca.get("course_code"),
+                    "section": sca.get("section")
+                })
 
         context = {
             "course_code": course_code,
@@ -399,6 +492,64 @@ def teacher_classlist(request, course_code, section):
             "students": [],
             "error": str(e)
         })
+
+
+from django.db.models import Max
+
+@login_required(login_url="Login")
+def student_status(request, student_id):
+    student = get_object_or_404(StudentProfile, id=student_id)
+    teacher = request.user.teacherprofile
+
+    # Fetch user info from Supabase
+    user_data = supabase.table("authentication_user") \
+        .select("first_name, last_name, username, id_number") \
+        .eq("id", student.user_id) \
+        .single().execute()
+
+    full_name = ""
+    username = ""
+    student_number = ""
+    if user_data.data:
+        full_name = f"{user_data.data.get('first_name', '')} {user_data.data.get('last_name', '')}"
+        username = user_data.data.get('username', '')
+        student_number = user_data.data.get('id_number', '')
+
+    # Fetch assignments for this teacher and student
+    teacher_assignments = CourseAssignment.objects.filter(student=student, teacher=teacher)
+
+    # Get distinct course codes
+    teacher_courses = teacher_assignments.values_list("course_code", flat=True).distinct()
+
+    # Fetch grades: pick **latest grade per course_code**
+    latest_grade_ids = Grade.objects.filter(student=student, course_code__in=teacher_courses) \
+        .values("course_code") \
+        .annotate(latest_id=Max("id")) \
+        .values_list("latest_id", flat=True)
+
+    grades = Grade.objects.filter(id__in=latest_grade_ids).values(
+        "course_code", "course_name", "midterm", "final_grade", "remarks", "semester", "school_year", "notes"
+    ).order_by("course_code")
+
+    # Pick first assignment for back button
+    course_code, section = "", ""
+    first_assignment = teacher_assignments.first()
+    if first_assignment:
+        course_code = first_assignment.course_code
+        section = first_assignment.section
+
+    context = {
+        "student": student,
+        "full_name": full_name,
+        "username": username,
+        "student_number": student_number,
+        "grades": grades,
+        "course_code": course_code,
+        "section": section,
+        "student_id": student.id,
+    }
+
+    return render(request, "teacher/StudentStatus.html", context)
 
 
 @login_required(login_url="Login")
@@ -423,7 +574,7 @@ def student_status(request, student_id):
     teacher_courses = teacher_assignments.values_list("course_code", flat=True)
 
     grades = Grade.objects.filter(student=student, course_code__in=teacher_courses).values(
-        "course_code", "course_name", "midterm", "final_grade", "remarks", "semester", "school_year"
+        "course_code", "course_name", "midterm", "final_grade", "remarks", "semester", "school_year", "notes"
     )
 
     course_code, section = "", ""
@@ -444,6 +595,7 @@ def student_status(request, student_id):
     }
 
     return render(request, "teacher/StudentStatus.html", context)
+
 
 
 # -----------------------------
@@ -513,22 +665,6 @@ def get_curriculum_json(request, program):
 # -----------------------------
 @login_required(login_url="Login")
 def export_student_report(request, student_id):
-    student = get_object_or_404(Student, id=student_id)
-    grades = student.grades.all()
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{student.full_name}_report.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
-    for g in grades:
-        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
-
-    return response
-
-
-@login_required(login_url="Login")
-def export_student_report(request, student_id):
     teacher = request.user.teacherprofile
     student = get_object_or_404(StudentProfile, id=student_id)
 
@@ -543,10 +679,10 @@ def export_student_report(request, student_id):
     response['Content-Disposition'] = f'attachment; filename="{student.user.get_full_name()}_report.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year'])
+    writer.writerow(['Course Code', 'Course Name', 'Midterm', 'Final Grade', 'Remarks', 'Semester', 'School Year', 'Notes'])
 
     for g in grades:
-        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year])
+        writer.writerow([g.course_code, g.course_name, g.midterm, g.final_grade, g.remarks, g.semester, g.school_year, g.notes])
 
     return response
 
@@ -554,18 +690,6 @@ def export_student_report(request, student_id):
 # -----------------------------
 # JSON API Views
 # -----------------------------
-@login_required(login_url="Login")
-def api_teacher_courses(request):
-    file_path = os.path.join(settings.BASE_DIR, "a2s", "static", "data", "teacher_courses.json")
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception as e:
-        data = {"error": str(e)}
-
-    return JsonResponse(data)
-
 
 @login_required(login_url="Login")
 def api_teacher_courses(request):
@@ -642,3 +766,178 @@ def get_course_students(request, course_code, section):
     except Exception as e:
         print("Error fetching students:", e)
         return JsonResponse({"students": [], "error": str(e)}, status=500)
+    
+
+
+@login_required(login_url="Login")
+def teacher_grades_list(request, course_code, section):
+    """Render the page UI (JS will fetch students via API)"""
+    return render(request, "teacher/TeacherGradesList.html", {
+        "course_code": course_code,
+        "section": section
+    })
+
+
+@login_required(login_url="Login")
+@require_GET
+def api_teacher_class_grades(request, course_code, section):
+    try:
+        # Get all course assignments for this teacher, course_code, section
+        assignments = CourseAssignment.objects.filter(
+            course_code=course_code,
+            section=section,
+            teacher__user=request.user
+        ).select_related('student__user')
+
+        students_list = []
+
+        for assign in assignments:
+            student = assign.student
+            user = student.user
+
+            # Fetch grade for this course + student
+            grade = Grade.objects.filter(
+                student=student,
+                course_code=course_code
+            ).first()
+
+            students_list.append({
+                "student_id": student.id,
+                "id_number": user.id_number if user else "-",
+                "full_name": f"{user.first_name} {user.last_name}" if user else "-",
+                "midterm": grade.midterm if grade else "-",
+                "final": grade.final if grade else "-",
+            })
+
+        return JsonResponse({"students": students_list})
+
+    except Exception as e:
+        print("❌ Error fetching class grades:", e)
+        return JsonResponse({"students": [], "error": str(e)}, status=500)
+
+
+
+
+
+@csrf_exempt
+@login_required(login_url="Login")
+def upload_grades(request):
+    """
+    Upload teacher grades CSV with columns:
+    id_number, midterm, final
+    """
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "POST method required"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        grades = data.get("grades", [])
+        if not grades:
+            return JsonResponse({"status": "error", "message": "No grades provided"}, status=400)
+
+        course_code = request.GET.get("course_code")
+        section = request.GET.get("section")
+        user_id = request.user.id  # authentication_user.id
+
+        supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
+        # 1️⃣ Fetch TeacherProfile.id for the logged-in user
+        teacher_profile_res = supabase.table("teacher_teacherprofile") \
+            .select("id") \
+            .eq("user_id", user_id) \
+            .single() \
+            .execute()
+
+        if not teacher_profile_res.data:
+            return JsonResponse({"status": "error", "message": "Teacher profile not found"}, status=400)
+
+        teacher_profile_id = teacher_profile_res.data["id"]
+
+        # 2️⃣ Fetch all assignments for this teacher/course/section
+        assignments_res = supabase.table("students_courseassignment") \
+            .select("student_id") \
+            .eq("teacher_id", teacher_profile_id) \
+            .eq("course_code", course_code) \
+            .eq("section", section) \
+            .execute()
+
+        assignments = [a["student_id"] for a in assignments_res.data]
+        if not assignments:
+            return JsonResponse({"status": "error", "message": f"No assignments found for {course_code} ({section})"}, status=400)
+
+        # 3️⃣ Fetch course info for defaults
+        course_res = supabase.table("students_course").select("*").eq("course_code", course_code).execute()
+        if not course_res.data:
+            return JsonResponse({"status": "error", "message": f"Course {course_code} not found"}, status=400)
+
+        course_info = course_res.data[0]
+        course_name = course_info.get("course_name", "")
+        units = course_info.get("units", 3)  # default to 3 if not in DB
+
+        # 4️⃣ Fetch teacher full name
+        teacher_res = supabase.table("authentication_user") \
+            .select("first_name,last_name") \
+            .eq("id", user_id).execute()
+
+        faculty_name = f"{teacher_res.data[0]['first_name']} {teacher_res.data[0]['last_name']}" if teacher_res.data else ""
+
+        # 5️⃣ Process each grade
+        for g in grades:
+            id_number = (g.get("id_number") or "").strip()
+            if not id_number:
+                continue
+
+            # Map id_number → student_id
+            student_res = supabase.table("authentication_user") \
+                .select("id") \
+                .eq("id_number", id_number) \
+                .execute()
+
+            if not student_res.data:
+                print(f"⚠️ Student ID Number {id_number} not found")
+                continue
+
+            student_id = student_res.data[0]["id"]
+
+            if student_id not in assignments:
+                print(f"⚠️ Student {id_number} not assigned to this course/section")
+                continue
+
+            # Check if grade exists
+            existing_res = supabase.table("students_grade") \
+                .select("id") \
+                .eq("student_id", student_id) \
+                .eq("course_code", course_code) \
+                .execute()
+
+            grade_data = {
+                "student_id": student_id,
+                "course_code": course_code,
+                "course_name": course_name,
+                "faculty": faculty_name,
+                "units": units,
+                "midterm": g.get("midterm"),
+                "final": g.get("final"),
+                "teacher_id": teacher_profile_id,
+                "notes": ""
+            }
+
+            if existing_res.data:
+                # Update existing grade
+                supabase.table("students_grade") \
+                    .update(grade_data) \
+                    .eq("id", existing_res.data[0]["id"]) \
+                    .execute()
+            else:
+                # Insert new grade
+                supabase.table("students_grade").insert(grade_data).execute()
+
+        return JsonResponse({"status": "success", "message": "Grades uploaded successfully"}, status=200)
+
+    except Exception as e:
+        print("❌ Error uploading grades:", e)
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+
+

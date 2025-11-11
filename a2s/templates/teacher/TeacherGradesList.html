@@ -1,0 +1,63 @@
+{% extends "teacher/teacher_base.html" %}
+{% load static %}
+
+{% block title %}Class List: {{ course_code }} - {{ section }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/teacher_grades_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="class-dashboard">
+  <!-- Header -->
+  <div class="header-card">
+    <h2>Class List</h2>
+    <p>{{ course_code }} - {{ section }}</p>
+  </div>
+
+  <a href="{% url 'TeacherCourses' %}" class="back-btn">← Back to Courses</a>
+
+  <div class="content-wrapper">
+    <div class="main-content">
+
+      <!-- LEFT PANEL -->
+      <div class="left-panel">
+        <h3>Enrolled Students & Grades</h3>
+        <table class="class-list-table">
+          <thead>
+            <tr>
+              <th>ID Number</th>
+              <th>Student Name</th>
+              <th>Midterm</th>
+              <th>Final</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <tr><td colspan="7">Loading students...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+        <div class="grades-upload">
+          <h4>Student Grades Upload</h4>
+          <button id="downloadTemplateBtn" class="download-template-btn">Download Template</button>
+          <label for="fileUpload">Upload Semestral Grades</label>
+          <input type="file" id="fileUpload" accept=".csv, .xlsx" />
+          <button id="uploadBtn" class="upload-file-btn">Upload</button>
+          <small>Supported formats: .csv, .xlsx</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+<script src="{% static 'js/teacher/TeacherGradesList.js' %}"></script>
+<script>
+  const COURSE_CODE = "{{ course_code }}";
+  const SECTION = "{{ section }}";
+</script>
+{% endblock %}

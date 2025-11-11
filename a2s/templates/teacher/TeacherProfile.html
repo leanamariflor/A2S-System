@@ -9,15 +9,16 @@
 
 {% block content %}
 <div class="profile-page-container">
-
-    <div class="header-info" style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-            <h1>Teacher Profile</h1>
-            <p>Manage your account information</p>
+    <div class="manage-card">
+        <div class="header-info" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>Teacher Profile</h1>
+                <p>Manage your account information</p>
+            </div>
+            <button id="edit-profile-button" class="edit-profile-button">
+                <i data-lucide="edit"></i> Edit Profile
+            </button>
         </div>
-        <button id="edit-profile-button" class="edit-profile-button">
-            <i data-lucide="edit"></i> Edit Profile
-        </button>
     </div>
 
     <div id="profile-container" class="read-only"
@@ -25,6 +26,7 @@
         data-update-profile-url="{% url 'UpdateTeacherProfile' %}"
         data-csrf-token="{{ csrf_token }}">
 
+        <!-- Tabs -->
         <div class="tabs">
             <div class="tab-list">
                 <button class="tab-trigger active" data-tab="personal">Personal Info</button>
@@ -32,104 +34,121 @@
                 <button class="tab-trigger" data-tab="achievements">Achievements</button>
             </div>
 
-            <!-- Personal Info -->
+            <!-- PERSONAL INFO -->
             <div class="tab-content active" id="personal">
                 <div class="profile-grid">
-
+                    
                     <!-- Profile Picture Card -->
-                    <div class="profile-picture-card">
-                        <div class="profile-picture-wrapper" style="position:relative;">
-                            <div class="profile-picture" id="profile-picture">
-                                {% if profile_picture_url %}
-                                    <img src="{{ profile_picture_url }}" alt="Profile Picture">
-                                {% else %}
-                                    <i data-lucide="user"></i>
-                                {% endif %}
+                    <div class="profile-info-card">
+                        <div class="profile-picture-card">
+                            <div class="profile-picture-wrapper" style="position: relative;">
+                                <div class="profile-picture" id="profile-picture">
+                                    {% if profile_picture_url %}
+                                        <img src="{{ profile_picture_url }}" alt="Profile Picture">
+                                    {% else %}
+                                        <i data-lucide="user"></i>
+                                    {% endif %}
+                                </div>
+
+                                <input type="file" id="profile-picture-input" style="display:none;">
+                                <button id="edit-profile-pic-button" class="edit-profile-pic-button" 
+                                        style="position: absolute; bottom: 5px; right: 5px; display: none;">
+                                    <i data-lucide="edit-2"></i>
+                                </button>
                             </div>
-                            <input type="file" id="profile-picture-input" style="display:none;">
-                            <button id="edit-profile-pic-button" class="edit-profile-pic-button" 
-                                    style="position:absolute; bottom:5px; right:5px; display:none;">
-                                <i data-lucide="edit-2"></i>
-                            </button>
+
+                            <h2 class="profile-name" data-field="full_name">{{ first_name }} {{ last_name }}</h2>
+                            <div class="profile-badge" data-field="dept_position">
+                                {{ department|default:"-" }} • {{ position|default:"-" }}
+                            </div>
                         </div>
-                        <h2 class="profile-name" data-field="full_name">{{ first_name }} {{ last_name }}</h2>
-                        <div class="profile-badge" data-field="department_position">{{ department|default:"N/A" }} • {{ position|default:"N/A" }}</div>
                     </div>
 
-                    <!-- Contact Information -->
+                    <!-- Contact Info -->
                     <div class="contact-card">
                         <h3 class="card-title"><i data-lucide="mail"></i> Contact Information</h3>
+
                         <div class="form-field">
                             <label>First Name</label>
                             <p class="field-value" data-field="first_name">{{ first_name }}</p>
                             <div class="editable-field"><input type="text" name="first_name" value="{{ first_name }}"></div>
                         </div>
+
                         <div class="form-field">
                             <label>Last Name</label>
                             <p class="field-value" data-field="last_name">{{ last_name }}</p>
                             <div class="editable-field"><input type="text" name="last_name" value="{{ last_name }}"></div>
                         </div>
+
                         <div class="form-field">
                             <label>Email</label>
                             <p class="field-value" data-field="email">{{ email }}</p>
                         </div>
+
                         <div class="form-field">
                             <label>Phone Number</label>
                             <p class="field-value" data-field="phone">{{ phone|default:'' }}</p>
                             <div class="editable-field"><input type="text" name="phone" value="{{ phone }}"></div>
                         </div>
+
                         <div class="form-field">
                             <label>Address</label>
                             <p class="field-value" data-field="address">{{ address|default:'' }}</p>
                             <div class="editable-field"><input type="text" name="address" value="{{ address }}"></div>
                         </div>
+
                         <div class="form-field">
                             <label>Date of Birth</label>
                             <p class="field-value" data-field="dob">{{ dob_display }}</p>
                             <div class="editable-field"><input type="date" name="dob" value="{{ dob|date:'Y-m-d' }}"></div>
                         </div>
+
                         <div class="form-field">
                             <label>Bio</label>
                             <p class="field-value" data-field="bio">{{ bio|default:'' }}</p>
                             <div class="editable-field"><textarea name="bio">{{ bio }}</textarea></div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Academic Info -->
+            <!-- ACADEMIC INFO -->
             <div class="tab-content" id="academic">
                 <div class="academic-grid">
                     <div class="card">
                         <h3 class="card-title"><i data-lucide="graduation-cap"></i> Academic Details</h3>
+
                         <div class="form-field">
                             <label>Teacher ID</label>
                             <p class="field-value" data-field="teacher_id">{{ teacher_id|default:'-' }}</p>
                         </div>
+
                         <div class="form-field">
-                            <label>Department / College</label>
-                            <p class="field-value" data-field="department">{{ department|default:'CCS' }}</p>
+                            <label>Department</label>
+                            <p class="field-value" data-field="department">{{ department|default:'-' }}</p>
                             <div class="editable-field">
                                 <select name="department" class="styled-select">
-                                    <option value="CEA" {% if department == "CEA" %}selected{% endif %}>Engineering and Architecture (CEA)</option>
                                     <option value="CCS" {% if department == "CCS" %}selected{% endif %}>Computer Studies (CCS)</option>
-                                    <option value="CASE" {% if department == "CASE" %}selected{% endif %}>Arts, Sciences and Education (CASE)</option>
-                                    <option value="CMBA" {% if department == "CMBA" %}selected{% endif %}>Management, Business and Accountancy (CMBA)</option>
-                                    <option value="CNAHS" {% if department == "CNAHS" %}selected{% endif %}>Nursing and Allied Health Sciences (CNAHS)</option>
+                                    <option value="CEA" {% if department == "CEA" %}selected{% endif %}>Engineering & Architecture (CEA)</option>
+                                    <option value="CASE" {% if department == "CASE" %}selected{% endif %}>Arts, Sciences & Education (CASE)</option>
+                                    <option value="CMBA" {% if department == "CMBA" %}selected{% endif %}>Business & Accountancy (CMBA)</option>
+                                    <option value="CNAHS" {% if department == "CNAHS" %}selected{% endif %}>Nursing & Allied Health Sciences (CNAHS)</option>
                                     <option value="CCJ" {% if department == "CCJ" %}selected{% endif %}>Criminal Justice (CCJ)</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="form-field">
                             <label>Specialization</label>
                             <p class="field-value" data-field="specialization">{{ specialization|default:'N/A' }}</p>
                             <div class="editable-field"><input type="text" name="specialization" value="{{ specialization }}"></div>
                         </div>
+
                         <div class="form-field">
                             <label>Date Joined</label>
                             <p class="field-value" data-field="date_joined">{{ date_joined|default:'-' }}</p>
                         </div>
+
                         <div class="form-field">
                             <label>Position</label>
                             <p class="field-value" data-field="position">{{ position|default:'Full-Time Faculty' }}</p>
@@ -146,42 +165,39 @@
 
                     <div class="card">
                         <h3 class="card-title"><i data-lucide="book-open"></i> Teaching Load</h3>
+
                         <div class="form-field">
-                            <label>Current Courses</label>
-                            <div class="gpa-display">
-                                <span class="gpa-value" data-field="total_courses">{{ total_courses }}</span>
-                                <span class="gpa-max"> courses</span>
-                            </div>
+                            <label>Courses Handled</label>
+                            <p class="field-value" data-field="total_courses">{{ total_courses|default:0 }}</p>
                         </div>
+
                         <div class="form-field">
                             <label>Total Students</label>
-                            <div class="credits-display">
-                                <span class="credits-value" data-field="total_students">{{ total_students }}</span>
-                                <span class="credits-max"> enrolled</span>
-                            </div>
+                            <p class="field-value" data-field="total_students">{{ total_students|default:0 }}</p>
                         </div>
+
                         <div class="form-field">
-                            <label>Status</label>
-                            <div class="status-badge success">Active</div>
+                            <label>Advisees</label>
+                            <p class="field-value" data-field="advisees">{{ advisees|default:0 }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Achievements -->
+            <!-- ACHIEVEMENTS -->
             <div class="tab-content" id="achievements">
                 <div class="card">
-                    <h3 class="card-title"><i data-lucide="award"></i> Achievements</h3>
+                    <h3 class="card-title"><i data-lucide="award"></i> Professional Achievements</h3>
                     <div class="achievements-grid" id="achievements-container">
                         {% for achievement in achievements %}
                         <div class="achievement-card" data-field="achievement_{{ forloop.counter }}">
                             <i data-lucide="{{ achievement.icon }}"></i>
                             <h4>{{ achievement.title }}</h4>
-                            <p>{{ achievement.description }}</p>
                             <div class="editable-field">
                                 <input type="text" name="achievement_{{ forloop.counter }}_title" value="{{ achievement.title }}">
                                 <input type="text" name="achievement_{{ forloop.counter }}_description" value="{{ achievement.description }}">
                             </div>
+                            <p>{{ achievement.description }}</p>
                         </div>
                         {% empty %}
                         <p>No achievements yet.</p>
@@ -189,15 +205,14 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <div class="profile-actions" style="display:none;" id="profile-actions">
+    <!-- Profile Action Buttons -->
+    <div class="profile-actions" style="display: none;" id="profile-actions">
         <button id="save-profile-button" class="save-button">Save Changes</button>
         <button id="cancel-profile-button" class="cancel-button">Cancel</button>
     </div>
-
 </div>
 
 <script src="{% static 'js/teacher/TeacherProfile.js' %}"></script>

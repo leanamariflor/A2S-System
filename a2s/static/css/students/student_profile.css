@@ -1,4 +1,4 @@
-/* ================== ROOT VARIABLES ================== */
+/* ================== 1. ROOT VARIABLES ================== */
 :root {
   --background: #f4f5f7;
   --foreground: #121212;
@@ -7,12 +7,19 @@
   --border: #e0e0e0;
   --text-muted: #6b7280;
   --radius: 0.5rem;
-  --shadow: 0 1px 4px rgba(0,0,0,0.08);
-    --glow: 0 0 8px rgba(111, 115, 255, 0.4);
-
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --glow: 0 0 8px rgba(111, 115, 255, 0.4);
 }
 
+/* ================== 2. BASE & BODY STYLES ================== */
+body,
+.main-content {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+}
 
+/* ================== 3. HEADER (.manage-card & .edit-profile-button) ================== */
 .manage-card {
   background-color: var(--primary);
   color: #fff;
@@ -20,51 +27,28 @@
   padding: 2rem;
   margin: 1rem 2rem;
   box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
-
 }
 
-
-
-/* ================== GENERAL ================== */
-body, .main-content {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+.edit-profile-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  color: #000000;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.card, .contact-card, .achievement-card {
- 
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 10px rgba(111, 115, 255, 0.1);
-     transition: transform 0.2s, box-shadow 0.2s;
+.edit-profile-button:hover {
+  background: #3730a3;
+  transform: scale(1.05);
 }
 
-
-.card, .contact-card, .achievement-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(111, 115, 255, 0.25);
-}
-
-
-
-
-.card:hover, .contact-card:hover, .achievement-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.8rem;
-  color: #000;
-}
-
-/* ================== TABS ================== */
+/* ================== 4. TABS & NAVIGATION ================== */
 .tabs {
   display: flex;
   flex-direction: column;
@@ -98,8 +82,7 @@ body, .main-content {
   background: #fff;
   color: var(--primary);
   font-weight: 700;
-  text-transform: uppercase;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .tab-content {
@@ -111,17 +94,41 @@ body, .main-content {
   transition: all 0.25s ease;
   box-shadow: var(--glow);
   border-color: var(--primary);
-
 }
-
-
-
 
 .tab-content.active {
   display: block;
 }
 
-/* ================== PROFILE GRID ================== */
+/* ================== 5. GENERAL CARD & LAYOUT STYLES (.profile-grid) ================== */
+/* General Card Styles (Used by Academic, Contact, Achievements) */
+.card,
+.contact-card,
+.achievement-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 10px rgba(111, 115, 255, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover,
+.contact-card:hover,
+.achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(111, 115, 255, 0.25);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  color: #000;
+}
+
+/* Profile Grid (Personal Info Tab) */
 .profile-grid {
   display: flex;
   flex-direction: column;
@@ -143,14 +150,37 @@ body, .main-content {
     height: 500px;
     overflow-y: auto;
     background: white;
-    
   }
 }
 
-/* ================== PROFILE PICTURE ================== */
+/* ================== 6. PERSONAL INFO TAB CONTENT ================== */
+
+/* 6a. Profile Picture Card (.profile-info-card & .profile-picture-card) */
+.profile-info-card {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(111, 115, 255, 0.15);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.profile-info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(111, 115, 255, 0.25);
+}
+
 .profile-picture-card {
   text-align: center;
   padding: 2rem 1rem 1rem;
+}
+
+.profile-info-card .profile-picture-card {
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .profile-picture-wrapper {
@@ -181,7 +211,7 @@ body, .main-content {
   position: absolute;
   bottom: 5px;
   right: 5px;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
   border-radius: 50%;
@@ -202,7 +232,7 @@ body, .main-content {
 }
 
 .profile-badge {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   padding: 0.4rem 0.8rem;
   border-radius: var(--radius);
   font-size: 0.85rem;
@@ -211,7 +241,7 @@ body, .main-content {
   letter-spacing: 0.5px;
 }
 
-/* ================== FORM FIELDS ================== */
+/* 6b. Form Field Styles (Used by Contact and Academic Cards) */
 .form-field {
   display: flex;
   flex-direction: column;
@@ -231,7 +261,7 @@ body, .main-content {
   margin: 0;
 }
 
-/* ================== ACADEMIC GRID ================== */
+/* ================== 7. ACADEMIC INFO TAB CONTENT ================== */
 .academic-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -257,7 +287,7 @@ body, .main-content {
   font-weight: 600;
 }
 
-/* ================== ACHIEVEMENTS ================== */
+/* ================== 8. ACHIEVEMENTS TAB CONTENT ================== */
 .achievements-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -271,10 +301,6 @@ body, .main-content {
   flex-direction: column;
   gap: 0.5rem;
   transition: transform 0.2s;
-}
-
-.achievement-card:hover {
-  transform: translateY(-3px);
 }
 
 .achievement-card i {
@@ -303,27 +329,9 @@ body, .main-content {
   margin: 0;
 }
 
-/* ================== EDIT PROFILE BUTTON ================== */
-.edit-profile-button {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: #fff;
-  color: #000000;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
+/* ================== 9. FOOTER ACTIONS & EDIT MODE ================== */
 
-.edit-profile-button:hover {
-  background: #3730a3;
-  transform: scale(1.05);
-}
-
-/* ================== SAVE/CANCEL BUTTONS ================== */
+/* Save/Cancel Buttons (.profile-actions) */
 .profile-actions {
   display: flex;
   justify-content: flex-end;
@@ -331,7 +339,8 @@ body, .main-content {
   margin: 1rem 0 2rem;
 }
 
-.save-button, .cancel-button {
+.save-button,
+.cancel-button {
   border: none;
   border-radius: var(--radius);
   padding: 0.5rem 1.2rem;
@@ -359,7 +368,7 @@ body, .main-content {
   background: #d1d5db;
 }
 
-/* ================== EDIT MODE ================== */
+/* Edit Mode (.edit-mode, .read-only) */
 .editable-field input,
 .editable-field textarea,
 .editable-field select {
@@ -386,10 +395,28 @@ body, .main-content {
   transition: all 0.2s ease;
 }
 
+/* ================== 10. RESPONSIVE DESIGN ================== */
+@media (min-width: 768px) {
+  .profile-grid {
+    flex-direction: row;
+    gap: 2rem;
+  }
 
-/* ================== RESPONSIVE ================== */
+  .profile-picture-card,
+  .contact-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 500px;
+    overflow-y: auto;
+    background: white;
+  }
+}
+
 @media (max-width: 768px) {
-  .profile-grid, .academic-grid {
+  .profile-grid,
+  .academic-grid {
     flex-direction: column;
     grid-template-columns: 1fr;
   }
@@ -403,26 +430,4 @@ body, .main-content {
     margin-bottom: 0.5rem;
     text-align: center;
   }
-}
-
-.profile-info-card {
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(111, 115, 255, 0.15);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.profile-info-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(111, 115, 255, 0.25);
-}
-
-.profile-info-card .profile-picture-card {
-    margin-bottom: 1rem;
-    text-align: center;
 }

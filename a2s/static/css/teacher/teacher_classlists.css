@@ -1,4 +1,14 @@
-/* ===== CLASS LIST PAGE ===== */
+
+:root {
+  --background: #f4f5f7;
+  --foreground: #121212;
+  --primary: #6f73ff;
+  --card-bg: #ffffff;
+  --border: #d8d8e8;
+  --text-muted: #6b7280;
+  --glow: 0 0 8px rgba(111, 115, 255, 0.4);
+}
+
 .class-list-page {
   font-family: "Inter", sans-serif;
   background: #f3f4f6;
@@ -83,11 +93,16 @@
 .class-list-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   font-size: 0.9rem;
+
+  background-color: var(--card-bg);
+  border: 1px solid var(--primary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--glow);
+  transition: all 0.25s ease;
 }
 
 .class-list-table th {

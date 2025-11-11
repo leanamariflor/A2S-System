@@ -26,10 +26,20 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="notification-button">
+        <button id="notif-btn" class="notif-btn">
           <i data-lucide="bell"></i>
-          <span class="notification-badge"></span>
+          <span id="notif-badge" class="notif-badge hidden">0</span>
         </button>
+
+        <div id="notif-dropdown" class="notification-dropdown">
+          <div class="notification-header">
+            <h4>Notifications</h4>
+            <span class="clear-notif" id="clear-notif">Mark all as read</span>
+          </div>
+          <div id="notif-list"></div>
+        </div>
+
+
         <a href="{% url 'Logout' %}" class="logout-button">
           <i data-lucide="log-out"></i>
         </a>
@@ -72,7 +82,6 @@
         Department: Not Assigned
       {% endif %}
     </p>
-    <br>
   </div>
 </div>
 
@@ -91,10 +100,10 @@
           <i data-lucide="calendar"></i>
           <span>Schedule</span>
         </a>
-        <button class="nav-button">
+        <a href="{% url 'TeacherGrades' %}" class="nav-button">
           <i data-lucide="clipboard-list"></i>
           <span>Grades</span>
-        </button>
+        </a>
         <a href="{% url 'TeacherCourses' %}" class="nav-button">
           <i data-lucide="book"></i>
           <span>Courses</span>
@@ -110,14 +119,17 @@
       </nav>
     </aside>
 
-    <!-- Main Content (child templates fill this block) -->
     <main class="dashboard-main">
       {% block content %}
-      <!-- Default content if child does not override -->
       <p>Welcome! This is the teacher dashboard.</p>
       {% endblock %}
     </main>
   </div>
+  {% if calendar_json %}
+  <script>
+  window.calendarJSON = JSON.parse('{{ calendar_json|escapejs }}');
+</script>
+{% endif %}
 
       <script src="{% static 'js/teacher/teacher_base.js' %}"></script>
 

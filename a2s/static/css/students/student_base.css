@@ -122,7 +122,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
    position: relative;
 }
 .logout-button {
-  position: relative; /* ✅ make badge stick to the button */
+  position: relative; 
   width: 2rem;
   height: 2rem;
   display: flex;
@@ -167,7 +167,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Quick Actions */
 .quick-actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 .action-card { background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-card); }
 .action-card:hover { box-shadow: var(--shadow-academic); }
@@ -175,7 +174,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
 .action-card h3 { font-size: 1rem; font-weight: 600; color: var(--foreground); margin-bottom: 0.25rem; }
 .action-card p { font-size: 0.875rem; color: var(--academic-text-muted); }
 
-/* Responsive */
 @media (max-width: 768px) {
     .header-content, .header-left { flex-direction: column; align-items: flex-start; gap: 1rem; }
     .tab-list { grid-template-columns: repeat(2, 1fr); gap: 0.25rem; }
@@ -184,37 +182,36 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
     .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Notification button */
+
 .notif-btn {
   width: 2.5rem;
   height: 2.5rem;
-  background-color: var(--primary); /* Purple button */
+  background-color: var(--primary);
   border: none;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-foreground); /* White icon */
+  color: var(--primary-foreground); 
   cursor: pointer;
   box-shadow: var(--shadow-glow);
-  position: relative; /* Needed for badge positioning */
+  position: relative; 
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .notif-btn:hover {
-  background-color: var(--academic-red-dark); /* Darker purple on hover */
+  background-color: var(--academic-red-dark); 
   transform: scale(1.05);
 }
 
-/* Badge */
 .notif-badge {
   position: absolute;
-  top: -0.25rem;  /* slightly above the button */
-  right: -0.25rem; /* slightly to the right */
+  top: -0.25rem; 
+  right: -0.25rem; 
   width: 1rem;
   height: 1rem;
-  background-color: var(--destructive); /* Red badge color */
-  color: var(--destructive-foreground); /* White number */
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -224,19 +221,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
   box-shadow: 0 0 5px rgba(0,0,0,0.25);
 }
 
-/* Hide badge if 0 */
 .notif-badge.hidden {
   display: none;
 }
 
 
-/* Notification dropdown */
 .notification-dropdown {
   position: absolute;
-  top: 100%;             /* place it directly below the button */
-  right: 0;               /* align to the right edge of button */
-  margin-top: 0.5rem;     /* small gap between button and dropdown */
-  width: 300px;           /* optional, adjust to fit your design */
+  top: 100%;             
+  right: 0;             
+  margin-top: 0.5rem;     
+  width: 300px;           
   background-color: #ffffff;
   border: 1px solid var(--border);
   border-radius: 1rem;
@@ -247,12 +242,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
   animation: fadeDown 0.25s ease forwards;
 }
 
-/* Show dropdown */
 .notification-dropdown.active {
   display: block;
 }
 
-/* Dropdown header */
 .notification-header {
   display: flex;
   justify-content: space-between;
@@ -268,7 +261,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
   color: var(--foreground);
 }
 
-/* Notification items */
 .notification-item {
   background: #ffffff;
   border: 1px solid rgba(111, 115, 255, 0.25);
@@ -307,7 +299,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
   color: var(--muted-foreground);
 }
 
-/* Clear all notifications */
 .clear-notif {
   font-size: 0.75rem;
   color: var(--primary);
@@ -320,14 +311,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
   opacity: 0.7;
 }
 
-/* Fade down animation for dropdown */
 @keyframes fadeDown {
   0% {
     opacity: 0;
-    transform: translateY(-6px); /* start slightly above */
+    transform: translateY(-6px); 
   }
   100% {
     opacity: 1;
-    transform: translateY(0);    /* end at natural position */
+    transform: translateY(0);  
   }
 }

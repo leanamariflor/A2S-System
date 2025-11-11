@@ -1,0 +1,169 @@
+.course-dashboard {
+  font-family: "Inter", sans-serif;
+  color: #333;
+  background: #f3f4f6;
+  padding: 30px;
+}
+
+/* Header */
+.header-card {
+  background: linear-gradient(135deg, #595cff, #4e50f0);
+  color: white;
+  padding: 25px 35px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+}
+
+.header-card h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.header-card p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.header-card span {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Layout */
+.main-content {
+  display: flex;
+  gap: 30px;
+}
+
+/* Left Panel */
+.left-panel {
+  flex: 2;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.left-panel h3 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.course-table th {
+  text-align: left;
+  background: #f5f5f5;
+  padding: 10px;
+  font-weight: 600;
+}
+
+.course-table td {
+  background: #fff;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.course-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Buttons */
+.view-btn,
+.upload-btn {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-btn:hover,
+.upload-btn:hover {
+  background: #e2e2e2;
+}
+
+/* Right Panel */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Section Management */
+.section-management,
+.student-progress {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.section-management h4,
+.student-progress h4 {
+  margin-top: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.section-management select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin: 10px 0;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.add-course-btn,
+.view-sections-btn {
+  flex: 1;
+  background: #6f73ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-course-btn:hover,
+.view-sections-btn:hover {
+  background: #5a5ef5;
+}
+
+/* Student Progress Upload */
+.upload-file-btn {
+  width: 100%;
+  background: #1e1e3f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.upload-file-btn:hover {
+  background: #2b2b5f;
+}
+
+.student-progress small {
+  color: #666;
+  font-size: 0.8rem;
+}

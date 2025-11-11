@@ -1,6 +1,7 @@
 # students/models.py
 from django.db import models
 from authentication.models import User
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 class StudentProfile(models.Model):
@@ -19,9 +20,12 @@ class StudentProfile(models.Model):
     profile_picture = models.URLField(blank=True, null=True)
 
 
+    @property
+    def student_number(self):
+        return self.user.id_number 
+
     def __str__(self):
         return f"{self.user.get_full_name()}"
-
 
 class Achievement(models.Model):
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name="achievements")
@@ -117,13 +121,13 @@ class CourseAssignment(models.Model):
         return f"{self.student.user.get_full_name()} - {self.course_code} {self.section} ({self.teacher.user.get_full_name()})"
 
 
-class Notification(models.Model):
-    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='notifications')
-    title = models.CharField(max_length=200)
-    message = models.TextField(blank=True, null=True)
-    type = models.CharField(max_length=50, blank=True, null=True) 
-    date_created = models.DateTimeField(auto_now_add=True)
-    read = models.BooleanField(default=False)  
 
-    def __str__(self):
-        return f"{self.student.user.get_full_name()} - {self.title}"
+class AcademicCalendar(models.Model):
+        title = models.CharField(max_length=100, default="Academic Calendar")
+        data = models.JSONField(encoder=DjangoJSONEncoder)
+
+        class Meta:
+         db_table = 'a2s_system_academic_calendar'
+
+        def __str__(self):
+            return self.title

@@ -147,20 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
   calendarSemesterSelect.addEventListener("change", renderCalendar);
   renderCalendar();
 
-  // =================== MODAL ===================
-  const modal = document.getElementById("eventModal");
-  modal.innerHTML = `
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h3 id="eventName"></h3>
-      <p><strong>Type:</strong> <span id="eventType"></span></p>
-      <p><strong>Date:</strong> <span id="eventDate"></span></p>
-    </div>`;
-  const closeModal = modal.querySelector(".close");
-  closeModal.onclick = () => (modal.style.display = "none");
-  window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
-
-  // =================== NOTIFICATIONS ===================
+   // =================== NOTIFICATIONS ===================
   const notificationsContainer = document.getElementById("recentNotificationsContainer");
   const today = new Date();
   const startOfWeek = new Date(today);
@@ -186,4 +173,18 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     notificationsContainer.innerHTML = `<p>No events this week.</p>`;
   }
+  // =================== MODAL ===================
+  const modal = document.getElementById("eventModal");
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="eventName"></h3>
+      <p><strong>Type:</strong> <span id="eventType"></span></p>
+      <p><strong>Date:</strong> <span id="eventDate"></span></p>
+    </div>`;
+  const closeModal = modal.querySelector(".close");
+  closeModal.onclick = () => (modal.style.display = "none");
+  window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+ 
 });

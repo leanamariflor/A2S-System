@@ -10,7 +10,7 @@
 {% block content %}
   <div class="course-dashboard">
   <div class="header-card">
-    <h2>Registered Subjects</h2>
+    <h2>Grades</h2>
     <p id="schoolYear">{{ school_year }}</p>
     <span id="activeCourses">{{ active_courses }} active courses</span>
   </div>
@@ -34,7 +34,7 @@
             <td><strong>{{ course.course_code }}</strong></td>
             <td>{{ course.section }}</td>
             <td>
-              <a href="{% url 'teacher_classlist' course.course_code course.section %}" 
+              <a href="{% url 'teacher_grades_list' course.course_code course.section %}" 
                  class="view-btn">View Class List</a>
             </td>
           </tr>
@@ -72,5 +72,5 @@
 </div>
 
 
-<script src="{% static 'js/teacher/TeacherCourses.js' %}"></script>
+<script src="{% static 'js/teacher/TeacherGrades.js' %}"></script>
 {% endblock %}
