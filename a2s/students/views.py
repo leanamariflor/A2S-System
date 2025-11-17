@@ -63,14 +63,46 @@ def student_dashboard(request):
     completed_units = 0
     completion_percentage = 0.0
     credits_remaining = 0
-    current_gpa = float(profile.gpa) if profile.gpa else 0.0
 
+    # --- GPA calculation dynamically for CURRENT courses ---
+    grades = profile.grades.all()
+    gpa_total_points = 0
+    gpa_total_units = 0
+
+    print(f"Calculating GPA for student: {student_user.get_full_name()}")
+
+    for grade in grades:
+        # Only consider CURRENT courses (status = "CURRENT")
+        if grade.status and grade.status.upper() != "CURRENT":
+            continue
+
+        units = grade.units or 3
+
+        # Use midterm + final if final exists, otherwise assume final = midterm
+        midterm_score = float(grade.midterm or 0)
+        final_score = float(grade.final) if grade.final is not None else midterm_score
+        course_grade = (midterm_score + final_score) / 2
+
+        gpa_total_points += course_grade * units
+        gpa_total_units += units
+
+        # Debug print per course
+        print(
+            f"Course: {grade.course_name or grade.course_code}, "
+            f"Units: {units}, "
+            f"Grade used: {course_grade} (midterm: {midterm_score}, final: {final_score}), "
+            f"Total Points so far: {gpa_total_points}, Total Units so far: {gpa_total_units}"
+        )
+
+    current_gpa = round(gpa_total_points / gpa_total_units, 2) if gpa_total_units > 0 else 0.0
+    print(f"Calculated GPA: {current_gpa}")
+
+    # --- Curriculum / Progress calculations ---
     try:
         if student_program != "Undeclared":
             curriculum_obj = Curriculum.objects.get(program=student_program)
             curriculum_data = curriculum_obj.data.get("curriculum", [])
 
-            # Calculate progress metrics
             for year in curriculum_data:
                 for term in year.get("terms", []):
                     for subject in term.get("subjects", []):
@@ -84,7 +116,7 @@ def student_dashboard(request):
                 completion_percentage = round((completed_units / total_units * 100), 1)
             credits_remaining = total_units - completed_units
 
-            # Get current courses
+            # Current courses from curriculum
             for year in curriculum_data:
                 for term in year.get("terms", []):
                     for subj in term.get("subjects", []):
@@ -93,6 +125,9 @@ def student_dashboard(request):
     except Curriculum.DoesNotExist:
         pass
 
+    # --- Load academic calendar ---
+    import os, json
+    from django.conf import settings
     calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
     try:
         with open(calendar_path, "r", encoding="utf-8") as f:
@@ -107,11 +142,9 @@ def student_dashboard(request):
     for sem in calendar_data:
         start_event = next((e for e in sem["events"] if "Start of Classes" in e["name"]), None)
         end_event = next((e for e in sem["events"] if "End of Classes" in e["name"]), None)
-
         if start_event and end_event:
             start_date = datetime.strptime(start_event["date"], "%Y-%m-%d").date()
             end_date = datetime.strptime(end_event["date"], "%Y-%m-%d").date()
-
             if start_date <= today <= end_date:
                 current_semester = sem["semester"]
                 break
@@ -123,7 +156,7 @@ def student_dashboard(request):
         "calendar_json": json.dumps(calendar_data),
         "current_courses": current_courses,
         "active_courses_count": len(current_courses),
-        "gpa": profile.gpa or 0.0,
+        "gpa": current_gpa,
         "credits_completed": profile.credits_completed or 0,
         "credits_required": profile.credits_required or 0,
         "year_level": profile.year_level,

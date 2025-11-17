@@ -159,8 +159,31 @@ def teacher_profile(request):
     else:
         profile_picture_url = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png"
 
-    total_courses = Course.objects.filter(grade__faculty=user.get_full_name()).distinct().count()
-    total_students = Enrollment.objects.filter(course__grade__faculty=user.get_full_name()).count()
+     # 1. Get all schedules of the teacher
+    schedules = Schedule.objects.filter(teacher=profile)
+
+    # 2. Count distinct courses (subject_code + section)
+    course_set = set()
+    student_set = set()
+
+    for sched in schedules:
+        if "/" in sched.section:
+            continue
+
+        key = f"{sched.subject_code}-{sched.section}"
+        course_set.add(key)
+
+        # Students assigned to this teacher for this course
+        student_ids = CourseAssignment.objects.filter(
+            teacher=profile,
+            course_code=sched.subject_code,
+            section=sched.section
+        ).values_list("student_id", flat=True)
+
+        student_set.update(student_ids)
+
+    total_courses = len(course_set)
+    total_students = len(student_set)
 
     context = {
         "first_name": user.first_name,

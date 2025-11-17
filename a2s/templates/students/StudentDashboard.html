@@ -21,8 +21,9 @@
       <p class="date">{{ today }}</p>
     </div>
     <div class="welcome-gpa">
-      <div class="gpa-value">{{ student.gpa }}</div>
+      <div class="gpa-value">{{ current_gpa|floatformat:2 }}</div>
       <div class="gpa-label">Current GPA</div>
+
     </div>
   </div>
 </div>
