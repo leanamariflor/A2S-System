@@ -54,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Populate year and semester dropdowns
   const years = [...new Set(allEvents.map(e => e.date.getFullYear()))];
   const semesters = [...new Set(allEvents.map(e => e.semester))];
   calendarYearSelect.innerHTML = `<option value="All">All</option>` + years.map(y => `<option>${y}</option>`).join("");
@@ -83,14 +82,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let row = document.createElement("div");
     row.className = "calendar-row";
 
-    // Empty cells before 1st
+ 
     for (let i = 0; i < firstDay; i++) {
       const empty = document.createElement("div");
       empty.className = "calendar-cell empty";
       row.appendChild(empty);
     }
 
-    // Calendar days
+  
     for (let d = 1; d <= lastDate; d++) {
       const cell = document.createElement("div");
       cell.className = "calendar-cell";

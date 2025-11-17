@@ -1,6 +1,5 @@
 
 
-/* 1. ROOT VARIABLES, BASE STYLES & LAYOUT */
 
 :root {
   --background: #f4f5f7;
@@ -10,6 +9,17 @@
   --border: #d8d8e8;
   --text-muted: #6b7280;
   --glow: 0 0 8px rgba(111, 115, 255, 0.4);
+}
+
+.course-item-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.course-item-link:hover {
+  background-color: #f2f2f2;
+  border-radius: 5px;
 }
 
 body {
@@ -77,6 +87,11 @@ body {
 }
 
 /* 3. TABS & TAB TRIGGERS */
+.tabs {
+  display: flex;
+  gap: 1rem;         
+  margin: 1rem 2rem; 
+}
 .tab-trigger {
   background: var(--primary);
   color: #fff;
@@ -85,6 +100,15 @@ body {
   text-align: center;
   transition: all 0.25s ease;
   border: 1px solid transparent;
+   flex: 1;
+    padding: 12px 0;     
+}
+
+
+.tab-list {
+  display: flex;
+  width: 100%;
+  gap: 10px; 
 }
 
 .tab-trigger.active {
@@ -93,6 +117,7 @@ body {
   border-color: var(--primary);
   box-shadow: var(--glow);
 }
+
 
 /* 4. GENERAL CARD STYLES & OVERVIEW TAB */
 .card {
@@ -188,6 +213,7 @@ body {
   align-items: center;
   transition: box-shadow 0.2s, border-color 0.2s;
   margin: 0.25rem 0;
+  margin-bottom: 10px;
 }
 
 .course-item:hover,

@@ -170,12 +170,10 @@
                             <div class="form-field">
                                 <label>Current GPA</label>
                                 <div class="gpa-display">
-                                    <span class="gpa-value" data-field="gpa">{{ gpa|default:'' }}</span>
-                                    <span class="gpa-max">/ 4.0</span>
+                                    <span class="gpa-value" data-field="gpa">{{ current_gpa |default:'' }}</span>
+                                    <span class="gpa-max"></span>
                                 </div>
-                                <div class="editable-field">
-                                    <input type="number" step="0.01" name="gpa" value="{{ gpa }}">
-                                </div>
+                            
                             </div>
 
                             <div class="form-field">
@@ -184,17 +182,13 @@
                                     <span class="credits-value" data-field="credits_completed">{{ credits_completed|default:'' }}</span>
                                     <span class="credits-max">/ {{ credits_required|default:'' }}</span>
                                 </div>
-                                <div class="editable-field">
-                                    <input type="number" name="credits_completed" value="{{ credits_completed }}">
-                                </div>
+                                
                             </div>
 
                             <div class="form-field">
                                 <label>Academic Standing</label>
                                 <div class="status-badge success" data-field="academic_standing">{{ academic_standing|default:'Good Standing' }}</div>
-                                <div class="editable-field">
-                                    <input type="text" name="academic_standing" value="{{ academic_standing }}">
-                                </div>
+                        
                             </div>
                         </div>
                     </div>

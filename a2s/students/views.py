@@ -30,18 +30,16 @@ from students.models import Curriculum
 from authentication.models import User
 
 
-# ----------------------------------------------------------------------
 # Supabase Configuration & Constants
-# ----------------------------------------------------------------------
+
 SUPABASE_URL = settings.SUPABASE_URL
 SUPABASE_SERVICE_KEY = settings.SUPABASE_SERVICE_KEY
 DEFAULT_PROFILE_URL = f"{SUPABASE_URL}/storage/v1/object/public/ProfilePicture/avatar.png"
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
-# ----------------------------------------------------------------------
+
 # Base View
-# ----------------------------------------------------------------------
 @login_required(login_url="Login")
 def student_base(request):
     return render(request, "students/student_base.html")
@@ -58,13 +56,13 @@ def student_dashboard(request):
 
     curriculum_data, calendar_data, current_courses = [], [], []
 
-    # Progress calculation variables
+   
     total_units = 0
     completed_units = 0
     completion_percentage = 0.0
     credits_remaining = 0
 
-    # --- GPA calculation dynamically for CURRENT courses ---
+   
     grades = profile.grades.all()
     gpa_total_points = 0
     gpa_total_units = 0
@@ -72,13 +70,13 @@ def student_dashboard(request):
     print(f"Calculating GPA for student: {student_user.get_full_name()}")
 
     for grade in grades:
-        # Only consider CURRENT courses (status = "CURRENT")
+       
         if grade.status and grade.status.upper() != "CURRENT":
             continue
 
         units = grade.units or 3
 
-        # Use midterm + final if final exists, otherwise assume final = midterm
+        
         midterm_score = float(grade.midterm or 0)
         final_score = float(grade.final) if grade.final is not None else midterm_score
         course_grade = (midterm_score + final_score) / 2
@@ -86,18 +84,9 @@ def student_dashboard(request):
         gpa_total_points += course_grade * units
         gpa_total_units += units
 
-        # Debug print per course
-        print(
-            f"Course: {grade.course_name or grade.course_code}, "
-            f"Units: {units}, "
-            f"Grade used: {course_grade} (midterm: {midterm_score}, final: {final_score}), "
-            f"Total Points so far: {gpa_total_points}, Total Units so far: {gpa_total_units}"
-        )
-
     current_gpa = round(gpa_total_points / gpa_total_units, 2) if gpa_total_units > 0 else 0.0
     print(f"Calculated GPA: {current_gpa}")
 
-    # --- Curriculum / Progress calculations ---
     try:
         if student_program != "Undeclared":
             curriculum_obj = Curriculum.objects.get(program=student_program)
@@ -116,7 +105,7 @@ def student_dashboard(request):
                 completion_percentage = round((completed_units / total_units * 100), 1)
             credits_remaining = total_units - completed_units
 
-            # Current courses from curriculum
+           
             for year in curriculum_data:
                 for term in year.get("terms", []):
                     for subj in term.get("subjects", []):
@@ -125,7 +114,7 @@ def student_dashboard(request):
     except Curriculum.DoesNotExist:
         pass
 
-    # --- Load academic calendar ---
+
     import os, json
     from django.conf import settings
     calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
@@ -162,7 +151,7 @@ def student_dashboard(request):
         "year_level": profile.year_level,
         "academic_standing": profile.academic_standing,
         "current_semester": current_semester,
-        # Progress overview data
+       
         "total_units": total_units,
         "completed_units": completed_units,
         "completion_percentage": completion_percentage,
@@ -173,21 +162,47 @@ def student_dashboard(request):
 
     return render(request, "students/StudentDashboard.html", context)
 
-
 @login_required(login_url="Login")
 def student_profile(request):
     user = request.user
     profile, _ = StudentProfile.objects.get_or_create(user=user)
-    credits_completed = profile.credits_completed or 0
-    credits_max = profile.credits_required or 0
-    progress = (credits_completed / credits_max) * 100 if credits_max else 0
+
+    # --- GPA calculation ---
+    grades = profile.grades.all()
+    gpa_total_points = 0
+    gpa_total_units = 0
+    for grade in grades:
+        if grade.status and grade.status.upper() != "CURRENT":
+            continue
+        units = grade.units or 3
+        midterm_score = float(grade.midterm or 0)
+        final_score = float(grade.final) if grade.final is not None else midterm_score
+        course_grade = (midterm_score + final_score) / 2
+        gpa_total_points += course_grade * units
+        gpa_total_units += units
+    current_gpa = round(gpa_total_points / gpa_total_units, 2) if gpa_total_units > 0 else 0.0
+
+    # --- Credits calculation ---
+    total_units = 0
+    completed_units = 0
+    try:
+        if profile.program:
+            curriculum_obj = Curriculum.objects.get(program=profile.program)
+            curriculum_data = curriculum_obj.data.get("curriculum", [])
+            for year in curriculum_data:
+                for term in year.get("terms", []):
+                    for subject in term.get("subjects", []):
+                        units = subject.get('units', 3)
+                        total_units += units
+                        if subject.get("final_grade","").upper() == "PASSED":
+                            completed_units += units
+        credits_remaining = total_units - completed_units
+        progress_percentage = round((completed_units / total_units * 100), 1) if total_units else 0
+    except Curriculum.DoesNotExist:
+        total_units = completed_units = credits_remaining = progress_percentage = 0
 
     def format_date(dt):
         return dt.strftime("%B %d, %Y") if dt else ""
-    if profile.profile_picture:
-        profile_picture_url = profile.profile_picture
-    else:
-        profile_picture_url = "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png"
 
     context = {
         "first_name": user.first_name,
@@ -203,13 +218,17 @@ def student_profile(request):
         "academic_year": profile.year_level or 1,
         "expected_graduation": profile.expected_graduation or "",
         "expected_graduation_display": format_date(profile.expected_graduation),
-        "gpa": profile.gpa or 0,
-        "credits_completed": credits_completed,
-        "credits_max": credits_max,
-        "progress_percentage": progress,
+
+        "current_gpa": current_gpa,  # use current_gpa
+        "credits_completed": completed_units,
+        "credits_required": total_units,
+        "academic_standing": profile.academic_standing or "Good Standing",
+        "progress_percentage": progress_percentage,
+
         "achievements": profile.achievements.all(),
-        "profile_picture_url": profile_picture_url,
+        "profile_picture_url": profile.profile_picture or "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png",
     }
+
     return render(request, "students/StudentProfile.html", context)
 
 

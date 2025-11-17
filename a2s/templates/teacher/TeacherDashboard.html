@@ -58,9 +58,10 @@
           </div>
 
           <div class="card-content">
-            {% if courses %}
-              <div class="course-list">
-                {% for course in courses %}
+          {% if courses %}
+            <div class="course-list">
+              {% for course in courses %}
+                <a href="{% url 'teacher_classlist' course_code=course.course_code section=course.section %}" class="course-item-link">
                   <div class="course-item">
                     <div class="course-details">
                       <div class="course-code">{{ course.course_code }}</div>
@@ -68,12 +69,14 @@
                     </div>
                     <div class="course-units">{{ course.student_count }} students</div>
                   </div>
-                {% endfor %}
-              </div>
-            {% else %}
-              <p>No active courses at the moment.</p>
-            {% endif %}
-          </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No active courses at the moment.</p>
+          {% endif %}
+        </div>
+
         </div>
       </div>
     </div>

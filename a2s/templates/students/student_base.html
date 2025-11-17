@@ -1,4 +1,4 @@
-  {% load static %}
+{% load static %}
 
   <!DOCTYPE html>
   <html lang="en">
@@ -74,7 +74,10 @@
     <p class="student-id">Student ID: {{ request.user.id_number }}</p>
     <div class="student-info">
   <p class="student-program" id="student-program">{{ request.user.studentprofile.program }}</p>
-  <p class="student-year" id="student-year">{{ request.user.studentprofile.year_level }} year</p>
+  <p class="student-year" id="student-year">
+  {% if year_level == 1 %}1st{% elif year_level == 2 %}2nd{% elif year_level == 3 %}3rd{% elif year_level == 4 %}4th{% else %}{{ year_level }}th{% endif %} year
+</p>
+
 </div>
 
 
