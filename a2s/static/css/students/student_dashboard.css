@@ -3,13 +3,17 @@
 /* 1. ROOT VARIABLES, BASE STYLES & LAYOUT */
 
 :root {
-  --background: #f4f5f7;
-  --foreground: #121212;
-  --primary: #6f73ff;
+  --background: #f0f2f8;
+  --foreground: #1a1d2e;
+  --primary: #6366f1;
   --card-bg: #ffffff;
-  --border: #d8d8e8;
+  --border: #e5e7eb;
   --text-muted: #6b7280;
-  --glow: 0 0 8px rgba(111, 115, 255, 0.4);
+  --glow: 0 0 16px rgba(99, 102, 241, 0.15);
+  --gradient-primary: linear-gradient(135deg, #6366f1, #818cf8);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
 }
 
 body {
@@ -37,12 +41,26 @@ body {
 
 /* 2. WELCOME SECTION */
 .welcome-card {
-  background-color: var(--primary);
+  background: var(--gradient-primary);
   color: #fff;
-  border-radius: 1rem;
-  padding: 2rem;
-  margin: 1rem 2rem;
-  box-shadow: 0 6px 14px rgba(111, 115, 255, 0.3);
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  margin: 1.5rem 2rem;
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(99, 102, 241, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(60px);
 }
 
 .welcome-content {
@@ -50,74 +68,117 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .welcome-text h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.8rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .welcome-text p {
   margin: 0;
-  color: #d1d5db;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 .welcome-gpa {
   text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .gpa-value {
-  font-size: 2.5rem;
-  font-weight: bold;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .gpa-label {
-  font-size: 0.9rem;
-  color: #d1d5db;
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 0.5rem;
+  font-weight: 600;
 }
 
 /* 3. TABS & TAB TRIGGERS */
 .tab-trigger {
-  background: var(--primary);
-  color: #fff;
-  border-radius: 8px;
-  font-weight: 500;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 0.75rem;
+  font-weight: 600;
   text-align: center;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   border: 1px solid transparent;
+  padding: 0.875rem 1.25rem;
+  position: relative;
+}
+
+.tab-trigger::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 3px 3px 0 0;
+  transition: transform 0.3s ease;
+}
+
+.tab-trigger:hover {
+  color: var(--foreground);
+  background: var(--card-bg);
 }
 
 .tab-trigger.active {
-  background: #fff;
+  background: var(--card-bg);
   color: var(--primary);
-  border-color: var(--primary);
-  box-shadow: var(--glow);
+  box-shadow: var(--shadow-md);
+  font-weight: 700;
+}
+
+.tab-trigger.active::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 /* 4. GENERAL CARD STYLES & OVERVIEW TAB */
 .card {
   background-color: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: var(--glow);
-  transition: all 0.25s ease;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
   height: auto;
-  margin-bottom: 1.5rem; 
-  border-color: var(--primary); 
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 /* Specific Overview Cards */
 .card.notifications-card,
 .card.courses-card {
- background-color: var(--card-bg);
-  border: 1px solid var(--primary);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: var(--glow);
-  transition: all 0.25s ease;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
   height: 100%;
-  max-height: 420px; 
+  max-height: 480px;
   overflow-y: auto;
   width: 100%;
   box-sizing: border-box;
@@ -128,22 +189,41 @@ body {
   margin-top: -20px;
 }
 
+.card.notifications-card:hover,
+.card.courses-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
 /* Card Structure */
 .card-header {
-  margin-bottom: 0.25rem !important;
-  padding-bottom: 0.25rem !important;
+  margin-bottom: 1rem !important;
+  padding-bottom: 0.75rem !important;
+  border-bottom: 2px solid var(--border);
 }
 
 .card-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-left: 5px;
-  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-left: 0;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-title::before {
+  content: '';
+  width: 4px;
+  height: 1.5rem;
+  background: var(--gradient-primary);
+  border-radius: 2px;
 }
 
 .card-content {
   margin-top: 0 !important;
-  padding-top: 0.25rem !important;
+  padding-top: 1rem !important;
 }
 
 .overview-grid {
@@ -163,12 +243,21 @@ body {
 /* Scrollbar Styles */
 .notifications-card::-webkit-scrollbar,
 .courses-card::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+}
+.notifications-card::-webkit-scrollbar-track,
+.courses-card::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 10px;
 }
 .notifications-card::-webkit-scrollbar-thumb,
 .courses-card::-webkit-scrollbar-thumb {
-  background-color: rgba(111, 115, 255, 0.3);
+  background: var(--primary);
   border-radius: 10px;
+}
+.notifications-card::-webkit-scrollbar-thumb:hover,
+.courses-card::-webkit-scrollbar-thumb:hover {
+  background: #4f46e5;
 }
 
 /* Course List Items */
@@ -179,79 +268,167 @@ body {
 
 .course-item,
 .task-item {
-  background-color: #f9fafb;
+  background-color: var(--background);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  margin: 0.25rem 0;
+  transition: all 0.3s ease;
+  margin: 0.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-item::before,
+.task-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gradient-primary);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
 }
 
 .course-item:hover,
 .task-item:hover {
   border-color: var(--primary);
-  box-shadow: 0 0 8px rgba(111, 115, 255, 0.25);
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+  background-color: var(--card-bg);
+}
+
+.course-item:hover::before,
+.task-item:hover::before {
+  transform: scaleY(1);
+}
+
+.course-details,
+.task-details {
+  flex: 1;
+}
+
+.course-code,
+.task-title {
+  font-weight: 700;
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  margin-bottom: 0.25rem;
+}
+
+.course-name,
+.task-due {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.course-units,
+.task-type {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 0.375rem 0.875rem;
+  border-radius: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Quick Actions */
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
 .action-card {
   background-color: var(--card-bg);
-  border-radius: 1rem;
-  padding: 1rem;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+  transition: all 0.3s ease;
   border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .action-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(111, 115, 255, 0.25);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--primary);
 }
 
+.action-card:hover::before {
+  transform: scaleX(1);
+}
+
 .action-card i {
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: var(--primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.action-card:hover i {
+  transform: scale(1.15) rotate(5deg);
 }
 
 .action-card h3 {
-  margin: 0.5rem 0 0.25rem 0;
+  margin: 0.75rem 0 0.375rem 0;
   font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
 }
 
 .action-card p {
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* 5. CURRICULUM TAB */
 /* Controls (Selects) */
 select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-  background-color: #f9f9f9;
-  margin-right: 10px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  font-size: 0.9375rem;
+  background-color: var(--card-bg);
+  margin-right: 12px;
   cursor: pointer;
+  font-weight: 500;
+  color: var(--foreground);
+  transition: all 0.3s ease;
+}
+
+select:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
 }
 
 select:focus {
   outline: none;
-  border-color: #007BFF;
-  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
 }
 
 .curriculum-card {
@@ -299,23 +476,28 @@ select:focus {
 }
 
 .filter-btn {
-  background-color: #f4f5f7;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.9rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  color: var(--text-muted);
 }
 
 .filter-btn:hover {
-  background-color: #e5e7eb;
+  background-color: var(--background);
+  border-color: var(--primary);
+  color: var(--foreground);
 }
 
 .filter-btn.active {
-  background-color: var(--primary);
+  background: var(--gradient-primary);
   color: white;
   border-color: var(--primary);
+  box-shadow: var(--shadow-md);
 }
 
 .curriculum-content {
@@ -327,37 +509,41 @@ select:focus {
 /* Curriculum Table Structure */
 .curriculum-table {
   background: var(--card-bg);
-  border-radius: 16px; 
-  padding: 20px; 
-  box-shadow: 0 4px 12px rgba(111, 115, 255, 0.1);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
   margin-top: 1.5rem;
   overflow-x: auto;
 }
 
 .curriculum-table h2 {
-  font-size: 1.4rem;
-  color: var(--primary);
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--foreground);
+  margin-bottom: 1.25rem;
   text-align: center;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .curriculum-table h3 {
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   color: var(--foreground);
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
   border-left: 4px solid var(--primary);
-  padding-left: 10px;
+  padding-left: 1rem;
+  font-weight: 700;
 }
 
 .curriculum-table table {
   border-collapse: collapse;
   width: 100%;
-  background: #fff;
-  border-radius: 10px;
-  margin-bottom: 1rem;
+  background: var(--card-bg);
+  border-radius: 0.875rem;
+  margin-bottom: 1.5rem;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .curriculum-table table:last-of-type {
@@ -365,28 +551,34 @@ select:focus {
 }
 
 .curriculum-table thead {
-  background-color: var(--primary);
+  background: var(--gradient-primary);
   color: #fff;
   text-align: left;
 }
 
 .curriculum-table th,
 .curriculum-table td {
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 1.25rem;
+  font-size: 0.9375rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.curriculum-table tbody tr {
+  transition: all 0.3s ease;
 }
 
 .curriculum-table tbody tr:hover {
-  background-color: #f2f3ff;
+  background-color: var(--background);
+  transform: scale(1.01);
 }
 
 .curriculum-table th {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .curriculum-table td {
-  color: #333;
+  color: var(--foreground);
+  font-weight: 500;
 }
 
 
@@ -409,35 +601,46 @@ select:focus {
 
 /* Calendar Container */
 .calendar-container {
-  box-shadow: 0 0 12px rgba(111, 115, 255, 0.2); 
-  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  border-radius: 1.25rem;
   width: 100%;
   max-width: 900px;
   margin: 10px auto;
-  padding: 20px;
-  background-color: #fff;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
 #month-title {
   text-align: center;
-  margin-bottom: 15px;
-  font-size: 1.6rem;
-  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  color: var(--foreground);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .calendar-nav {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: 1.5rem;
 }
 
 .calendar-nav button {
-  padding: 6px 12px;
-  background: var(--primary);
+  padding: 0.75rem 1.25rem;
+  background: var(--gradient-primary);
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 0.75rem;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.calendar-nav button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 #calendar-grid {
@@ -468,30 +671,39 @@ select:focus {
 
 .calendar-cell {
   flex: 1;
-  padding: 12px;
-  background: #fff;
-  border-radius: 6px;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 0.75rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  font-weight: 500;
-  border: var(--primary);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  min-height: 80px;
+}
+
+.calendar-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .calendar-cell.header {
-  background-color: var(--primary);
+  background: var(--gradient-primary);
   color: #fff;
   flex: 1;
   text-align: center;
-  border-radius: 6px 6px 0 0;
-  padding: 10px 0;
-  font-weight: bold;
+  border-radius: 0.75rem;
+  padding: 1rem 0;
+  font-weight: 700;
+  border: none;
 }
 
 .calendar-cell.today {
-  background-color: #e0e1ff; 
-  border: 2px solid var(--primary); 
-  box-shadow: var(--glow); 
-  color: #000;
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(129,140,248,0.15));
+  border: 2px solid var(--primary);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(99,102,241,0.2);
+  color: var(--foreground);
+  font-weight: 700;
 }
 
 .empty {
@@ -502,97 +714,106 @@ select:focus {
 /* Event Badges */
 .event-badge {
   display: block;
-  margin-top: 5px; 
+  margin-top: 0.5rem;
   font-size: 0.75rem;
-  border-left: 4px solid;
-  padding-left: 4px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-size: 0.7rem;
+  border-left: 3px solid;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.9);
+  text-align: left;
 }
 
 .event-badge:hover {
   transform: scale(1.05);
-  opacity: 0.9;
+  box-shadow: var(--shadow-md);
 }
 
-.event-holiday { border-color: #ff4d4d; color: #c00; }
-.event-exam { border-color: #3399ff; color: #036; }
-.event-ceremony { border-color: #ff9900; color: #b85c00; }
-.event-deadline { border-color: #66cc33; color: #3a7d00; }
+.event-holiday { border-color: #ef4444; color: #dc2626; background: rgba(239,68,68,0.1); }
+.event-exam { border-color: #3b82f6; color: #1d4ed8; background: rgba(59,130,246,0.1); }
+.event-ceremony { border-color: #f59e0b; color: #d97706; background: rgba(245,158,11,0.1); }
+.event-deadline { border-color: #10b981; color: #059669; background: rgba(16,185,129,0.1); }
 
 /* Event Modal */
 .modal {
   display: none;
   position: fixed;
-  z-index: 999; 
+  z-index: 999;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(20, 20, 40, 0.5);
-  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
   justify-content: center;
   align-items: center;
-  animation: fadeInModal 0.25s ease;
+  animation: fadeInModal 0.3s ease;
 }
 
 .modal-content {
   background: var(--card-bg);
-  color: var(--foreground); 
-  padding: 2rem;
-  border-radius: 1rem; 
-  width: 420px; 
-  box-shadow: 0 6px 18px rgba(111, 115, 255, 0.25); 
-  border: 1px solid rgba(111, 115, 255, 0.2); 
+  color: var(--foreground);
+  padding: 2.5rem;
+  border-radius: 1.25rem;
+  width: 480px;
+  max-width: 90%;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
   position: relative;
   animation: slideUpModal 0.3s ease;
 }
 
 .modal-content .close {
   position: absolute;
-  top: 1rem; 
-  right: 1.2rem;
-  font-size: 1.5rem;
-  color: var(--muted-foreground); 
+  top: 1.25rem;
+  right: 1.5rem;
+  font-size: 1.75rem;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
 }
 
 .modal-content .close:hover {
   color: var(--primary);
-  transform: scale(1.1);
+  background: var(--background);
+  transform: rotate(90deg);
 }
 
 .modal-content h3 {
-  margin-top: 0.5rem;
-  font-size: 1.25rem;
-  color: var(--primary);
-  border-bottom: 1px solid rgba(111, 115, 255, 0.25);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: var(--foreground);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
 .modal-content p {
-  font-size: 0.95rem;
-  margin: 0.75rem 0;
+  font-size: 1rem;
+  margin: 1rem 0;
   display: flex;
   justify-content: space-between;
-  background: var(--primary);
-  color: var(--background);
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 6px rgba(111, 115, 255, 0.15);
+  background: var(--background);
+  padding: 1rem 1.25rem;
+  border-radius: 0.875rem;
+  border: 1px solid var(--border);
 }
 
 .modal-content p strong {
-  color: var(--primary-foreground);
-  font-weight: 600;
+  color: var(--foreground);
+  font-weight: 700;
 }
 
 @keyframes fadeInModal {
@@ -601,7 +822,7 @@ select:focus {
 }
 
 @keyframes slideUpModal {
-  from { transform: translateY(15px); opacity: 0.8; }
+  from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -618,20 +839,23 @@ select:focus {
   margin-bottom: 2rem;
   background-color: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: var(--glow);
-  transition: all 0.25s ease;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
   height: auto;
-  border-color: var(--primary); 
+}
+
+.progress-overview:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .progress-card {
-  background: white;
+  background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: 1.25rem;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -640,38 +864,42 @@ select:focus {
 
 .progress-center {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary), #8b8cff);
+  background: var(--gradient-primary);
   border-radius: 50%;
   color: white;
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(99,102,241,0.3);
 }
 
 .progress-percentage {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 3rem;
+  font-weight: 800;
   line-height: 1;
 }
 
 .progress-label {
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
 }
 
 .progress-details h3 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   color: var(--foreground);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
+  font-weight: 700;
 }
 
 .progress-details p {
   color: var(--text-muted);
   margin: 0;
+  font-weight: 500;
 }
 
 .stats-grid {
@@ -683,30 +911,49 @@ select:focus {
 .stat-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   align-items: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gradient-primary);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card:hover::before {
+  transform: scaleY(1);
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--primary), #8b8cff);
-  border-radius: 12px;
+  width: 56px;
+  height: 56px;
+  background: var(--gradient-primary);
+  border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
+  box-shadow: var(--shadow-md);
 }
 
 .stat-content {
@@ -715,16 +962,17 @@ select:focus {
 }
 
 .stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 800;
   color: var(--foreground);
   line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
+  font-weight: 600;
 }
 
 /* 8. RESPONSIVE DESIGN (MEDIA QUERIES) */

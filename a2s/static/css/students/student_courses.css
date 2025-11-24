@@ -1,14 +1,22 @@
 :root {
-  --sched-primary: #6f73ff; /* purple */
-  --sched-light: #f8f6ff;
-  --text-dark: #333;
+  --sched-primary: #6366f1;
+  --sched-primary-dark: #4f46e5;
+  --sched-primary-light: #818cf8;
+  --sched-light: #f0f2f8;
+  --text-dark: #1a1d2e;
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --gradient-primary: linear-gradient(135deg, #6366f1, #818cf8);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* === Page Background === */
 .courses-container {
-  background-color: #fff;
+  background-color: transparent;
   min-height: 100vh;
-  padding: 2rem 4rem;
+  padding: 2rem 2.5rem;
 }
 
 .dashboard-main {
@@ -17,138 +25,203 @@
 
 /* === Header (Same as Schedule Header) === */
 .courses-header {
-  background-color: var(--sched-primary);
+  background: var(--gradient-primary);
   color: #fff;
-  border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  border-radius: 1.25rem;
+  padding: 2.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(99, 102, 241, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.courses-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(60px);
 }
 
 .courses-header h2 {
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
 }
 
 .courses-header p {
-  margin: 0.3rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 1rem;
-  opacity: 0.9;
+  opacity: 0.95;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
 }
 
 /* === Card Wrapper (Like Table Card) === */
 .courses-card {
-  background-color: #fff;
-  border: 2px solid var(--sched-primary);
-  border-radius: 1rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
   padding: 2rem;
-  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.courses-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 /* === Tabs === */
 .filter-buttons {
   display: flex;
-  gap: 10px;
-  margin-bottom: 1.5rem;
+  gap: 12px;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
 .tab-btn {
-  padding: 8px 18px;
-  border-radius: 25px;
-  border: 2px solid var(--sched-primary);
-  background: #fff;
-  color: var(--sched-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-dark);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.9375rem;
+  letter-spacing: 0.5px;
 }
 
 .tab-btn:hover {
-  background: var(--sched-primary);
-  color: #fff;
+  background: var(--sched-light);
+  border-color: var(--sched-primary);
+  color: var(--sched-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .tab-btn.active {
-  background: var(--sched-primary);
+  background: var(--gradient-primary);
   color: #fff;
+  border-color: var(--sched-primary);
+  box-shadow: var(--shadow-md);
 }
 
 /* === Course List === */
 .course-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .course-item {
-  background-color: var(--sched-light);
-  border-left: 6px solid var(--sched-primary);
-  border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
+  background-color: var(--card-bg);
+  border-left: 4px solid var(--sched-primary);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--sched-primary);
+  border-radius: 1rem;
+  padding: 1.5rem 1.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: var(--text-dark);
-  box-shadow: 0 2px 6px rgba(111, 66, 193, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-primary);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
 }
 
 .course-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
+  transform: translateX(8px);
+  box-shadow: var(--shadow-lg);
+  border-left-width: 6px;
+}
+
+.course-item:hover::before {
+  transform: scaleY(1);
 }
 
 /* Course Info */
 .course-info h4 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 700;
   color: var(--text-dark);
+  letter-spacing: -0.01em;
 }
 
 .course-info p {
-  margin: 3px 0 0;
-  font-size: 0.85rem;
-  color: #555;
+  margin: 0.375rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+  font-weight: 500;
 }
 
 /* === Progress === */
 .course-progress {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 180px;
+  gap: 12px;
+  width: 200px;
 }
 
 .progress-bar {
   flex: 1;
-  height: 10px;
-  background: #e0e0e0;
-  border-radius: 5px;
+  height: 12px;
+  background: var(--sched-light);
+  border-radius: 6px;
   overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--sched-primary);
-  border-radius: 5px;
+  background: var(--gradient-primary);
+  border-radius: 6px;
   transition: width 0.5s ease;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
 }
 
 .progress-fill.completed {
-  background: #28a745;
+  background: linear-gradient(135deg, #10b981, #059669);
 }
 
 .course-progress span {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--text-dark);
+  font-weight: 700;
+  min-width: 45px;
+  text-align: right;
 }
 
 /* === Empty Message === */
 .empty-msg {
   text-align: center;
-  color: #888;
-  padding: 2rem 0;
+  color: var(--text-dark);
+  opacity: 0.5;
+  padding: 3rem 0;
+  font-size: 1rem;
+  font-weight: 500;
 }

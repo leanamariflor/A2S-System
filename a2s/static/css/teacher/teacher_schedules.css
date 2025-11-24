@@ -1,7 +1,12 @@
 :root {
-  --sched-primary: #6f73ff; /* purple */
-  --sched-light: #f8f6ff;
-  --text-dark: #333;
+  --sched-primary: #6366f1;
+  --sched-light: #f0f2f8;
+  --text-dark: #1a1d2e;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --gradient-primary: linear-gradient(135deg, #6366f1, #818cf8);
+  --border: #e5e7eb;
 }
 
 .schedule-container {
@@ -17,12 +22,25 @@
 
 /* Header Card */
 .schedule-header {
-  background-color: var(--sched-primary);
+  background: var(--gradient-primary);
   color: #fff;
-  border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  border-radius: 1.25rem;
+  padding: 2rem 2.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.schedule-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  pointer-events: none;
 }
 
 .schedule-header h2 {
@@ -34,10 +52,16 @@
 /* Table Card */
 .schedule-card {
   background-color: #fff;
-  border: 2px solid var(--sched-primary);
-  border-radius: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
   padding: 2rem;
-  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.15);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.schedule-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--sched-primary);
 }
 
 .schedule-wrapper {
@@ -47,10 +71,12 @@
 .schedule-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 0.75rem;
+  overflow: hidden;
 }
 
 .schedule-table thead {
-  background-color: var(--sched-primary);
+  background: var(--gradient-primary);
   color: #fff;
 }
 
@@ -58,18 +84,37 @@
 .schedule-table td {
   text-align: center;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.schedule-table thead th {
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 .schedule-table tbody tr:nth-child(even) {
   background-color: var(--sched-light);
 }
 
+.schedule-table tbody tr:hover {
+  background: linear-gradient(to right, rgba(99,102,241,0.05), transparent);
+  transition: all 0.3s ease;
+}
+
 /* Subject Box inside cells */
 .subject-box {
-  background-color: var(--sched-primary);
+  background: var(--gradient-primary);
   color: #fff;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  font-size: 0.9rem;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.subject-box:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
 }
