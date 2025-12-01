@@ -96,21 +96,93 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
 
 /* Dashboard */
 .dashboard-container { display: flex; min-height: calc(100vh - 4rem); background-color: var(--background); }
-.dashboard-sidebar { width: 16rem; background-color: #e6e7ee; color: #121212; flex-shrink: 0; display: flex; flex-direction: column; padding: 1rem; position: sticky; top: 4rem; height: calc(100vh-4rem); overflow: hidden; }
-.teacher-avatar { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 24px; margin: 0 auto 10px; border: 2px solid #6b7280; }
-.teacher-avatar img.avatar-circle { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.teacher-details { text-align: center; margin-bottom: 2rem; }
-.teacher-info { display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 1rem; color: var(--foreground); gap: 0.5rem; }
-.teacher-program::after { content: " "; }
-.teacher-details h3 { font-size: 1rem; font-weight: 600; color: var(--foreground); margin-bottom: 0.25rem; }
-.teacher-details p { font-size: 0.875rem; color: var(--academic-text-muted); margin-bottom: 0.125rem; }
-.teacher-details .student-program, .student-details .student-year { color: var(--academic-text-secondary); }
+.dashboard-sidebar {
+  width: 16rem;
+  background-color: #e6e7ee;
+  color: #121212;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  position: sticky;
+  top: 4rem;
+  height: calc(100vh - 4rem);
+  overflow: hidden;
+  border-right: 1px solid rgba(0,0,0,0.06);
+  
+}
+
+.dashboard-sidebar .sidebar-scroll { overflow-y: auto; padding-right: 0.5rem; }
+
+.teacher-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--academic-red) 0%, var(--academic-red-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--academic-text-primary);
+  font-weight: 700;
+  font-size: 28px;
+  margin: 0 auto 10px;
+  border: 3px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 18px rgba(6,8,23,0.5);
+}
+
+.teacher-avatar img.avatar-circle { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+
+.teacher-details { text-align: center; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.teacher-info { display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 0.95rem; color: var(--foreground); gap: 0.5rem; }
+.teacher-program::after { content: " - "; }
+.teacher-details h3 { font-size: 1.05rem; font-weight: 700; color: var(--foreground); margin-bottom: 0.25rem; }
+.teacher-details p { font-size: 0.85rem; color: rgba(0,0,0,0.75); margin-bottom: 0.125rem; }
+.teacher-details .teacher-program, .teacher-details .teacher-year { color: var(--academic-text-secondary); }
 
 /* Navigation */
-.sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; }
-.nav-button { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #6f73ff; border: 1px solid #5d61e8; border-radius: 9999px; color: #121212; font-size: 0.875rem; font-weight: 500; text-decoration: none; cursor: pointer; width: 100%; text-align: left; }
-.nav-button::before { content: ""; width: 0.8rem; height: 0.8rem; border-radius: 50%; background: #d1d4ff; }
-.nav-button:hover, .nav-button.active { background-color: #8a8eff; border-color: #6f73ff; color: #121212; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.75rem 0 1rem; }
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.95);
+  cursor: pointer;
+  border-radius: 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.06s ease;
+}
+.nav-button::before {
+  content: "";
+  position: absolute;
+  left: 0.35rem;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 4px;
+  border-radius: 4px;
+  background: transparent;
+  transition: background-color 0.14s ease, box-shadow 0.14s ease;
+}
+.nav-button .label { margin-left: 0.4rem; display: inline-block; }
+.nav-button span { flex: 1; }
+.nav-button:hover { background: rgba(0,0,0,0.03); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+.nav-button { background-clip: padding-box; transition: background-color 0.14s ease, color 0.14s ease, transform 0.12s ease, box-shadow 0.18s ease; }
+.nav-button:focus { outline: 2px solid rgba(111,115,255,0.18); outline-offset: 2px; }
+.nav-button.active {
+  background: rgba(0,0,0,0.04);
+  color: var(--foreground);
+}
+.nav-button.active::before { background: var(--primary); box-shadow: 0 6px 16px rgba(111,115,255,0.14); }
+.nav-button:hover::before { background: rgba(111,115,255,0.12); }
+.nav-button i { color: rgba(0,0,0,0.7); min-width: 1.2rem; }
+.nav-button.active i { color: var(--primary); }
 
 /* Main Content */
 .dashboard-main { flex: 1; padding: 1rem 2rem; height: calc(100vh - 4rem); overflow-y: auto; }

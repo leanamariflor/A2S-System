@@ -133,3 +133,65 @@ document.addEventListener("DOMContentLoaded", () => {
     updateBadge();
   }
 });
+
+// Show sidebar scrollbar only when scrolling or hovering
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebarScroll = document.querySelector('.sidebar-scroll');
+  if (!sidebarScroll) return;
+  let scrollTimer = null;
+
+  function handleScroll() {
+    sidebarScroll.classList.add('scrolling');
+    if (scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => sidebarScroll.classList.remove('scrolling'), 700);
+  }
+
+  sidebarScroll.addEventListener('scroll', handleScroll, { passive: true });
+  sidebarScroll.addEventListener('mouseenter', () => sidebarScroll.classList.add('scrolling'));
+  sidebarScroll.addEventListener('mouseleave', () => sidebarScroll.classList.remove('scrolling'));
+});
+
+// Show notifications scrollbar only when scrolling or hovering
+document.addEventListener('DOMContentLoaded', () => {
+  const notifListEl = document.getElementById('notif-list');
+  if (!notifListEl) return;
+  let nTimer = null;
+  function handleNotifScroll() {
+    notifListEl.classList.add('scrolling');
+    if (nTimer) clearTimeout(nTimer);
+    nTimer = setTimeout(() => notifListEl.classList.remove('scrolling'), 600);
+  }
+  notifListEl.addEventListener('scroll', handleNotifScroll, { passive: true });
+  notifListEl.addEventListener('mouseenter', () => notifListEl.classList.add('scrolling'));
+  notifListEl.addEventListener('mouseleave', () => notifListEl.classList.remove('scrolling'));
+});
+
+// Recent Notifications card: reveal scrollbar on hover/scroll
+document.addEventListener('DOMContentLoaded', () => {
+  const recentContainer = document.getElementById('recentNotificationsContainer');
+  if (!recentContainer) return;
+  let rTimer = null;
+  function handleRecentScroll() {
+    recentContainer.classList.add('scrolling');
+    if (rTimer) clearTimeout(rTimer);
+    rTimer = setTimeout(() => recentContainer.classList.remove('scrolling'), 600);
+  }
+  recentContainer.addEventListener('scroll', handleRecentScroll, { passive: true });
+  recentContainer.addEventListener('mouseenter', () => recentContainer.classList.add('scrolling'));
+  recentContainer.addEventListener('mouseleave', () => recentContainer.classList.remove('scrolling'));
+});
+
+// Current Courses card: reveal scrollbar on hover/scroll
+document.addEventListener('DOMContentLoaded', () => {
+  const coursesContent = document.querySelector('.courses-card .card-content');
+  if (!coursesContent) return;
+  let cTimer = null;
+  function handleCoursesScroll() {
+    coursesContent.classList.add('scrolling');
+    if (cTimer) clearTimeout(cTimer);
+    cTimer = setTimeout(() => coursesContent.classList.remove('scrolling'), 600);
+  }
+  coursesContent.addEventListener('scroll', handleCoursesScroll, { passive: true });
+  coursesContent.addEventListener('mouseenter', () => coursesContent.classList.add('scrolling'));
+  coursesContent.addEventListener('mouseleave', () => coursesContent.classList.remove('scrolling'));
+});

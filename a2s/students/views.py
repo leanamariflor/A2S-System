@@ -67,7 +67,6 @@ def student_dashboard(request):
     gpa_total_points = 0
     gpa_total_units = 0
 
-    print(f"Calculating GPA for student: {student_user.get_full_name()}")
 
     for grade in grades:
        
@@ -85,7 +84,7 @@ def student_dashboard(request):
         gpa_total_units += units
 
     current_gpa = round(gpa_total_points / gpa_total_units, 2) if gpa_total_units > 0 else 0.0
-    print(f"Calculated GPA: {current_gpa}")
+    
 
     try:
         if student_program != "Undeclared":

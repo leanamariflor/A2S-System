@@ -50,8 +50,9 @@
   <div class="dashboard-container">
     <!-- Sidebar -->
     <aside class="dashboard-sidebar">
-      <!-- Teacher Info -->
-  <div class="sidebar-teacher-info">
+      <div class="sidebar-scroll">
+        <!-- Teacher Info -->
+    <div class="sidebar-teacher-info">
     <div class="teacher-avatar">
   {% if request.user.teacherprofile.profile_picture %}
     <img 
@@ -108,13 +109,11 @@
           <i data-lucide="book"></i>
           <span>Courses</span>
         </a>
-        <button class="nav-button">
-          <i data-lucide="bar-chart-3"></i>
-          <span>Reports</span>
-        </button>
+       
         
         </a>
       </nav>
+    </div>
     </aside>
 
     <main class="dashboard-main">

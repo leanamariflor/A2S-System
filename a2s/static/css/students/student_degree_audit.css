@@ -2,9 +2,9 @@
 
 :root {
   /* --- Primary Colors (A2S Dashboard Theme) --- */
-  --primary-color: #4f46e5;          /* Deep indigo for main actions */
+  --primary-color: #6366f1;          /* Modern indigo for main actions */
   --primary-light: #818cf8;          /* Lighter indigo accent */
-  --primary-dark: #3730a3;           /* Darker indigo for hover states */
+  --primary-dark: #4f46e5;           /* Darker indigo for hover states */
   
   /* --- Secondary & Accent --- */
   --secondary-color: #6366f1;        /* Consistent with dashboard accent */
@@ -32,20 +32,39 @@
   /* --- Layout --- */
   --border-radius: 12px;
   --border-radius-lg: 16px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, #6366f1, #818cf8);
+}
+
+.dashboard-main {
+  background-color: #ffffff !important;
 }
 
 /* Page Header */
 .degree-audit-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  background: var(--gradient-primary);
   color: white;
-  padding: 2rem 2.5rem;
-  border-radius: var(--border-radius-lg);
+  padding: 2.5rem;
+  border-radius: 1.25rem;
   margin-bottom: 2rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(99, 102, 241, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.degree-audit-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(60px);
 }
 
 .header-content {
@@ -53,6 +72,8 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .degree-audit-header h1 {
@@ -78,21 +99,25 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   color: white;
+  backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary {
@@ -102,7 +127,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .header-meta {
@@ -134,9 +159,10 @@
 }
 
 .gpa-highlight {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  background: var(--gradient-primary);
   color: white;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(99, 102, 241, 0.2);
+  border-radius: var(--border-radius);
 }
 
 .gpa-highlight .stat-icon {
@@ -157,11 +183,18 @@
   background: white;
   border-radius: var(--border-radius-lg);
   padding: 2rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid var(--gray-200);
+}
+
+.progress-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .progress-visual {
@@ -237,28 +270,31 @@
   background: white;
   border-radius: var(--border-radius);
   padding: 1.5rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   display: flex;
   gap: 1rem;
   align-items: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  border: 1px solid var(--gray-200);
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
 }
 
 .stat-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+  background: var(--gradient-primary);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-content {
@@ -284,8 +320,14 @@
   background: white;
   border-radius: var(--border-radius-lg);
   padding: 2rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s ease;
+}
+
+.requirements-section:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .section-header {
@@ -348,9 +390,9 @@
   border: none;
   border-bottom: 3px solid transparent;
   color: var(--gray-600);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   margin-bottom: -2px;
 }
 
@@ -399,16 +441,34 @@
   border: 2px solid var(--gray-200);
   border-radius: var(--border-radius);
   padding: 1.5rem;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   height: 220px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .course-card:hover {
   border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.course-card:hover::before {
+  transform: scaleX(1);
 }
 
 .course-card.completed {
@@ -509,7 +569,14 @@
   background: white;
   border-radius: var(--border-radius-lg);
   padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s ease;
+}
+
+.calculator-card:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .calculator-header {
@@ -575,22 +642,23 @@
 
 .btn-calculate {
   padding: 0.75rem 1.5rem;
-  background: var(--primary-color);
+  background: var(--gradient-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-calculate:hover {
-  background: var(--primary-dark);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
 }
 
 .calculator-result {
@@ -656,8 +724,14 @@
   background: white;
   border-radius: var(--border-radius-lg);
   padding: 2rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s ease;
+}
+
+.achievements-section:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .achievements-grid {
@@ -672,31 +746,51 @@
   border-radius: var(--border-radius);
   padding: 1.5rem;
   text-align: center;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .achievement-card:hover {
   border-color: var(--primary-color);
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.achievement-card:hover::before {
+  transform: scaleX(1);
 }
 
 .achievement-icon {
   width: 64px;
   height: 64px;
   margin: 0 auto 1rem;
-  background: linear-gradient(135deg, var(--warning-color), #f97316);
+  background: var(--gradient-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  box-shadow: var(--shadow-md);
 }
 
 .achievement-card h4 {
   font-size: 1rem;
   color: var(--gray-800);
   margin: 0 0 0.5rem 0;
+  font-weight: 700;
 }
 
 .achievement-card p {
@@ -704,6 +798,7 @@
   color: var(--gray-600);
   margin: 0;
   line-height: 1.5;
+  font-weight: 500;
 }
 
 /* Recommendations Section */
@@ -711,6 +806,12 @@
   background: white;
   border-radius: var(--border-radius-lg);
   padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s ease;
+}
+
+.recommendations-section:hover {
   box-shadow: var(--shadow-md);
 }
 
@@ -725,14 +826,14 @@
   border: 2px solid var(--gray-200);
   border-radius: var(--border-radius);
   padding: 1.5rem;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   position: relative;
 }
 
 .recommendation-card:hover {
   border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
 }
 
 .recommendation-card.added-to-plan {
@@ -779,32 +880,34 @@
 
 .btn-add-to-plan {
   width: 100%;
-  padding: 0.625rem;
-  background: var(--primary-color);
+  padding: 0.75rem;
+  background: var(--gradient-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-add-to-plan:hover {
-  background: var(--primary-dark);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-add-to-plan.added {
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   border-color: #22c55e;
 }
 
 .btn-add-to-plan.added:hover {
-  background: #16a34a;
+  background: linear-gradient(135deg, #16a34a, #15803d);
   transform: translateY(-2px);
 }
 

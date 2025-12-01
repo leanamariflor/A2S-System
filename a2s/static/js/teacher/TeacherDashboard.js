@@ -186,4 +186,35 @@ document.addEventListener("DOMContentLoaded", () => {
   window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
 
  
+  // =================== Scrollbar show/hide for cards ===================
+  // Recent Notifications
+  (function() {
+    const recent = document.getElementById('recentNotificationsContainer');
+    if (!recent) return;
+    let t = null;
+    function onScroll() {
+      recent.classList.add('scrolling');
+      if (t) clearTimeout(t);
+      t = setTimeout(() => recent.classList.remove('scrolling'), 600);
+    }
+    recent.addEventListener('scroll', onScroll, { passive: true });
+    recent.addEventListener('mouseenter', () => recent.classList.add('scrolling'));
+    recent.addEventListener('mouseleave', () => recent.classList.remove('scrolling'));
+  })();
+
+  // Current Courses
+  (function() {
+    const coursesContent = document.querySelector('.courses-card .card-content');
+    if (!coursesContent) return;
+    let ct = null;
+    function onCoursesScroll() {
+      coursesContent.classList.add('scrolling');
+      if (ct) clearTimeout(ct);
+      ct = setTimeout(() => coursesContent.classList.remove('scrolling'), 600);
+    }
+    coursesContent.addEventListener('scroll', onCoursesScroll, { passive: true });
+    coursesContent.addEventListener('mouseenter', () => coursesContent.classList.add('scrolling'));
+    coursesContent.addEventListener('mouseleave', () => coursesContent.classList.remove('scrolling'));
+  })();
+
 });
