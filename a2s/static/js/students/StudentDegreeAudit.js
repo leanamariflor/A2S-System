@@ -1,8 +1,3 @@
-// ========================================
-// Degree Audit JavaScript
-// ========================================
-
-console.log('🎓 Degree Audit JavaScript loaded! Version 8');
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔥 DOMContentLoaded event fired!');
@@ -228,46 +223,39 @@ function addToPlan(courseCode, courseTitle, courseUnits, button) {
         });
     }
     
-    // Save to localStorage
+   
     localStorage.setItem('studentCoursePlan', JSON.stringify(plans));
     localStorage.setItem('studentCoursePlanDetails', JSON.stringify(planDetails));
     
-    // Update button appearance
+    
     markAsAdded(button);
     
-    // Add animation to parent card
     const card = button.closest('.recommendation-card');
     if (card) {
         card.classList.add('added-to-plan');
     }
     
-    // Update plan count
     updatePlanCount();
 }
 
 function removeFromPlan(courseCode, button) {
-    // Get existing plans
+
     let plans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
     let planDetails = JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
     
-    // Remove course
     plans = plans.filter(code => code !== courseCode);
     planDetails = planDetails.filter(course => course.code !== courseCode);
     
-    // Save to localStorage
     localStorage.setItem('studentCoursePlan', JSON.stringify(plans));
     localStorage.setItem('studentCoursePlanDetails', JSON.stringify(planDetails));
     
-    // Update button appearance
     markAsRemoved(button);
     
-    // Remove added class from parent card
     const card = button.closest('.recommendation-card');
     if (card) {
         card.classList.remove('added-to-plan');
     }
     
-    // Update plan count
     updatePlanCount();
 }
 
@@ -290,7 +278,6 @@ function markAsAdded(button) {
         textSpan.textContent = 'Added to Plan';
     }
     
-    // Add to parent card
     const card = button.closest('.recommendation-card');
     if (card) {
         card.classList.add('added-to-plan');
@@ -318,13 +305,12 @@ function markAsRemoved(button) {
 }
 
 function showNotification(message, type = 'success') {
-    // Remove any existing notifications
+
     const existingNotification = document.querySelector('.course-notification');
     if (existingNotification) {
         existingNotification.remove();
     }
     
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `course-notification ${type}`;
     notification.innerHTML = `
@@ -332,20 +318,16 @@ function showNotification(message, type = 'success') {
         <span>${message}</span>
     `;
     
-    // Add to page
     document.body.appendChild(notification);
     
-    // Initialize icon
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
     
-    // Show notification
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
     
-    // Remove notification after 3 seconds
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {
@@ -354,7 +336,6 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// Function to get all planned courses (can be used elsewhere)
 function getPlannedCourses() {
     return JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
 }
@@ -373,18 +354,16 @@ function toggleCoursePlan() {
     console.log('Toggle modal called. Current display:', modal.style.display);
     
     if (modal.style.display === 'none' || modal.style.display === '') {
-        // Show modal
+
         modal.style.display = 'flex';
         renderCoursePlan();
         document.body.style.overflow = 'hidden';
         console.log('✓ Modal opened');
         
-        // Reinitialize icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
     } else {
-        // Hide modal
         modal.style.display = 'none';
         document.body.style.overflow = '';
         console.log('✓ Modal closed');
@@ -444,20 +423,17 @@ function renderCoursePlan() {
     
     console.log('✓ Course plan rendered');
     
-    // Reinitialize icons
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 }
 
 window.removeFromPlanModal = function(courseCode) {
-    // Find the button in the recommendations section
     const button = document.querySelector(`.btn-add-to-plan[data-course-code="${courseCode}"]`);
     
     if (button) {
         removeFromPlan(courseCode, button);
     } else {
-        // If button not found, still remove from storage
         let plans = JSON.parse(localStorage.getItem('studentCoursePlan') || '[]');
         let planDetails = JSON.parse(localStorage.getItem('studentCoursePlanDetails') || '[]');
         
@@ -468,7 +444,6 @@ window.removeFromPlanModal = function(courseCode) {
         localStorage.setItem('studentCoursePlanDetails', JSON.stringify(planDetails));
     }
     
-    // Re-render the plan
     renderCoursePlan();
     updatePlanCount();
     showNotification(`${courseCode} removed from your plan`, 'info');
@@ -477,17 +452,17 @@ window.removeFromPlanModal = function(courseCode) {
 function clearAllPlan() {
     console.log('Clear all plan called');
     if (confirm('Are you sure you want to clear all courses from your plan?')) {
-        // Clear localStorage
+        
         localStorage.setItem('studentCoursePlan', '[]');
         localStorage.setItem('studentCoursePlanDetails', '[]');
         
-        // Reset all buttons
+        
         const buttons = document.querySelectorAll('.btn-add-to-plan.added');
         buttons.forEach(button => {
             markAsRemoved(button);
         });
         
-        // Re-render
+        
         renderCoursePlan();
         updatePlanCount();
         showNotification('All courses cleared from your plan', 'info');
@@ -530,11 +505,11 @@ function initializeCalculator() {
             return;
         }
 
-        // Get course units from the selected option
+       
         const selectedOption = courseSelect.options[courseSelect.selectedIndex];
         const courseUnits = parseInt(selectedOption.getAttribute('data-units')) || 3;
 
-        // Calculate predicted GPA
+     
         const result = calculatePredictedGPA(
             currentGPA,
             completedUnits,
@@ -542,40 +517,28 @@ function initializeCalculator() {
             courseUnits
         );
 
-        // Display result
+        
         displayCalculatorResult(result, resultDiv, predictedGpaSpan, gpaChangeSpan);
     });
 }
 
 /**
- * Calculate predicted GPA using weighted average
- * 
- * Philippine Grading Scale:
- * - 5.00 = Excellent (Highest)
- * - 3.00 = Passing
- * - 2.9 and below = Failing
- * - 1.00 = Lowest (Failing)
- * 
- * @param {number} currentGPA - Current GPA
- * @param {number} currentUnits - Total units completed
- * @param {number} expectedGrade - Expected grade for the new course (1.00 - 5.00 scale)
- * @param {number} courseUnits - Units for the new course
- * @returns {object} - Object containing predictedGPA and change
+ * @param {number} currentGPA 
+ * @param {number} currentUnits 
+ * @param {number} expectedGrade
+ * @param {number} courseUnits
+ * @returns {object} 
  */
 function calculatePredictedGPA(currentGPA, currentUnits, expectedGrade, courseUnits) {
-    // Calculate total grade points earned so far
+
     const currentGradePoints = currentGPA * currentUnits;
 
-    // Calculate grade points for the new course
     const newGradePoints = expectedGrade * courseUnits;
 
-    // Calculate new total units
     const newTotalUnits = currentUnits + courseUnits;
 
-    // Calculate predicted GPA
     const predictedGPA = (currentGradePoints + newGradePoints) / newTotalUnits;
 
-    // Calculate change in GPA
     const gpaChange = predictedGPA - currentGPA;
 
     return {
@@ -586,14 +549,11 @@ function calculatePredictedGPA(currentGPA, currentUnits, expectedGrade, courseUn
     };
 }
 
-/**
- * Display calculator result with animation
- */
+
 function displayCalculatorResult(result, resultDiv, predictedGpaSpan, gpaChangeSpan) {
-    // Update predicted GPA
+
     predictedGpaSpan.textContent = result.predictedGPA.toFixed(2);
 
-    // Format change message
     let changeMessage = '';
     let changeClass = '';
 
@@ -611,10 +571,8 @@ function displayCalculatorResult(result, resultDiv, predictedGpaSpan, gpaChangeS
     gpaChangeSpan.textContent = changeMessage;
     gpaChangeSpan.className = `result-change ${changeClass}`;
 
-    // Show result with animation
     resultDiv.style.display = 'block';
 
-    // Scroll to result smoothly
     setTimeout(() => {
         resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
@@ -624,12 +582,10 @@ function displayCalculatorResult(result, resultDiv, predictedGpaSpan, gpaChangeS
 // Course Card Interactions
 // ========================================
 
-// Add click handlers to course cards for potential future functionality
 document.addEventListener('click', (e) => {
     const courseCard = e.target.closest('.course-card');
     if (courseCard) {
-        // Future: Show course details modal or expand card
-        // For now, just add visual feedback
+        
         courseCard.style.transform = 'scale(0.98)';
         setTimeout(() => {
             courseCard.style.transform = '';
@@ -662,16 +618,12 @@ achievementCards.forEach(card => {
 // Utility Functions
 // ========================================
 
-/**
- * Format GPA to 2 decimal places
- */
+
 function formatGPA(gpa) {
     return parseFloat(gpa).toFixed(2);
 }
 
-/**
- * Get status badge color based on course status
- */
+
 function getStatusColor(status) {
     const colors = {
         'PASSED': '#10b981',
@@ -681,9 +633,7 @@ function getStatusColor(status) {
     return colors[status.toUpperCase()] || '#64748b';
 }
 
-/**
- * Count courses by status
- */
+
 function countCoursesByStatus(courses, status) {
     return courses.filter(course => 
         course.status.toUpperCase() === status.toUpperCase()

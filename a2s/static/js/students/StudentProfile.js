@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     editButton?.addEventListener('click', () => toggleEditMode(true));
     cancelButton?.addEventListener('click', () => {
-        // Reset inputs to original values
+        
         document.querySelectorAll('.editable-field input, .editable-field textarea').forEach(input => {
             const displayEl = document.querySelector(`.field-value[data-field="${input.name}"]`);
             if (displayEl) input.value = displayEl.textContent;
@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleEditMode(false);
     });
 
-    // ---------------- Update display instantly ----------------
     function updateDisplayField(fieldName, value) {
         const displayEl = document.querySelector(`.field-value[data-field="${fieldName}"]`);
         if (displayEl) displayEl.textContent = value;
@@ -136,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ---------------- Ensure default avatar ----------------
    function ensureProfilePictureExists() {
     const profilePicDiv = document.getElementById('profile-picture');
     const currentImg = profilePicDiv.querySelector('img');

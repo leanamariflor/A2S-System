@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     editButton?.addEventListener('click', () => toggleEditMode(true));
     cancelButton?.addEventListener('click', () => {
-        // Reset inputs
         document.querySelectorAll('.editable-field input, .editable-field textarea').forEach(input => {
             const displayEl = document.querySelector(`.field-value[data-field="${input.name}"]`);
             if (displayEl) input.value = displayEl.textContent;
@@ -49,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleEditMode(false);
     });
 
-    // ---------------- Update display instantly ----------------
     function updateDisplayField(fieldName, value) {
         const displayEl = document.querySelector(`.field-value[data-field="${fieldName}"]`);
         if (displayEl) displayEl.textContent = value;
@@ -111,12 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = profileInput.files[0];
         if (!file) return;
 
-        // Preview locally
         const reader = new FileReader();
         reader.onload = e => updateProfileImage(e.target.result);
         reader.readAsDataURL(file);
 
-        // Upload to server
         const uploadData = new FormData();
         uploadData.append('file', file);
 

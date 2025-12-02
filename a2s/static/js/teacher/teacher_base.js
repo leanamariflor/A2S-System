@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
 
-  // ===== Default Profile Handling =====
   const defaultProfileUrl =
     "https://qimrryerxdzfewbkoqyq.supabase.co/storage/v1/object/public/ProfilePicture/avatar.png";
 
@@ -52,18 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    // Load read notifications from localStorage
     let readEvents = JSON.parse(localStorage.getItem("readNotifications") || "[]");
 
-    // ===== Store calendar data in localStorage =====
     if (typeof calendarJSON !== "undefined" && Array.isArray(calendarJSON)) {
       localStorage.setItem("teacherCalendarData", JSON.stringify(calendarJSON));
     }
 
-    // Always load events from localStorage (persistent)
     const storedCalendar = JSON.parse(localStorage.getItem("teacherCalendarData") || "[]");
 
-    // Flatten all events
     const allEvents = [];
     if (Array.isArray(storedCalendar)) {
       storedCalendar.forEach(sem => {
@@ -81,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Filter this week's unread events
     let weekEvents = allEvents.filter(
       ev =>
         ev.date >= startOfWeek &&
@@ -89,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
         !readEvents.includes(ev.id)
     );
 
-    // ===== Badge update =====
     function updateBadge() {
       if (notifCount) {
         if (weekEvents.length > 0) {
@@ -101,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ===== Render notification list =====
     function renderNotifications() {
       notifList.innerHTML =
         weekEvents.length > 0
@@ -132,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // ===== Mark all as read =====
     clearNotifBtn.addEventListener("click", () => {
       weekEvents.forEach(ev => readEvents.push(ev.id));
       localStorage.setItem("readNotifications", JSON.stringify(readEvents));
@@ -141,21 +132,19 @@ document.addEventListener("DOMContentLoaded", () => {
       updateBadge();
     });
 
-    // ===== Toggle dropdown =====
     notifBtn.addEventListener("click", e => {
       e.stopPropagation();
       notifDropdown.style.display =
         notifDropdown.style.display === "block" ? "none" : "block";
     });
 
-    // ===== Close dropdown on click outside =====
     document.addEventListener("click", e => {
       if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
         notifDropdown.style.display = "none";
       }
     });
 
-    // ===== Initial Render =====
+    
     renderNotifications();
     updateBadge();
   }

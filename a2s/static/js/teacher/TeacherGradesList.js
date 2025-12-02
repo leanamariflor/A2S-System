@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let students = [];
 
-  // ===== Fetch students + grades =====
   async function fetchGrades() {
     try {
       const response = await fetch(`/teacher/api/teacher/class_grades/${COURSE_CODE}/${SECTION}/`);
@@ -21,7 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   fetchGrades();
 
-  // ===== Render table =====
   function renderStudents(list) {
     tbody.innerHTML = "";
     if (list.length > 0) {
@@ -41,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ===== Download CSV Template =====
   downloadBtn.addEventListener("click", () => {
     if (!students || students.length === 0) return alert("No students loaded yet.");
     let csvContent = "id_number,midterm,final\n";
@@ -58,7 +55,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.body.removeChild(link);
   });
 
-  // ===== Upload CSV/XLSX =====
   uploadBtn.addEventListener("click", () => {
     const file = fileUpload.files[0];
     if (!file) return alert("Please select a file to upload.");
@@ -73,12 +69,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             midterm: g["midterm"] || null,
             final: g["final"] || null
           }))
-          .filter(g => g.id_number); // remove empty rows
+          .filter(g => g.id_number); 
 
         if (!uploadedGrades.length) return alert("No valid student rows found in file.");
 
         await saveGradesToBackend(uploadedGrades);
-        await fetchGrades(); // refresh table
+        await fetchGrades(); 
       },
       error: (err) => {
         console.error("Error parsing file:", err);
@@ -87,7 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // ===== Save grades to backend =====
   async function saveGradesToBackend(grades) {
     try {
       const response = await fetch(`/teacher/api/teacher/upload_grades/?course_code=${COURSE_CODE}&section=${SECTION}`, {
@@ -111,7 +106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ===== CSRF helper =====
   function getCSRFToken() {
     const name = "csrftoken";
     const cookies = document.cookie.split(";");

@@ -54,11 +54,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
 
 /* Header */
 .header { background-color: var(--header-bg); border-bottom: 1px solid var(--border); }
-.header-content { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; }
-.header-left { display: flex; align-items: center; gap: 1rem; }
-.header-icon { width: 2.5rem; height: 2.5rem; background: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-glow); }
+.header-content { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; gap: 1rem; flex-wrap: wrap; }
+.header-left { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+.header-icon { width: 2.5rem; height: 2.5rem; background: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-glow); flex: 0 0 auto; }
 .header-icon i { width: 1.5rem; height: 1.5rem; color: white; }
-.header-text h1 { font-size: 1.25rem; font-weight: bold; color: #ffffff; }
+.header-text { overflow: hidden; min-width: 0; }
+.header-text h1 { font-size: 1.25rem; font-weight: bold; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .header-text p { font-size: 0.875rem; color: #a9b1d6; }
 
 .edit-button { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--accent); border: none; color: white; cursor: pointer; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; box-shadow: var(--shadow-academic); }
@@ -204,6 +205,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial
     .dashboard-container { flex-direction: column; }
     .dashboard-sidebar { width: 100%; padding: 1rem; }
     .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Smaller screens: compact header actions and icon sizes */
+@media (max-width: 520px) {
+  .header-content { align-items: center; }
+  .header-left { flex-direction: row; gap: 0.5rem; }
+  .header-text h1 { font-size: 1rem; }
+  .header-text p { display: none; }
+  .header-icon { width: 2rem; height: 2rem; }
+  .header-icon i { width: 1rem; height: 1rem; }
+  .notif-btn, .logout-button { width: 2rem; height: 2rem; }
+  .notif-btn i, .logout-button i { width: 1rem; height: 1rem; }
+}
+
+@media (max-width: 380px) {
+  .header-content { justify-content: space-between; }
+  .header-actions { margin-left: auto; }
 }
 
 

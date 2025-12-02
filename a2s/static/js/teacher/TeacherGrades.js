@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const courseTable = document.getElementById('courseTable');
   const rows = courseTable.querySelectorAll('.course-row');
 
-  // When "View Section" is clicked
   viewSectionBtn.addEventListener('click', () => {
     const selectedValue = sectionSelect.value;
     if (!selectedValue) {
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const courseCode = row.querySelector('td:nth-child(1)').innerText.trim();
       const section = row.querySelector('td:nth-child(2)').innerText.trim();
 
-      // Show only the matching course/section
       if (courseCode === selectedCourse && section === selectedSection) {
         row.style.display = '';
       } else {
@@ -29,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // When "Show All" is clicked
   showAllBtn.addEventListener('click', () => {
     rows.forEach(row => {
       row.style.display = '';

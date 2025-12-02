@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let readEvents = JSON.parse(localStorage.getItem("readNotifications_" + USER_ID) || "[]");
 
-    // Store calendar data if exists
+    
     if (typeof calendarJSON !== "undefined" && Array.isArray(calendarJSON)) {
       localStorage.setItem("studentCalendarData_" + USER_ID, JSON.stringify(calendarJSON));
     }
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Show sidebar scrollbar only when scrolling or hovering
+
 document.addEventListener('DOMContentLoaded', () => {
   const sidebarScroll = document.querySelector('.sidebar-scroll');
   if (!sidebarScroll) return;
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   sidebarScroll.addEventListener('mouseleave', () => sidebarScroll.classList.remove('scrolling'));
 });
 
-// Show notifications scrollbar only when scrolling or hovering
+
 document.addEventListener('DOMContentLoaded', () => {
   const notifListEl = document.getElementById('notif-list');
   if (!notifListEl) return;
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
   notifListEl.addEventListener('mouseleave', () => notifListEl.classList.remove('scrolling'));
 });
 
-// Recent Notifications card: reveal scrollbar on hover/scroll
+
 document.addEventListener('DOMContentLoaded', () => {
   const recentContainer = document.getElementById('recentNotificationsContainer');
   if (!recentContainer) return;
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
   recentContainer.addEventListener('mouseleave', () => recentContainer.classList.remove('scrolling'));
 });
 
-// Current Courses card: reveal scrollbar on hover/scroll
+
 document.addEventListener('DOMContentLoaded', () => {
   const coursesContent = document.querySelector('.courses-card .card-content');
   if (!coursesContent) return;

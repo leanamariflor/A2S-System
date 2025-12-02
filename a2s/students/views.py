@@ -218,7 +218,7 @@ def student_profile(request):
         "expected_graduation": profile.expected_graduation or "",
         "expected_graduation_display": format_date(profile.expected_graduation),
 
-        "current_gpa": current_gpa,  # use current_gpa
+        "current_gpa": current_gpa,  
         "credits_completed": completed_units,
         "credits_required": total_units,
         "academic_standing": profile.academic_standing or "Good Standing",
@@ -257,7 +257,7 @@ def update_student_profile(request):
 
             return JsonResponse({"status": "success"})
         except Exception as e:
-            print("❌ ERROR updating profile:", e)
+            print("ERROR updating profile:", e)
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
@@ -741,7 +741,6 @@ def export_degree_audit_pdf(request):
     profile, _ = StudentProfile.objects.get_or_create(user=student_user)
     student_program = profile.program if profile.program and profile.program != "Undeclared" else "No Program"
     
-    # Fetch curriculum data
     curriculum_data = []
     all_courses = []
     completed_courses = []

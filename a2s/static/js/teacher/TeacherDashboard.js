@@ -68,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    // Header
     const header = document.createElement("div");
     header.className = "calendar-row header";
     ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(day => {
@@ -186,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
 
  
-  // =================== Scrollbar show/hide for cards ===================
   // Recent Notifications
   (function() {
     const recent = document.getElementById('recentNotificationsContainer');

@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const updateUrl = container.dataset.updateUrl;
     const csrfToken = container.dataset.csrfToken;
 
-    // Edit button click
     editBtn.addEventListener("click", function() {
         noteEdit.value = noteDisplay.textContent.trim() === "No notes for this student yet."
             ? ""
@@ -20,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
         saveBtn.style.display = "inline-block";
     });
 
-    // Save button click
     saveBtn.addEventListener("click", function() {
         const updatedNote = noteEdit.value.trim();
 
@@ -35,15 +33,15 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
-                // Update display
+               
                 noteDisplay.textContent = data.notes || "No notes for this student yet.";
 
-                // Update table notes
+                
                 document.querySelectorAll(".note-text").forEach(td => {
                     td.textContent = data.notes || "No notes yet";
                 });
 
-                // Switch back to view mode
+                
                 noteDisplay.style.display = "block";
                 noteEdit.style.display = "none";
                 editBtn.style.display = "inline-block";
