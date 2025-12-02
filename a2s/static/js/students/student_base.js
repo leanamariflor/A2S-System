@@ -35,71 +35,68 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ===== Notifications =====
-  try {
-    const notifBtn = document.getElementById("notif-btn");
-    const notifDropdown = document.getElementById("notif-dropdown");
-    const notifList = document.getElementById("notif-list");
-    const clearNotifBtn = document.getElementById("clear-notif");
-    const notifCount = document.getElementById("notif-badge");
+  const notifBtn = document.getElementById("notif-btn");
+  const notifDropdown = document.getElementById("notif-dropdown");
+  const notifList = document.getElementById("notif-list");
+  const clearNotifBtn = document.getElementById("clear-notif");
+  const notifCount = document.getElementById("notif-badge");
 
-    console.debug('Notif elements', { notifBtn: !!notifBtn, notifDropdown: !!notifDropdown, notifList: !!notifList, clearNotifBtn: !!clearNotifBtn, notifCount: !!notifCount });
+  if (notifBtn && notifDropdown) {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    if (notifBtn && notifDropdown) {
-      const today = new Date();
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
+    let readEvents = JSON.parse(localStorage.getItem("readNotifications") || "[]");
 
-      let readEvents = JSON.parse(localStorage.getItem("readNotifications") || "[]");
+    if (typeof calendarJSON !== "undefined" && Array.isArray(calendarJSON)) {
+      localStorage.setItem("teacherCalendarData", JSON.stringify(calendarJSON));
+    }
 
-      if (typeof window.calendarJSON !== "undefined" && Array.isArray(window.calendarJSON)) {
-        localStorage.setItem("studentCalendarData", JSON.stringify(window.calendarJSON));
-      }
+    const storedCalendar = JSON.parse(localStorage.getItem("teacherCalendarData") || "[]");
 
-      const storedCalendar = JSON.parse(localStorage.getItem("studentCalendarData") || "[]");
-
-      const allEvents = [];
-      if (Array.isArray(storedCalendar)) {
-        storedCalendar.forEach(sem => {
-          if (sem.events && Array.isArray(sem.events)) {
-            sem.events.forEach(ev => {
-              allEvents.push({
-                id: ev.name + ev.date,
-                date: new Date(ev.date),
-                name: ev.name,
-                type: ev.type,
-                semester: sem.semester,
-              });
+    const allEvents = [];
+    if (Array.isArray(storedCalendar)) {
+      storedCalendar.forEach(sem => {
+        if (sem.events && Array.isArray(sem.events)) {
+          sem.events.forEach(ev => {
+            allEvents.push({
+              id: ev.name + ev.date,
+              date: new Date(ev.date),
+              name: ev.name,
+              type: ev.type,
+              semester: sem.semester,
             });
-          }
-        });
-      }
+          });
+        }
+      });
+    }
 
-      let weekEvents = allEvents.filter(
-        ev =>
-          ev.date >= startOfWeek &&
-          ev.date <= endOfWeek &&
-          !readEvents.includes(ev.id)
-      );
+    let weekEvents = allEvents.filter(
+      ev =>
+        ev.date >= startOfWeek &&
+        ev.date <= endOfWeek &&
+        !readEvents.includes(ev.id)
+    );
 
-      function updateBadge() {
-        if (notifCount) {
-          if (weekEvents.length > 0) {
-            notifCount.textContent = weekEvents.length;
-            notifCount.classList.remove("hidden");
-          } else {
-            notifCount.classList.add("hidden");
-          }
+    function updateBadge() {
+      if (notifCount) {
+        if (weekEvents.length > 0) {
+          notifCount.textContent = weekEvents.length;
+          notifCount.classList.remove("hidden");
+        } else {
+          notifCount.classList.add("hidden");
         }
       }
+    }
 
-      function renderNotifications() {
-        notifList.innerHTML =
-          weekEvents.length > 0
-            ? weekEvents
-                .map(
-                  ev => `
+    function renderNotifications() {
+      notifList.innerHTML =
+        weekEvents.length > 0
+          ? weekEvents
+              .map(
+                ev => `
           <div class="task-item" data-id="${ev.id}">
             <div class="task-details">
               <div class="task-title">${ev.name}</div>
@@ -108,66 +105,45 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="task-type">${ev.type}</div>
           </div>
         `
-                )
-                .join("")
-            : `<p>No events this week.</p>`;
+              )
+              .join("")
+          : `<p>No events this week.</p>`;
 
-        notifList.querySelectorAll(".task-item").forEach(item => {
-          item.addEventListener("click", () => {
-            const id = item.dataset.id;
-            readEvents.push(id);
-            localStorage.setItem("readNotifications", JSON.stringify(readEvents));
-            item.remove();
-            weekEvents = weekEvents.filter(ev => ev.id !== id);
-            updateBadge();
-          });
-        });
-      }
-
-      if (clearNotifBtn) {
-        clearNotifBtn.addEventListener("click", () => {
-          weekEvents.forEach(ev => readEvents.push(ev.id));
+      notifList.querySelectorAll(".task-item").forEach(item => {
+        item.addEventListener("click", () => {
+          const id = item.dataset.id;
+          readEvents.push(id);
           localStorage.setItem("readNotifications", JSON.stringify(readEvents));
-          weekEvents = [];
-          renderNotifications();
+          item.remove();
+          weekEvents = weekEvents.filter(ev => ev.id !== id);
           updateBadge();
         });
-      }
-
-      notifBtn.addEventListener("click", e => {
-        e.stopPropagation();
-        console.debug('notif-btn clicked', { target: e.target, currentDisplay: notifDropdown.style.display });
-        try {
-          const isOpen = notifDropdown.style.display === "block" || notifDropdown.classList.contains('active');
-          if (isOpen) {
-            notifDropdown.style.display = "none";
-            notifDropdown.classList.remove('active');
-          } else {
-            notifDropdown.style.display = "block";
-            notifDropdown.classList.add('active');
-          }
-        } catch (err) {
-          console.error('Error toggling notification dropdown', err);
-        }
       });
+    }
 
-      document.addEventListener("click", e => {
-        try {
-          if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
-            notifDropdown.style.display = "none";
-            notifDropdown.classList.remove('active');
-          }
-        } catch (err) {
-          console.debug('document click handler error', err);
-        }
-      });
-
+    clearNotifBtn.addEventListener("click", () => {
+      weekEvents.forEach(ev => readEvents.push(ev.id));
+      localStorage.setItem("readNotifications", JSON.stringify(readEvents));
+      weekEvents = [];
       renderNotifications();
       updateBadge();
-      console.debug('Notification init complete', { weekEventsCount: weekEvents.length });
-    } else console.debug('Notification init skipped: missing elements');
-  } catch (err) {
-    console.error('Notification init failed', err);
+    });
+
+    notifBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      notifDropdown.style.display =
+        notifDropdown.style.display === "block" ? "none" : "block";
+    });
+
+    document.addEventListener("click", e => {
+      if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+        notifDropdown.style.display = "none";
+      }
+    });
+
+    
+    renderNotifications();
+    updateBadge();
   }
 
 });

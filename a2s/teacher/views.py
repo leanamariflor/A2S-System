@@ -973,6 +973,9 @@ def upload_grades(request):
                 "units": units,
                 "midterm": g.get("midterm"),
                 "final": g.get("final"),
+                "final_grade": g.get("final"),
+                "school_year": course_info.get("school_year") or "2526",
+                "semester": course_info.get("semester") or "",
                 "teacher_id": teacher_profile_id,
                 "notes": ""
             }
