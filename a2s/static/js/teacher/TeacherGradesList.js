@@ -55,6 +55,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.body.removeChild(link);
   });
 
+  // Update label text when a file is selected
+  const fileUploadLabel = document.getElementById("fileUploadLabel");
+  if (fileUpload) {
+    fileUpload.addEventListener("change", () => {
+      const f = fileUpload.files[0];
+      if (f) fileUploadLabel.textContent = f.name;
+      else fileUploadLabel.textContent = "Choose file...";
+    });
+  }
+
   uploadBtn.addEventListener("click", () => {
     const file = fileUpload.files[0];
     if (!file) return alert("Please select a file to upload.");

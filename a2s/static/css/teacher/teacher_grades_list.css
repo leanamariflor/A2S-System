@@ -141,6 +141,47 @@
   font-weight: 600;
 }
 
+/* Download template button */
+.download-template-btn {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.download-template-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(111,115,255,0.12);
+}
+
+/* Custom file input label */
+.file-input-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px dashed var(--border);
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: linear-gradient(180deg, #ffffff, #fbfbff);
+  transition: all 0.18s ease;
+  width: 100%;
+  justify-content: space-between;
+}
+.file-input-label:hover { box-shadow: var(--glow); border-color: var(--primary); }
+.file-input-label input[type="file"] { display: none; }
+.file-input-label #fileUploadLabel { font-weight: 600; color: var(--foreground); }
+.file-input-label::after { content: "Browse"; background: var(--primary); color: white; padding: 6px 10px; border-radius: 8px; font-weight: 600; }
+
+/* Make upload button match visual style */
+.upload-file-btn { padding: 10px 14px; border-radius: 10px; font-weight: 700; }
+
 .upload-file-btn {
   background: var(--primary);
   color: white;

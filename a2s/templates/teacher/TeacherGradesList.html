@@ -43,9 +43,11 @@
         <div class="grades-upload">
           <h4>Student Grades Upload</h4>
           <button id="downloadTemplateBtn" class="download-template-btn">Download Template</button>
-          <label for="fileUpload">Upload Semestral Grades</label>
-          <input type="file" id="fileUpload" accept=".csv, .xlsx" />
-          <button id="uploadBtn" class="upload-file-btn">Upload</button>
+            <label for="fileUpload" class="file-input-label">
+              <span id="fileUploadLabel">Choose file...</span>
+              <input type="file" id="fileUpload" accept=".csv, .xlsx" />
+            </label>
+            <button id="uploadBtn" class="upload-file-btn">Upload</button>
           <small>Supported formats: .csv, .xlsx</small>
         </div>
       </div>

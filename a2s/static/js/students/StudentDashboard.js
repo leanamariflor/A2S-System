@@ -253,10 +253,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // =================== MODAL ===================
   const modal = document.getElementById("eventModal");
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="eventName"></h3>
+      <p><strong>Type:</strong> <span id="eventType"></span></p>
+      <p><strong>Date:</strong> <span id="eventDate"></span></p>
+    </div>`;
   const closeModal = modal.querySelector(".close");
   closeModal.onclick = () => (modal.style.display = "none");
   window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
 
+ 
   // =================== NOTIFICATIONS ===================
   const notificationsContainer = document.getElementById("recentNotificationsContainer");
   const today = new Date();
@@ -283,4 +291,19 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     notificationsContainer.innerHTML = `<p>No events this week.</p>`;
   }
+
+   // Recent Notifications
+  (function() {
+    const recent = document.getElementById('recentNotificationsContainer');
+    if (!recent) return;
+    let t = null;
+    function onScroll() {
+      recent.classList.add('scrolling');
+      if (t) clearTimeout(t);
+      t = setTimeout(() => recent.classList.remove('scrolling'), 600);
+    }
+    recent.addEventListener('scroll', onScroll, { passive: true });
+    recent.addEventListener('mouseenter', () => recent.classList.add('scrolling'));
+    recent.addEventListener('mouseleave', () => recent.classList.remove('scrolling'));
+  })();
 });

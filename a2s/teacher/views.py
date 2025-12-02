@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 
 
 import json, os, csv
+import re
 from datetime import datetime, timedelta, date
 
 from supabase import create_client
@@ -106,12 +107,46 @@ def teacher_dashboard(request):
     total_students = len(total_students_all)
 
     calendar_data = []
-    calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
     try:
-        with open(calendar_path, "r", encoding="utf-8") as f:
-            calendar_data = json.load(f)
+        cal_res = supabase.table("a2s_system_academic_calendar").select("data,title").eq("title", "Academic Calendar").single().execute()
+        if cal_res.data:
+            raw = cal_res.data.get("data")
+            parsed = None
+            if isinstance(raw, str):
+                try:
+                    parsed = json.loads(raw)
+                except Exception:
+                    parsed = None
+            else:
+                parsed = raw
+
+            schedule = []
+            if isinstance(parsed, dict) and parsed.get("schedule"):
+                schedule = parsed.get("schedule")
+            elif isinstance(parsed, list):
+                schedule = parsed
+
+            if schedule:
+                grouped = {}
+                for item in schedule:
+                    sem = item.get("Semester") or item.get("semester") or ""
+                    date_str = item.get("Date") or item.get("date") or item.get("date_string") or ""
+                    name = item.get("Event Name") or item.get("name") or item.get("event_name") or ""
+                    etype = item.get("Event Type") or item.get("type") or item.get("event_type") or ""
+
+                    if sem not in grouped:
+                        grouped[sem] = []
+                    grouped[sem].append({"date": date_str, "name": name, "type": etype})
+
+                for sem_key, events in grouped.items():
+                    calendar_data.append({"semester": sem_key, "events": events})
     except Exception:
-        calendar_data = []
+        calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
+        try:
+            with open(calendar_path, "r", encoding="utf-8") as f:
+                calendar_data = json.load(f)
+        except Exception:
+            calendar_data = []
 
     current_semester = "Unknown Semester"
     today = date.today()
@@ -397,7 +432,16 @@ def teacher_courses(request):
             })
             seen.add(key)
 
-    courses_list.sort(key=lambda x: (x["course_code"], x["section"]))
+    # Sort courses by numeric part of course code first (e.g. IT317 before CSIT321),
+    # then by course code and section to keep ordering deterministic.
+    def _course_sort_key(item):
+        code = item.get("course_code", "") or ""
+        # find first numeric sequence in the course code
+        m = re.search(r"(\d+)", code)
+        num = int(m.group(1)) if m else float('inf')
+        return (num, code, item.get("section", ""))
+
+    courses_list.sort(key=_course_sort_key)
 
     context = {
         "teacher_name": request.user.get_full_name(),
@@ -430,7 +474,14 @@ def teacher_grades(request):
             })
             seen.add(key)
 
-    courses_list.sort(key=lambda x: (x["course_code"], x["section"]))
+
+    def _course_sort_key(item):
+        code = item.get("course_code", "") or ""
+        m = re.search(r"(\d+)", code)
+        num = int(m.group(1)) if m else float('inf')
+        return (num, code, item.get("section", ""))
+
+    courses_list.sort(key=_course_sort_key)
 
     context = {
         "teacher_name": request.user.get_full_name(),
@@ -899,13 +950,13 @@ def upload_grades(request):
                 .execute()
 
             if not student_res.data:
-                print(f"⚠️ Student ID Number {id_number} not found")
+                print(f" Student ID Number {id_number} not found")
                 continue
 
             student_id = student_res.data[0]["id"]
 
             if student_id not in assignments:
-                print(f"⚠️ Student {id_number} not assigned to this course/section")
+                print(f" Student {id_number} not assigned to this course/section")
                 continue
 
             existing_res = supabase.table("students_grade") \

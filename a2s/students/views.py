@@ -39,7 +39,54 @@ supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 
-# Base View
+
+def load_academic_calendar():
+    calendar = []
+    try:
+        cal_res = supabase.table("a2s_system_academic_calendar").select("data,title").eq("title", "Academic Calendar").single().execute()
+        if cal_res.data:
+            raw = cal_res.data.get("data")
+            parsed = None
+            if isinstance(raw, str):
+                try:
+                    parsed = json.loads(raw)
+                except Exception:
+                    parsed = None
+            else:
+                parsed = raw
+
+            schedule = []
+            if isinstance(parsed, dict) and parsed.get("schedule"):
+                schedule = parsed.get("schedule")
+            elif isinstance(parsed, list):
+                schedule = parsed
+
+            if schedule:
+                grouped = {}
+                for item in schedule:
+                    sem = item.get("Semester") or item.get("semester") or ""
+                    date_str = item.get("Date") or item.get("date") or ""
+                    name = item.get("Event Name") or item.get("name") or ""
+                    etype = item.get("Event Type") or item.get("type") or ""
+                    if sem not in grouped:
+                        grouped[sem] = []
+                    grouped[sem].append({"date": date_str, "name": name, "type": etype})
+                for sem_key, events in grouped.items():
+                    calendar.append({"semester": sem_key, "events": events})
+                return calendar
+    except Exception:
+        pass
+
+   
+    try:
+        calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
+        with open(calendar_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print("Error loading academic calendar:", e)
+        return []
+
+
 @login_required(login_url="Login")
 def student_base(request):
     return render(request, "students/student_base.html")
@@ -114,14 +161,7 @@ def student_dashboard(request):
         pass
 
 
-    import os, json
-    from django.conf import settings
-    calendar_path = os.path.join(settings.BASE_DIR, "static", "data", "academic_calendar.json")
-    try:
-        with open(calendar_path, "r", encoding="utf-8") as f:
-            calendar_data = json.load(f)
-    except Exception as e:
-        print("Error loading academic calendar:", e)
+    calendar_data = load_academic_calendar()
 
     from datetime import date, datetime
     today = date.today()
@@ -369,14 +409,12 @@ def student_courses(request):
     profile, _ = StudentProfile.objects.get_or_create(user=student_user)
     student_program = profile.program if profile.program and profile.program != "Undeclared" else None
 
-    calendar_path = os.path.join(settings.BASE_DIR, 'a2s', 'static', 'data', 'academic_calendar.json')
+    calendar_data = load_academic_calendar()
     current_semester = None
     current_phase = None
 
     try:
-        with open(calendar_path, 'r', encoding='utf-8') as f:
-            academic_calendar = json.load(f)
-
+        academic_calendar = calendar_data
         now = datetime.now().date()
 
         for sem in academic_calendar:
@@ -527,24 +565,19 @@ def student_degree_audit(request):
     
     recommended_courses = recommended_courses[:6]
     
-    calendar_path = os.path.join(settings.BASE_DIR, 'a2s', 'static', 'data', 'academic_calendar.json')
+    calendar_data = load_academic_calendar()
     current_semester = "Unknown Semester"
     try:
-        with open(calendar_path, 'r', encoding='utf-8') as f:
-            calendar_data = json.load(f)
-            today = datetime.now().date()
-            
-            for sem in calendar_data:
-                start_event = next((e for e in sem["events"] if "Start of Classes" in e["name"]), None)
-                end_event = next((e for e in sem["events"] if "End of Classes" in e["name"]), None)
-                
-                if start_event and end_event:
-                    start_date = datetime.strptime(start_event["date"], "%Y-%m-%d").date()
-                    end_date = datetime.strptime(end_event["date"], "%Y-%m-%d").date()
-                    
-                    if start_date <= today <= end_date:
-                        current_semester = sem["semester"]
-                        break
+        today = datetime.now().date()
+        for sem in calendar_data:
+            start_event = next((e for e in sem.get("events", []) if "Start of Classes" in e.get("name", "")), None)
+            end_event = next((e for e in sem.get("events", []) if "End of Classes" in e.get("name", "")), None)
+            if start_event and end_event:
+                start_date = datetime.strptime(start_event.get("date", ""), "%Y-%m-%d").date()
+                end_date = datetime.strptime(end_event.get("date", ""), "%Y-%m-%d").date()
+                if start_date <= today <= end_date:
+                    current_semester = sem.get("semester")
+                    break
     except Exception as e:
         print("Error loading academic calendar:", e)
     
@@ -655,10 +688,8 @@ def calculate_subject_progress(semester_name, subject_status):
     elif subject_status == "recommended":
         return 0
     elif subject_status == "current":
-        with open("path/to/academic_calendar.json") as f:
-            data = json.load(f)
-
-        semester = next((s for s in data if s["semester"] == semester_name), None)
+        data = load_academic_calendar()
+        semester = next((s for s in data if s.get("semester") == semester_name), None)
         if not semester:
             return 0
 

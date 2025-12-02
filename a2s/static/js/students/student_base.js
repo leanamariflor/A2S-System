@@ -35,105 +35,142 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ===== Notifications =====
-  const notifBtn = document.getElementById("notif-btn");
-  const notifDropdown = document.getElementById("notif-dropdown");
-  const notifList = document.getElementById("notif-list");
-  const clearNotifBtn = document.getElementById("clear-notif");
-  const notifCount = document.getElementById("notif-badge");
+  try {
+    const notifBtn = document.getElementById("notif-btn");
+    const notifDropdown = document.getElementById("notif-dropdown");
+    const notifList = document.getElementById("notif-list");
+    const clearNotifBtn = document.getElementById("clear-notif");
+    const notifCount = document.getElementById("notif-badge");
 
-  if (notifBtn && notifDropdown) {
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    console.debug('Notif elements', { notifBtn: !!notifBtn, notifDropdown: !!notifDropdown, notifList: !!notifList, clearNotifBtn: !!clearNotifBtn, notifCount: !!notifCount });
 
-    let readEvents = JSON.parse(localStorage.getItem("readNotifications_" + USER_ID) || "[]");
+    if (notifBtn && notifDropdown) {
+      const today = new Date();
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    
-    if (typeof calendarJSON !== "undefined" && Array.isArray(calendarJSON)) {
-      localStorage.setItem("studentCalendarData_" + USER_ID, JSON.stringify(calendarJSON));
-    }
+      let readEvents = JSON.parse(localStorage.getItem("readNotifications") || "[]");
 
-    const storedCalendar = JSON.parse(localStorage.getItem("studentCalendarData_" + USER_ID) || "[]");
-    const allEvents = [];
-    if (Array.isArray(storedCalendar)) {
-      storedCalendar.forEach(sem => {
-        if (sem.events && Array.isArray(sem.events)) {
-          sem.events.forEach(ev => allEvents.push({
-            id: ev.name + ev.date,
-            date: new Date(ev.date),
-            name: ev.name,
-            type: ev.type,
-            semester: sem.semester
-          }));
-        }
-      });
-    }
-
-    let weekEvents = allEvents.filter(ev =>
-      ev.date >= startOfWeek && ev.date <= endOfWeek && !readEvents.includes(ev.id)
-    );
-
-    function updateBadge() {
-      if (notifCount) {
-        if (weekEvents.length > 0) {
-          notifCount.textContent = weekEvents.length;
-          notifCount.classList.remove("hidden");
-        } else notifCount.classList.add("hidden");
+      if (typeof window.calendarJSON !== "undefined" && Array.isArray(window.calendarJSON)) {
+        localStorage.setItem("studentCalendarData", JSON.stringify(window.calendarJSON));
       }
-    }
 
-    function renderNotifications() {
-      notifList.innerHTML =
-        weekEvents.length > 0
-          ? weekEvents.map(ev => `
-            <div class="task-item" data-id="${ev.id}">
-              <div class="task-details">
-                <div class="task-title">${ev.name}</div>
-                <div class="task-due">Date: ${ev.date.toLocaleDateString()}</div>
-              </div>
-              <div class="task-type">${ev.type}</div>
+      const storedCalendar = JSON.parse(localStorage.getItem("studentCalendarData") || "[]");
+
+      const allEvents = [];
+      if (Array.isArray(storedCalendar)) {
+        storedCalendar.forEach(sem => {
+          if (sem.events && Array.isArray(sem.events)) {
+            sem.events.forEach(ev => {
+              allEvents.push({
+                id: ev.name + ev.date,
+                date: new Date(ev.date),
+                name: ev.name,
+                type: ev.type,
+                semester: sem.semester,
+              });
+            });
+          }
+        });
+      }
+
+      let weekEvents = allEvents.filter(
+        ev =>
+          ev.date >= startOfWeek &&
+          ev.date <= endOfWeek &&
+          !readEvents.includes(ev.id)
+      );
+
+      function updateBadge() {
+        if (notifCount) {
+          if (weekEvents.length > 0) {
+            notifCount.textContent = weekEvents.length;
+            notifCount.classList.remove("hidden");
+          } else {
+            notifCount.classList.add("hidden");
+          }
+        }
+      }
+
+      function renderNotifications() {
+        notifList.innerHTML =
+          weekEvents.length > 0
+            ? weekEvents
+                .map(
+                  ev => `
+          <div class="task-item" data-id="${ev.id}">
+            <div class="task-details">
+              <div class="task-title">${ev.name}</div>
+              <div class="task-due">Date: ${ev.date.toLocaleDateString()}</div>
             </div>
-          `).join("")
-          : `<p>No events this week.</p>`;
+            <div class="task-type">${ev.type}</div>
+          </div>
+        `
+                )
+                .join("")
+            : `<p>No events this week.</p>`;
 
-      notifList.querySelectorAll(".task-item").forEach(item => {
-        item.addEventListener("click", () => {
-          const id = item.dataset.id;
-          readEvents.push(id);
-          localStorage.setItem("readNotifications_" + USER_ID, JSON.stringify(readEvents));
-          item.remove();
-          weekEvents = weekEvents.filter(ev => ev.id !== id);
+        notifList.querySelectorAll(".task-item").forEach(item => {
+          item.addEventListener("click", () => {
+            const id = item.dataset.id;
+            readEvents.push(id);
+            localStorage.setItem("readNotifications", JSON.stringify(readEvents));
+            item.remove();
+            weekEvents = weekEvents.filter(ev => ev.id !== id);
+            updateBadge();
+          });
+        });
+      }
+
+      if (clearNotifBtn) {
+        clearNotifBtn.addEventListener("click", () => {
+          weekEvents.forEach(ev => readEvents.push(ev.id));
+          localStorage.setItem("readNotifications", JSON.stringify(readEvents));
+          weekEvents = [];
+          renderNotifications();
           updateBadge();
         });
-      });
-    }
+      }
 
-    clearNotifBtn.addEventListener("click", () => {
-      weekEvents.forEach(ev => readEvents.push(ev.id));
-      localStorage.setItem("readNotifications_" + USER_ID, JSON.stringify(readEvents));
-      weekEvents = [];
+      notifBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        console.debug('notif-btn clicked', { target: e.target, currentDisplay: notifDropdown.style.display });
+        try {
+          const isOpen = notifDropdown.style.display === "block" || notifDropdown.classList.contains('active');
+          if (isOpen) {
+            notifDropdown.style.display = "none";
+            notifDropdown.classList.remove('active');
+          } else {
+            notifDropdown.style.display = "block";
+            notifDropdown.classList.add('active');
+          }
+        } catch (err) {
+          console.error('Error toggling notification dropdown', err);
+        }
+      });
+
+      document.addEventListener("click", e => {
+        try {
+          if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+            notifDropdown.style.display = "none";
+            notifDropdown.classList.remove('active');
+          }
+        } catch (err) {
+          console.debug('document click handler error', err);
+        }
+      });
+
       renderNotifications();
       updateBadge();
-    });
-
-    notifBtn.addEventListener("click", e => {
-      e.stopPropagation();
-      notifDropdown.style.display = notifDropdown.style.display === "block" ? "none" : "block";
-    });
-
-    document.addEventListener("click", e => {
-      if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
-        notifDropdown.style.display = "none";
-      }
-    });
-
-    renderNotifications();
-    updateBadge();
+      console.debug('Notification init complete', { weekEventsCount: weekEvents.length });
+    } else console.debug('Notification init skipped: missing elements');
+  } catch (err) {
+    console.error('Notification init failed', err);
   }
-});
 
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const sidebarScroll = document.querySelector('.sidebar-scroll');
