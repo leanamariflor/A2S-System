@@ -31,7 +31,6 @@
             <div class="tab-list">
                 <button class="tab-trigger active" data-tab="personal">Personal Info</button>
                 <button class="tab-trigger" data-tab="academic">Academic Info</button>
-                <button class="tab-trigger" data-tab="achievements">Achievements</button>
             </div>
 
             <!-- PERSONAL INFO -->
@@ -180,26 +179,8 @@
                 </div>
             </div>
 
-            <!-- ACHIEVEMENTS -->
-            <div class="tab-content" id="achievements">
-                <div class="card">
-                    <h3 class="card-title"><i data-lucide="award"></i> Professional Achievements</h3>
-                    <div class="achievements-grid" id="achievements-container">
-                        {% for achievement in achievements %}
-                        <div class="achievement-card" data-field="achievement_{{ forloop.counter }}">
-                            <i data-lucide="{{ achievement.icon }}"></i>
-                            <h4>{{ achievement.title }}</h4>
-                            <div class="editable-field">
-                                <input type="text" name="achievement_{{ forloop.counter }}_title" value="{{ achievement.title }}">
-                                <input type="text" name="achievement_{{ forloop.counter }}_description" value="{{ achievement.description }}">
-                            </div>
-                            <p>{{ achievement.description }}</p>
-                        </div>
-                        {% empty %}
-                        <p>No achievements yet.</p>
-                        {% endfor %}
-                    </div>
-                </div>
+         
+          
             </div>
         </div>
     </div>
